@@ -1,17 +1,22 @@
 package main
 
 import (
-    "log"
-    "net/http"
-
-    "github.com/go-chi/chi/v5"
+	"log"
+	"os"
 )
 
 func main() {
+	cfg := config{
+		addr: ":8080",
+		db: dbConfig{},
+	}
 
-    r := chi.NewRouter()
+	api := application{
+		config: cfg,
+	}
 
-    log.Println("running on :8080")
-
-    http.ListenAndServe(":8080", r)
+	if err := api.run(api.mount()); err != nil {
+		log.Printf("server has fialed to start, with err: %s", err)
+		os.Exit(1)
+	}
 }

@@ -1,10 +1,10 @@
 .PHONY: run build test migrate-up migrate-down seed
 
 run:
-	go run ./cmd/main.go
+	go run ./cmd
 
 build:
-	go build -o ./bin/server ./cmd/main.go
+	go build -o ./bin/server ./cmd
 
 test:
 	go test ./internals/...
