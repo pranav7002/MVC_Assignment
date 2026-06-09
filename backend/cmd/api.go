@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func (app *application) mount() http.Handler {
@@ -40,10 +42,20 @@ func (app *application) run(h http.Handler) error {
 	return srv.ListenAndServe()
 }
 
+func (app *application) connectDB() (*pgxpool.Pool, error) {
+	dbpool, err := pgxpool.New(context.Background(), app.config.db.dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	log.Printf("db connected successfully")
+	return dbpool, nil
+}
+
 type application struct {
 	config config
+	dbpool *pgxpool.Pool
 	// logger
-	// db driver
 }
 
 type config struct {
