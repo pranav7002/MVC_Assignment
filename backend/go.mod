@@ -1,4 +1,4 @@
-module github/pranav7002/MVC_Assignment
+module github.com/pranav7002/MVC_Assignment
 
 go 1.26.4
 
