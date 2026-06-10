@@ -54,7 +54,7 @@ func checkPassword(hash, password string) bool {
 }
 
 func (authService *AuthService) CreateToken(username string) (string, error) {
-	userID, err := authService.UserRepo.GetAttributeFromUsername(username, "user_id")
+	userID, err := authService.UserRepo.GetAttributeFromUsername(username, "id")
 	if err != nil {
 		return "", err
 	}
