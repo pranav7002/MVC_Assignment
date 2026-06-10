@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/pranav7002/MVC_Assignment/internal/database"
 )
 
 func main() {
@@ -48,6 +49,8 @@ func main() {
 	}
 	api.dbpool = pool
 	defer pool.Close() 
+
+	database.Seed(pool)
 
 	if err := api.run(api.mount()); err != nil {
 		slog.Error("server failed to start", "error", err)
