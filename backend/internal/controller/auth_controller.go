@@ -3,6 +3,8 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/jackc/pgx/v5"
 )
 
 type AuthServiceInterface interface {
@@ -53,11 +55,15 @@ func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *htt
 	}
 
 	isAuthenticated, err := authController.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
-	if err != nil {
+	if err == pgx.ErrNoRows {
+		w.WriteHeader(http.StatusUnauthorized)
+        w.Write([]byte("Incorrect username entered!!"))
+		return
+	} else if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
         w.Write([]byte("Something bad happened on the server :/"))
 		return
-	}
+	} 
 
 	if !isAuthenticated {
         w.WriteHeader(http.StatusBadRequest)
