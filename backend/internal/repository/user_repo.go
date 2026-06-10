@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -24,8 +25,8 @@ func (userRepo *UserRepository) GetAttributeFromUsername(username, column string
 
 	var attribute string
 
-    query := `SELECT $1 FROM users WHERE username = "$2"`
-	err := userRepo.DB.QueryRow(ctx, query, column, username).Scan(&attribute)
+    query := fmt.Sprintf(`SELECT %s FROM users WHERE username = $1`, column)
+	err := userRepo.DB.QueryRow(ctx, query, username).Scan(&attribute)
 	
 	if err != nil {
 		return "", err
