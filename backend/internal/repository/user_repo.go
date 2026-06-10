@@ -19,17 +19,17 @@ func (userRepo *UserRepository) InsertUser(username, hash string) error {
     return err 
 }
 
-func (userRepo *UserRepository) GetPasswordHash(username string) (string, error) {
+func (userRepo *UserRepository) GetAttributeFromUsername(username, column string) (string, error) {
     ctx := context.Background()	
 
-	var hash string
+	var attribute string
 
-    query := `SELECT password_hash FROM users WHERE username = "$1"`
-	err := userRepo.DB.QueryRow(ctx, query, username).Scan(&hash)
+    query := `SELECT $1 FROM users WHERE username = "$2"`
+	err := userRepo.DB.QueryRow(ctx, query, column, username).Scan(&attribute)
 	
 	if err != nil {
 		return "", err
 	}
 
-	return hash, nil
+	return attribute, nil
 }  

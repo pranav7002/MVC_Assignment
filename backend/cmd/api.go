@@ -12,6 +12,7 @@ import (
 	"github.com/pranav7002/MVC_Assignment/internal/controller"
 	"github.com/pranav7002/MVC_Assignment/internal/repository"
 	"github.com/pranav7002/MVC_Assignment/internal/services"
+	customMiddleware "github.com/pranav7002/MVC_Assignment/internal/middleware"
 )
 
 func (app *application) mount() http.Handler {
@@ -32,6 +33,12 @@ func (app *application) mount() http.Handler {
 		// PUBLIC 
 		r.Group(func(r chi.Router) {
 			r.Post("/auth/register", app.authController.RegisterHandler)
+			r.Post("/login", app.authController.LoginHandler)
+		})
+
+		// PROTECTED 
+		r.Group(func(r chi.Router) {
+			r.Use(customMiddleware.JWTMiddleware)
 		})
 	})
 
