@@ -50,6 +50,9 @@ func main() {
 	api.dbpool = pool
 	defer pool.Close() 
 
+	// Inject all dependencies
+	api.hydrate()
+
 	database.Seed(pool)
 
 	if err := api.run(api.mount()); err != nil {

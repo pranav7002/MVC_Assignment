@@ -9,6 +9,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/pranav7002/MVC_Assignment/internal/controller"
+	"github.com/pranav7002/MVC_Assignment/internal/repository"
+	"github.com/pranav7002/MVC_Assignment/internal/services"
 )
 
 func (app *application) mount() http.Handler {
@@ -24,6 +27,8 @@ func (app *application) mount() http.Handler {
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
 	})
+
+	r.Post("/register", app.authController.RegisterHandler)
 
 	return r
 }
@@ -55,7 +60,8 @@ func (app *application) connectDB() (*pgxpool.Pool, error) {
 type application struct {
 	config config
 	dbpool *pgxpool.Pool
-	// logger
+
+	authController *controller.AuthController
 }
 
 type config struct {
@@ -65,4 +71,14 @@ type config struct {
 
 type dbConfig struct {
 	dsn string
+}
+
+func (app *application) hydrate() {
+	dbpool := app.dbpool
+
+	userRepo := &repository.UserRepository{ DB: dbpool }
+	authService := &services.AuthService{ UserRepo: userRepo }
+	authController := &controller.AuthController{ AuthService: authService}
+
+	app.authController = authController
 }
