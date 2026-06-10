@@ -28,7 +28,12 @@ func (app *application) mount() http.Handler {
 	w.Write([]byte("ok"))
 	})
 
-	r.Post("/register", app.authController.RegisterHandler)
+	r.Route("/api", func(r chi.Router) {
+		// PUBLIC 
+		r.Group(func(r chi.Router) {
+			r.Post("/auth/register", app.authController.RegisterHandler)
+		})
+	})
 
 	return r
 }

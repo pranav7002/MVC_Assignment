@@ -9,7 +9,6 @@ CREATE TYPE resource_type AS ENUM ('gold', 'elixir');
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username TEXT UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     xp INT NOT NULL DEFAULT 0,
     level INT NOT NULL DEFAULT 1,

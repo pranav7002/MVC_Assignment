@@ -14,6 +14,3 @@ migrate-up:
 
 migrate-down:
 	migrate -path ./migrations -database "postgres://postgres:postgres@localhost:5433/coc?sslmode=disable" down
-
-seed:
-	go run ./cmd/seed/main.go
