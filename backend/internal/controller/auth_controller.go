@@ -8,6 +8,7 @@ import (
 type AuthServiceInterface interface {
 	RegisterUser(username, password string) error
 	LoginUser(username, password string) (bool, error)
+	CreateToken(userID string) (string, error)
 }
 
 type AuthController struct {
@@ -64,6 +65,13 @@ func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *htt
         return
 	}
 
+	tokenString, err := authController.AuthService.CreateToken(userReqBody.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+        w.Write([]byte("Something bad happened on the server :/"))
+		return
+	}
+
     w.WriteHeader(http.StatusOK)
-    w.Write([]byte("User logged in successfully!"))
+    w.Write([]byte(tokenString))
 }
