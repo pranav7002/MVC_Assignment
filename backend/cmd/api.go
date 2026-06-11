@@ -33,12 +33,14 @@ func (app *application) mount() http.Handler {
 		// PUBLIC 
 		r.Group(func(r chi.Router) {
 			r.Post("/auth/register", app.authController.RegisterHandler)
-			r.Post("/login", app.authController.LoginHandler)
+			r.Post("/auth/login", app.authController.LoginHandler)
 		})
 
 		// PROTECTED 
 		r.Group(func(r chi.Router) {
 			r.Use(customMiddleware.JWTMiddleware)
+
+			r.Get("/user/{userID}/buildings", app.villageController.BuildingHandler)
 		})
 	})
 
@@ -74,6 +76,7 @@ type application struct {
 	dbpool *pgxpool.Pool
 
 	authController *controller.AuthController
+	villageController *controller.VillageController
 }
 
 type config struct {
@@ -92,5 +95,10 @@ func (app *application) hydrate() {
 	authService := &services.AuthService{ UserRepo: userRepo }
 	authController := &controller.AuthController{ AuthService: authService}
 
+	villageRepo := &repository.VillageRepository{ DB: dbpool }
+	villageService := &services.VillageService{ VillageRepo: villageRepo }
+	villageController := &controller.VillageController{ VillageService: villageService}
+
 	app.authController = authController
+	app.villageController = villageController
 }
