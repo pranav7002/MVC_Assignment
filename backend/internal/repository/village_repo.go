@@ -44,7 +44,9 @@ func (villageRepo *VillageRepository) GetGameProgressionConfig(thLevel int, buil
 	defer rows.Close()
 
 	gameProgConfig, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.GameProgressionConfig])
-
+	if err != nil {
+		return models.GameProgressionConfig{}, err
+	}
 	return gameProgConfig, nil
 }
 
@@ -204,6 +206,23 @@ func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int
 	// Check if the building belongs to the user
 	if result.RowsAffected() == 0 {
 		return fmt.Errorf("building not found or does not belong to user")
+	}
+
+	return nil
+}
+
+func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType string, amount int) error {
+	ctx := context.Background()
+
+	query := fmt.Sprintf(`
+		UPDATE village 
+		SET %s = %s - $1 
+		WHERE user_id = $2
+	`, resourceType, resourceType)
+
+	_, err := villageRepo.DB.Exec(ctx, query, amount, userID)
+	if err != nil {
+		return err
 	}
 
 	return nil

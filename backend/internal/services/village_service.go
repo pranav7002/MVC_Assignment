@@ -19,6 +19,7 @@ type VillageRepositoryInterface interface {
 	GetResourceConfig(name string, level int) (models.ResourceConfig, error)
 	GetStorageConfig(name string, level int) (models.StorageConfig, error)
 	GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error)
+	RemoveResource(userID string, resourceType string, amount int) error
 }
 
 type VillageService struct {
@@ -147,10 +148,14 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 
 	for i := buildingReqBody.PosX; i < buildingReqBody.PosX + size; i++ {
 		for j := buildingReqBody.PosY; j < buildingReqBody.PosY + size; j++ {
-			if villageBitmap[i][j] == true {
+			if villageBitmap[i][j] {
 				return errors.New("Collision Detected!!")
 			}
 		}
+	}
+
+	if err := villageService.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
+		return err
 	}
 
 	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
@@ -166,18 +171,26 @@ func (villageService *VillageService) MoveBuilding(userID string, buildingID int
 		return err
 	}
 
+	var b models.Building
 	var villageBitmap [44][44]bool
 	for _, building := range buildings {
 		for i := building.PosX; i <= building.PosX+building.Size; i++ {
 			for j := building.PosY; j <= building.PosY+building.Size; j++ {
+				if building.ID == buildingID { 
+					b = building
+					continue 
+				}
 				villageBitmap[i][j] = true
 			}
 		}
 	}
 
-	for i := reqBody.PosX; i < reqBody.PosX+reqBody.Size; i++ {
-		for j := reqBody.PosY; j < reqBody.PosY+reqBody.Size; j++ {
-			if villageBitmap[i][j] == true {
+	for i := reqBody.PosX; i < reqBody.PosX + b.Size; i++ {
+		for j := reqBody.PosY; j < reqBody.PosY + b.Size; j++ {
+			if i > 43 || j > 43 {
+				return errors.New("Out of Bounds!!")
+			}
+			if villageBitmap[i][j] {
 				return errors.New("Collision Detected!!")
 			}
 		}
