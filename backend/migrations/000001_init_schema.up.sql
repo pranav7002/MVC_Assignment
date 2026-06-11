@@ -58,6 +58,7 @@ CREATE TABLE building_instance (
     level INT NOT NULL DEFAULT 1,
     pos_x INT NOT NULL,
     pos_y INT NOT NULL,
+    size INT NOT NULL,
     is_upgrading BOOLEAN NOT NULL DEFAULT false,
     hp INT NOT NULL
 );
@@ -82,6 +83,7 @@ CREATE TABLE storage_config (
     upgrade_cost_type resource_type NOT NULL,
     upgrade_duration_sec INT NOT NULL,
     max_hp INT NOT NULL,
+    size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)
 );
 
@@ -95,6 +97,7 @@ CREATE TABLE resource_config (
     upgrade_cost_type resource_type NOT NULL,
     upgrade_duration_sec INT NOT NULL,
     max_hp INT NOT NULL,
+    size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)
 );
 
@@ -105,6 +108,7 @@ CREATE TABLE town_hall_config (
     upgrade_cost_type resource_type NOT NULL,
     upgrade_duration_sec INT NOT NULL,
     max_hp INT NOT NULL,
+    size INT NOT NULL DEFAULT 4,
     PRIMARY KEY (name, level)
 );
 
@@ -117,6 +121,7 @@ CREATE TABLE defence_config (
     dps INT NOT NULL,
     max_hp INT NOT NULL,
     range INT NOT NULL,
+    size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)
 );
 
@@ -128,6 +133,7 @@ CREATE TABLE training_grounds_config (
     upgrade_cost_type resource_type NOT NULL,
     upgrade_duration_sec INT NOT NULL,
     max_hp INT NOT NULL,
+    size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)
 );
 
