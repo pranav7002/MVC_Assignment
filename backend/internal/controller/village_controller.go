@@ -28,7 +28,7 @@ func (villageController *VillageController) BuildingHandler(w http.ResponseWrite
 	buildings, err := villageController.VillageService.GetBuildings(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-        w.Write([]byte("Something bad happened on the server :/"))
+		w.Write([]byte("Something bad happened on the server :/"))
 		return
 	}
 
@@ -50,18 +50,18 @@ func (villageController *VillageController) BuildingCreationHandler(w http.Respo
 
 	err := json.NewDecoder(r.Body).Decode(reqBody)
 	if err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        w.Write([]byte("Please provide the correct input!!"))
-        return
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Please provide the correct input!!"))
+		return
 	}
 
 	if err := villageController.VillageService.CreateBuilding(userID, *reqBody); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-		return 
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Building Created successfully!"))
+	w.Write([]byte("Building Created successfully!"))
 }
 
 func (villageController *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,16 +75,16 @@ func (villageController *VillageController) BuildingPositionHandler(w http.Respo
 	reqBody := new(models.BuildingPositionRequestBody)
 
 	if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
-        w.WriteHeader(http.StatusBadRequest)
-        w.Write([]byte("Please provide the correct input!!"))
-        return
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("Please provide the correct input!!"))
+		return
 	}
 
 	if err := villageController.VillageService.MoveBuilding(userID, buildingID, *reqBody); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-		return 
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-    w.Write([]byte("Building Moved successfully!"))
+	w.Write([]byte("Building Moved successfully!"))
 }

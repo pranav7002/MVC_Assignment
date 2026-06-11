@@ -22,7 +22,7 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-	dbDSN := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", 
+	dbDSN := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_HOST"),
@@ -48,7 +48,7 @@ func main() {
 		os.Exit(1)
 	}
 	api.dbpool = pool
-	defer pool.Close() 
+	defer pool.Close()
 
 	// Inject all dependencies
 	api.hydrate()

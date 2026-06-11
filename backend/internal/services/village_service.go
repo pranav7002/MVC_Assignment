@@ -35,34 +35,34 @@ func (villageService *VillageService) GetBuildings(userID string) ([]models.Buil
 
 func (villageService *VillageService) CreateBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody) error {
 	village, err := villageService.VillageRepo.GetVillage(userID)
-	if err != nil { 
-		return err 
+	if err != nil {
+		return err
 	}
 
 	buildingCount, err := villageService.VillageRepo.GetBuildingCount(
-		userID, 
-		buildingReqBody.BuildingType, 
+		userID,
+		buildingReqBody.BuildingType,
 		buildingReqBody.BuildingName,
 	)
-	if err != nil { 
-		return err 
+	if err != nil {
+		return err
 	}
 
 	gameProgConfig, err := villageService.VillageRepo.GetGameProgressionConfig(
-		village.TownHallLevel, 
-		buildingReqBody.BuildingType, 
+		village.TownHallLevel,
+		buildingReqBody.BuildingType,
 		buildingReqBody.BuildingName,
-	)	
-	if err != nil { 
-		return err 
+	)
+	if err != nil {
+		return err
 	}
 
 	// CHECK
 	if gameProgConfig.MaxBuilt == 0 {
-    	return errors.New("building not available at this town hall level")
+		return errors.New("building not available at this town hall level")
 	}
 	if buildingCount == int(gameProgConfig.MaxBuilt) {
-    	return errors.New("more buildings not allowed at this town hall level")
+		return errors.New("more buildings not allowed at this town hall level")
 	}
 
 	var upgradeCost int
@@ -120,7 +120,6 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		return fmt.Errorf("invalid building type: %s", buildingReqBody.BuildingType)
 	}
 
-	
 	switch upgradeCostType {
 	case "gold":
 		if village.Gold < upgradeCost {
@@ -133,28 +132,28 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	}
 
 	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
-	if err != nil { 
-		return err 
+	if err != nil {
+		return err
 	}
 
-	var villageBitmap [44][44]bool  
+	var villageBitmap [44][44]bool
 	for _, building := range buildings {
-		for i := building.PosX; i <= building.Size; i++ {
-			for j := building.PosY; j <= building.Size; j++ {
-				villageBitmap[i][j] = true;
+		for i := building.PosX; i < building.PosX + building.Size; i++ {
+			for j := building.PosY; j < building.PosY + building.Size; j++ {
+				villageBitmap[i][j] = true
 			}
 		}
 	}
 
-	for i := buildingReqBody.PosX; i <= size; i++ {
-		for j := buildingReqBody.PosY; j <= size; j++ {
+	for i := buildingReqBody.PosX; i < buildingReqBody.PosX + size; i++ {
+		for j := buildingReqBody.PosY; j < buildingReqBody.PosY + size; j++ {
 			if villageBitmap[i][j] == true {
 				return errors.New("Collision Detected!!")
 			}
 		}
 	}
 
- 	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
+	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
 		return err
 	}
 
@@ -163,21 +162,21 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 
 func (villageService *VillageService) MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error {
 	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
-	if err != nil { 
-		return err 
+	if err != nil {
+		return err
 	}
 
-	var villageBitmap [44][44]bool  
+	var villageBitmap [44][44]bool
 	for _, building := range buildings {
-		for i := building.PosX; i <= building.PosX + building.Size; i++ {
-			for j := building.PosY; j <= building.PosY + building.Size; j++ {
-				villageBitmap[i][j] = true;
+		for i := building.PosX; i <= building.PosX+building.Size; i++ {
+			for j := building.PosY; j <= building.PosY+building.Size; j++ {
+				villageBitmap[i][j] = true
 			}
 		}
 	}
 
-	for i := reqBody.PosX; i <= reqBody.PosX + reqBody.Size; i++ {
-		for j := reqBody.PosY; j <= reqBody.PosY + reqBody.Size; j++ {
+	for i := reqBody.PosX; i < reqBody.PosX+reqBody.Size; i++ {
+		for j := reqBody.PosY; j < reqBody.PosY+reqBody.Size; j++ {
 			if villageBitmap[i][j] == true {
 				return errors.New("Collision Detected!!")
 			}
@@ -186,7 +185,7 @@ func (villageService *VillageService) MoveBuilding(userID string, buildingID int
 
 	if err := villageService.VillageRepo.MoveBuilding(userID, buildingID, reqBody.PosX, reqBody.PosY); err != nil {
 		return err
-	} 
+	}
 
 	return nil
 }
