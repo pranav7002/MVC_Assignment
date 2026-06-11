@@ -10,6 +10,7 @@ import (
 type VillageRepositoryInterface interface {
 	FetchUserBuildings(userID string) ([]models.Building, error)
 	InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error
+	MoveBuilding(userID string, buildingID int64, posX, posY int) error
 	GetGameProgressionConfig(thLevel int, buildingType string, buildingName string) (models.GameProgressionConfig, error)
 	GetVillage(userID string) (models.Village, error)
 	GetBuildingCount(userID string, buildingType string, buildingName string) (int, error)
@@ -156,6 +157,36 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
  	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (villageService *VillageService) MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error {
+	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
+	if err != nil { 
+		return err 
+	}
+
+	var villageBitmap [44][44]bool  
+	for _, building := range buildings {
+		for i := building.PosX; i <= building.PosX + building.Size; i++ {
+			for j := building.PosY; j <= building.PosY + building.Size; j++ {
+				villageBitmap[i][j] = true;
+			}
+		}
+	}
+
+	for i := reqBody.PosX; i <= reqBody.PosX + reqBody.Size; i++ {
+		for j := reqBody.PosY; j <= reqBody.PosY + reqBody.Size; j++ {
+			if villageBitmap[i][j] == true {
+				return errors.New("Collision Detected!!")
+			}
+		}
+	}
+
+	if err := villageService.VillageRepo.MoveBuilding(userID, buildingID, reqBody.PosX, reqBody.PosY); err != nil {
+		return err
+	} 
 
 	return nil
 }
