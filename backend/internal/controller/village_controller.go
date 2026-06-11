@@ -1,4 +1,3 @@
-// GET    /api/village                → get my village (all building instances)
 // POST   /api/village/buildings      → place a building (validate: TH level allows it,
 //                                      max count not exceeded via game_progression_config,
 //                                      player has enough currency, grid position valid)
@@ -17,6 +16,7 @@ import (
 
 type VillageServiceInterface interface {
 	GetBuildings(userID string) ([]models.Building, error)
+	CreateBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody) error
 }
 
 type VillageController struct {
@@ -42,4 +42,24 @@ func (villageController *VillageController) BuildingHandler(w http.ResponseWrite
 		http.Error(w, "Failed to encode JSON", http.StatusInternalServerError)
 		return
 	}
+}
+
+func (villageController *VillageController) BuildingCreationHandler(w http.ResponseWriter, r *http.Request) {
+	userID := chi.URLParam(r, "userID")
+	buildingReqBody := new(models.BuildingCreationRequestBody)
+
+	err := json.NewDecoder(r.Body).Decode(buildingReqBody)
+	if err != nil {
+        w.WriteHeader(http.StatusBadRequest)
+        w.Write([]byte("Please provide the correct input!!"))
+        return
+	}
+
+	if err := villageController.VillageService.CreateBuilding(userID, *buildingReqBody); err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+		return 
+	}
+
+	w.WriteHeader(http.StatusOK)
+    w.Write([]byte("Building Created successfully!"))
 }

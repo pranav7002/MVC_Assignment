@@ -41,6 +41,7 @@ func (app *application) mount() http.Handler {
 			r.Use(customMiddleware.JWTMiddleware)
 
 			r.Get("/user/{userID}/buildings", app.villageController.BuildingHandler)
+			r.Post("/user/{userID}/buildings", app.villageController.BuildingCreationHandler)
 		})
 	})
 
