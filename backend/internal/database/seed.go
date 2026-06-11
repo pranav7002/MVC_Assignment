@@ -102,18 +102,23 @@ func Seed(pool *pgxpool.Pool) {
 			INSERT INTO game_progression_config (town_hall_level, building_type, building_name, max_level, max_built) VALUES 
 			-- TH1
 			(1, 'defense', 'Cannon', 2, 2),
+			(1, 'defense', 'Archer Tower', 0, 0),
+			(1, 'defense', 'Mortar', 0, 0),
 			(1, 'resource', 'Gold Mine', 2, 1),
 			(1, 'resource', 'Elixir Collector', 2, 1),
 			(1, 'storage', 'Gold Storage', 2, 1),
 			(1, 'storage', 'Elixir Storage', 2, 1),
+			(1, 'barracks', 'Barracks', 0, 0),
 			
 			-- TH2
 			(2, 'defense', 'Cannon', 3, 2),
 			(2, 'defense', 'Archer Tower', 2, 1),
+			(2, 'defense', 'Mortar', 0, 0),
 			(2, 'resource', 'Gold Mine', 4, 2),
 			(2, 'resource', 'Elixir Collector', 4, 2),
 			(2, 'storage', 'Gold Storage', 4, 1),
 			(2, 'storage', 'Elixir Storage', 4, 1),
+			(2, 'barracks', 'Barracks', 1, 1),
 			
 			-- TH3
 			(3, 'defense', 'Cannon', 4, 2),
@@ -123,6 +128,7 @@ func Seed(pool *pgxpool.Pool) {
 			(3, 'resource', 'Elixir Collector', 6, 3),
 			(3, 'storage', 'Gold Storage', 6, 2),
 			(3, 'storage', 'Elixir Storage', 6, 2),
+			(3, 'barracks', 'Barracks', 2, 1),
 			
 			-- TH4
 			(4, 'defense', 'Cannon', 5, 2),
@@ -131,7 +137,8 @@ func Seed(pool *pgxpool.Pool) {
 			(4, 'resource', 'Gold Mine', 8, 4),
 			(4, 'resource', 'Elixir Collector', 8, 4),
 			(4, 'storage', 'Gold Storage', 8, 2),
-			(4, 'storage', 'Elixir Storage', 8, 2);
+			(4, 'storage', 'Elixir Storage', 8, 2),
+			(4, 'barracks', 'Barracks', 3, 2);
 		`
 		if _, err = pool.Exec(ctx, progQuery); err != nil {
 			log.Println("Failed to seed progression rules: ", err)
