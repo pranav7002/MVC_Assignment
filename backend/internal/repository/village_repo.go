@@ -65,7 +65,7 @@ func (villageRepo *VillageRepository) GetVillage(userID string) (models.Village,
 func (villageRepo *VillageRepository) GetBuildingCount(userID string, buildingType string, buildingName string) (int, error) {
 	ctx := context.Background()
 
-	var count int 
+	var count int
 	query := `SELECT COUNT(*) FROM building_instance WHERE user_id = $1 AND building_type = $2 AND building_name = $3`
 	err := villageRepo.DB.QueryRow(ctx, query, userID, buildingType, buildingName).Scan(&count)
 	if err != nil {
@@ -173,12 +173,12 @@ func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqB
 		(user_id, building_type, building_name, level, pos_x, pos_y, size, is_upgrading, hp) 
 		VALUES ($1, $2, $3, 1, $4, $5, $6, false, $7)
 	`
-	
-	_, err := villageRepo.DB.Exec(ctx, query, 
-		userID, 
-		buildingReqBody.BuildingType, 
-		buildingReqBody.BuildingName, 
-		buildingReqBody.PosX, 
+
+	_, err := villageRepo.DB.Exec(ctx, query,
+		userID,
+		buildingReqBody.BuildingType,
+		buildingReqBody.BuildingName,
+		buildingReqBody.PosX,
 		buildingReqBody.PosY,
 		size,
 		hp,
@@ -195,7 +195,7 @@ func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int
 		SET pos_x = $1, pos_y = $2 
 		WHERE id = $3 AND user_id = $4
 	`
-	
+
 	result, err := villageRepo.DB.Exec(ctx, query, posX, posY, buildingID, userID)
 	if err != nil {
 		return err
