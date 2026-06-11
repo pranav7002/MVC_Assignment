@@ -35,5 +35,4 @@ type BuildingCreationRequestBody struct {
 type BuildingPositionRequestBody struct {
 	PosX int `json:"pos_x"`
 	PosY int `json:"pos_y"`
-	Size int `json:"size"`
 }
