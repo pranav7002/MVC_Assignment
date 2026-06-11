@@ -42,6 +42,7 @@ func (app *application) mount() http.Handler {
 
 			r.Get("/user/{userID}/buildings", app.villageController.BuildingHandler)
 			r.Post("/user/{userID}/buildings", app.villageController.BuildingCreationHandler)
+			r.Put("/user/{userID}/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
 		})
 	})
 

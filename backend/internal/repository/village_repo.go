@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -184,4 +185,26 @@ func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqB
 	)
 
 	return err
+}
+
+func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int64, posX, posY int) error {
+	ctx := context.Background()
+
+	query := `
+		UPDATE building_instance 
+		SET pos_x = $1, pos_y = $2 
+		WHERE id = $3 AND user_id = $4
+	`
+	
+	result, err := villageRepo.DB.Exec(ctx, query, posX, posY, buildingID, userID)
+	if err != nil {
+		return err
+	}
+
+	// Check if the building belongs to the user
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("building not found or does not belong to user")
+	}
+
+	return nil
 }
