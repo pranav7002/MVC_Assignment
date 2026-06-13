@@ -47,7 +47,10 @@ func (app *application) mount() http.Handler {
 			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
 
 			// ECONOMY
-			r.Put("/economy/collect", app.economyController.ResourceCollectionHandler)
+			r.Post("/economy/collect", app.economyController.ResourceCollectionHandler)
+
+			// TROOPS
+			r.Post("/troops/train", app.troopController.TrainTroopHandler)
 		})
 	})
 
@@ -85,6 +88,7 @@ type application struct {
 	authController    *controller.AuthController
 	villageController *controller.VillageController
 	economyController *controller.EconomyController
+	troopController   *controller.TroopController
 }
 
 type config struct {
@@ -121,7 +125,16 @@ func (app *application) hydrate(secretKey []byte) {
 	}
 	economyController := &controller.EconomyController{EconomyService: economyService}
 
+	troopRepo := &repository.TroopRepository{DB: dbpool}
+	troopService := &services.TroopService{
+		TroopRepo:   troopRepo,
+		VillageRepo: villageRepo,
+		ConfigRepo:  configRepo,
+	}
+	troopController := &controller.TroopController{TroopService: troopService}
+
 	app.authController = authController
 	app.villageController = villageController
 	app.economyController = economyController
+	app.troopController = troopController
 }

@@ -14,11 +14,11 @@ type VillageRepository struct {
 	DB *pgxpool.Pool
 }
 
-func (villageRepo *VillageRepository) GetUserBuildings(userID string) ([]models.Building, error) {
+func (r *VillageRepository) GetUserBuildings(userID string) ([]models.Building, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM building_instance WHERE user_id = $1`
-	rows, err := villageRepo.DB.Query(ctx, query, userID)
+	rows, err := r.DB.Query(ctx, query, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -34,11 +34,11 @@ func (villageRepo *VillageRepository) GetUserBuildings(userID string) ([]models.
 }
 
 
-func (villageRepo *VillageRepository) GetVillage(userID string) (models.Village, error) {
+func (r *VillageRepository) GetVillage(userID string) (models.Village, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM village WHERE user_id = $1`
-	rows, err := villageRepo.DB.Query(ctx, query, userID)
+	rows, err := r.DB.Query(ctx, query, userID)
 	if err != nil {
 		return models.Village{}, err
 	}
@@ -48,12 +48,12 @@ func (villageRepo *VillageRepository) GetVillage(userID string) (models.Village,
 	return village, nil
 }
 
-func (villageRepo *VillageRepository) GetBuildingCount(userID string, buildingType string, buildingName string) (int, error) {
+func (r *VillageRepository) GetBuildingCount(userID string, buildingType string, buildingName string) (int, error) {
 	ctx := context.Background()
 
 	var count int
 	query := `SELECT COUNT(*) FROM building_instance WHERE user_id = $1 AND building_type = $2 AND building_name = $3`
-	err := villageRepo.DB.QueryRow(ctx, query, userID, buildingType, buildingName).Scan(&count)
+	err := r.DB.QueryRow(ctx, query, userID, buildingType, buildingName).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
@@ -62,7 +62,7 @@ func (villageRepo *VillageRepository) GetBuildingCount(userID string, buildingTy
 }
 
 
-func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error {
+func (r *VillageRepository) InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error {
 	ctx := context.Background()
 
 	query := `
@@ -71,7 +71,7 @@ func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqB
 		VALUES ($1, $2, $3, 1, $4, $5, $6, false, $7)
 	`
 
-	_, err := villageRepo.DB.Exec(ctx, query,
+	_, err := r.DB.Exec(ctx, query,
 		userID,
 		buildingReqBody.BuildingType,
 		buildingReqBody.BuildingName,
@@ -84,7 +84,7 @@ func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqB
 	return err
 }
 
-func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int64, posX, posY int) error {
+func (r *VillageRepository) MoveBuilding(userID string, buildingID int64, posX, posY int) error {
 	ctx := context.Background()
 
 	query := `
@@ -93,7 +93,7 @@ func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int
 		WHERE id = $3 AND user_id = $4
 	`
 
-	result, err := villageRepo.DB.Exec(ctx, query, posX, posY, buildingID, userID)
+	result, err := r.DB.Exec(ctx, query, posX, posY, buildingID, userID)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (villageRepo *VillageRepository) MoveBuilding(userID string, buildingID int
 	return nil
 }
 
-func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType string, amount int) error {
+func (r *VillageRepository) RemoveResource(userID string, resourceType string, amount int) error {
 	ctx := context.Background()
 
 	query := fmt.Sprintf(`
@@ -115,7 +115,7 @@ func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType
 		WHERE user_id = $2
 	`, resourceType, resourceType)
 
-	_, err := villageRepo.DB.Exec(ctx, query, amount, userID)
+	_, err := r.DB.Exec(ctx, query, amount, userID)
 	if err != nil {
 		return err
 	}
@@ -123,10 +123,10 @@ func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType
 	return nil
 }
 
-func (villageRepo *VillageRepository) AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error {
+func (r *VillageRepository) AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error {
 	ctx := context.Background()
 
-	tx, err := villageRepo.DB.Begin(ctx)
+	tx, err := r.DB.Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func (villageRepo *VillageRepository) AddResourceFromColletor(userID string, res
 	return nil
 }
 
-func (villageRepo *VillageRepository) GetBuilding(buildingID int64) (models.Building, error) {
+func (r *VillageRepository) GetBuilding(buildingID int64) (models.Building, error) {
 	ctx := context.Background()
 
 	query := `
@@ -172,7 +172,7 @@ func (villageRepo *VillageRepository) GetBuilding(buildingID int64) (models.Buil
 		id == $1
 	`
 
-	rows, err := villageRepo.DB.Query(ctx, query, buildingID) 
+	rows, err := r.DB.Query(ctx, query, buildingID) 
 	if err != nil {
 		return models.Building{}, err
 	}
@@ -186,7 +186,7 @@ func (villageRepo *VillageRepository) GetBuilding(buildingID int64) (models.Buil
 	return building, nil
 }
 
-func (villageRepo *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp int) error {
+func (r *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp int) error {
 	ctx := context.Background()
 
 	query := `
@@ -199,7 +199,7 @@ func (villageRepo *VillageRepository) UpdateBuilding(userID string, buildingID i
 		AND user_id == $3
 	`
 
-	result, err := villageRepo.DB.Exec(ctx, query, hp, buildingID, userID)
+	result, err := r.DB.Exec(ctx, query, hp, buildingID, userID)
 	if err != nil {
 		return err
 	}
@@ -211,7 +211,7 @@ func (villageRepo *VillageRepository) UpdateBuilding(userID string, buildingID i
 	return nil
 }
 
-func (villageRepo *VillageRepository) GetUserBuildingsByName(userID string, buildingName string) ([]models.Building, error) {
+func (r *VillageRepository) GetUserBuildingsByName(userID string, buildingName string) ([]models.Building, error) {
 	ctx := context.Background()
 	query := `
 	SELECT * 
@@ -222,7 +222,7 @@ func (villageRepo *VillageRepository) GetUserBuildingsByName(userID string, buil
 		AND building_name = $2
 	`
 
-	rows, err := villageRepo.DB.Query(ctx, query, userID, buildingName)
+	rows, err := r.DB.Query(ctx, query, userID, buildingName)
 	if err != nil {
 		return []models.Building{}, err
 	}

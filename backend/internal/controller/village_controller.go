@@ -21,14 +21,14 @@ type VillageController struct {
 	VillageService VillageServiceInterface
 }
 
-func (villageController *VillageController) BuildingHandler(w http.ResponseWriter, r *http.Request) {
+func (c *VillageController) BuildingHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
 		return
 	}
 
-	buildings, err := villageController.VillageService.GetBuildings(userID)
+	buildings, err := c.VillageService.GetBuildings(userID)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return
@@ -37,7 +37,7 @@ func (villageController *VillageController) BuildingHandler(w http.ResponseWrite
 	WriteJSON(w, http.StatusOK, buildings)
 }
 
-func (villageController *VillageController) BuildingCreationHandler(w http.ResponseWriter, r *http.Request) {
+func (c *VillageController) BuildingCreationHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
@@ -52,7 +52,7 @@ func (villageController *VillageController) BuildingCreationHandler(w http.Respo
 		return
 	}
 
-	if err := villageController.VillageService.CreateBuilding(userID, *reqBody); err != nil {
+	if err := c.VillageService.CreateBuilding(userID, *reqBody); err != nil {
 		WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -60,7 +60,7 @@ func (villageController *VillageController) BuildingCreationHandler(w http.Respo
 	WriteJSON(w, http.StatusOK, "Building Created successfully!")
 }
 
-func (villageController *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *http.Request) {
+func (c *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
@@ -80,7 +80,7 @@ func (villageController *VillageController) BuildingPositionHandler(w http.Respo
 		return
 	}
 
-	if err := villageController.VillageService.MoveBuilding(userID, buildingID, *reqBody); err != nil {
+	if err := c.VillageService.MoveBuilding(userID, buildingID, *reqBody); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -88,7 +88,7 @@ func (villageController *VillageController) BuildingPositionHandler(w http.Respo
 	WriteJSON(w, http.StatusOK, "Building moved successfully!")
 }
 
-func (villageController *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *http.Request) {	
+func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *http.Request) {	
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
@@ -101,7 +101,7 @@ func (villageController *VillageController) BuildingUpgradeHandler(w http.Respon
 		return
 	}
 
-	if err := villageController.VillageService.UpgradeBuilding(userID, buildingID); err != nil {
+	if err := c.VillageService.UpgradeBuilding(userID, buildingID); err != nil {
 		WriteError(w, http.StatusBadRequest, err.Error())
 		return 
 	} 
