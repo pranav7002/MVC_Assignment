@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS troop_config CASCADE;
 DROP TABLE IF EXISTS training_grounds_config CASCADE;
-DROP TABLE IF EXISTS defence_config CASCADE;
+DROP TABLE IF EXISTS defense_config CASCADE;
 DROP TABLE IF EXISTS town_hall_config CASCADE;
 DROP TABLE IF EXISTS resource_config CASCADE;
 DROP TABLE IF EXISTS storage_config CASCADE;

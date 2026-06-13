@@ -51,7 +51,7 @@ func (r *TroopRepository) TrainTroop(userID string, troopName string, quantity i
 	}
 
 	query = `
-		INSERT INTO troops_trained (user_id, troop_name, troop_level, quantity)
+		INSERT INTO troops_trained (user_id, troop_name, quantity)
 		VALUES ($1, $2, $3)
 		ON CONFLICT (user_id, troop_name) 
 		DO UPDATE SET quantity = troops_trained.quantity + EXCLUDED.quantity

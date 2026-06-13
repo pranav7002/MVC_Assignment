@@ -46,7 +46,7 @@ func Seed(pool *pgxpool.Pool) {
 		}
 
 		defQuery := `
-			INSERT INTO defence_config (name, level, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, dps, max_hp, range) VALUES 
+			INSERT INTO defense_config (name, level, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, dps, max_hp, range) VALUES 
 			('Cannon', 1, 250, 'gold', 10, 9, 420, 9),
 			('Cannon', 2, 1000, 'gold', 900, 11, 470, 9),
 			('Cannon', 3, 4000, 'gold', 3600, 15, 540, 9),

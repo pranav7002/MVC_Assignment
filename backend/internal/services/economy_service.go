@@ -73,7 +73,7 @@ func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
 		elixirPerSec = elixirPerSec + elixirPerSecPerLevel[elixirCollector.Level]
 	}
 
-	timeElapsed := reqTime.Sub(village.GoldLastCollectedAt)
+	timeElapsed := reqTime.Sub(village.ElixirLastCollectedAt)
 	secondsElapsed := timeElapsed.Seconds()
 	elixirCollected := int(secondsElapsed) * elixirPerSec
 

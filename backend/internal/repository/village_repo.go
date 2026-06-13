@@ -45,6 +45,9 @@ func (r *VillageRepository) GetVillage(userID string) (models.Village, error) {
 	defer rows.Close()
 
 	village, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.Village])
+	if err != nil {
+		return models.Village{}, err
+	}
 	return village, nil
 }
 

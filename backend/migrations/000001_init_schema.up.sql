@@ -33,6 +33,7 @@ CREATE TABLE troops_trained (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     troop_name VARCHAR(50) NOT NULL,
     quantity INT NOT NULL DEFAULT 0
+    UNIQUE(user_id, troop_name)
 );
 CREATE INDEX idx_troops_trained_user_id ON troops_trained(user_id);
 
@@ -111,7 +112,7 @@ CREATE TABLE town_hall_config (
     PRIMARY KEY (name, level)
 );
 
-CREATE TABLE defence_config (
+CREATE TABLE defense_config (
     name VARCHAR(50) NOT NULL,
     level INT NOT NULL,
     upgrade_cost INT NOT NULL,

@@ -95,7 +95,7 @@ func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *htt
 		return
 	}
 	
-	buildingID, err := strconv.ParseInt(chi.URLParam(r, "BuildingID"), 10, 64) 
+	buildingID, err := strconv.ParseInt(chi.URLParam(r, "buildingID"), 10, 64) 
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
 		return
