@@ -39,7 +39,7 @@ func (economyService *EconomyService) CollectGold(userID string, reqTime time.Ti
 	secondsElapsed := timeElapsed.Seconds()
 	goldCollected := int(secondsElapsed) * goldPerSec
 
-	if err := economyService.VillageRepo.AddResource(userID, "gold", goldCollected); err != nil {
+	if err := economyService.VillageRepo.AddResourceFromColletor(userID, "gold", goldCollected, reqTime); err != nil {
 		return err
 	}
 
@@ -77,7 +77,7 @@ func (economyService *EconomyService) CollectElixir(userID string, reqTime time.
 	secondsElapsed := timeElapsed.Seconds()
 	elixirCollected := int(secondsElapsed) * elixirPerSec
 
-	if err := economyService.VillageRepo.AddResource(userID, "elixir", elixirCollected); err != nil {
+	if err := economyService.VillageRepo.AddResourceFromColletor(userID, "elixir", elixirCollected, reqTime); err != nil {
 		return err
 	}
 
