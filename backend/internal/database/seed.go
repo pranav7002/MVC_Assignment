@@ -108,7 +108,7 @@ func Seed(pool *pgxpool.Pool) {
 			(1, 'resource', 'Elixir Collector', 2, 1),
 			(1, 'storage', 'Gold Storage', 2, 1),
 			(1, 'storage', 'Elixir Storage', 2, 1),
-			(1, 'barracks', 'Barracks', 0, 0),
+			(1, 'training_grounds', 'Training Grounds', 0, 0),
 			
 			-- TH2
 			(2, 'defense', 'Cannon', 3, 2),
@@ -118,7 +118,7 @@ func Seed(pool *pgxpool.Pool) {
 			(2, 'resource', 'Elixir Collector', 4, 2),
 			(2, 'storage', 'Gold Storage', 4, 1),
 			(2, 'storage', 'Elixir Storage', 4, 1),
-			(2, 'barracks', 'Barracks', 1, 1),
+			(2, 'training_grounds', 'Training Grounds', 1, 1),
 			
 			-- TH3
 			(3, 'defense', 'Cannon', 4, 2),
@@ -128,7 +128,7 @@ func Seed(pool *pgxpool.Pool) {
 			(3, 'resource', 'Elixir Collector', 6, 3),
 			(3, 'storage', 'Gold Storage', 6, 2),
 			(3, 'storage', 'Elixir Storage', 6, 2),
-			(3, 'barracks', 'Barracks', 2, 1),
+			(3, 'training_grounds', 'Training Grounds', 2, 1),
 			
 			-- TH4
 			(4, 'defense', 'Cannon', 5, 2),
@@ -138,7 +138,7 @@ func Seed(pool *pgxpool.Pool) {
 			(4, 'resource', 'Elixir Collector', 8, 4),
 			(4, 'storage', 'Gold Storage', 8, 2),
 			(4, 'storage', 'Elixir Storage', 8, 2),
-			(4, 'barracks', 'Barracks', 3, 2);
+			(4, 'training_grounds', 'Training Grounds', 3, 2);
 		`
 		if _, err = pool.Exec(ctx, progQuery); err != nil {
 			log.Println("Failed to seed progression rules: ", err)

@@ -16,7 +16,7 @@ func WriteJSON(w http.ResponseWriter, status int, data any) {
 
 	w.WriteHeader(status)
 	if err := json.NewEncoder(w).Encode(APIResponse{Data: data}); err != nil {
-		log.Fatal("Error encoding response!!")
+		log.Println("Error encoding response!!")
 	}
 }	
 

@@ -26,7 +26,10 @@ type ConfigRepositoryInterface interface {
 	GetResourceConfig(name string, level int) (models.ResourceConfig, error)
 	GetStorageConfig(name string, level int) (models.StorageConfig, error)
 	GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error)
+	GetTroopConfig(name string) (models.TroopConfig, error)
 	GetAllResourceConfig() ([]models.ResourceConfig, error)
+	GetAllTrainingGroundsConfig() ([]models.TrainingGroundsConfig, error)
+	GetAllTroopConfig() ([]models.TroopConfig, error)
 }
 
 type VillageService struct {
@@ -116,7 +119,7 @@ func (s *VillageService) CreateBuilding(userID string, buildingReqBody models.Bu
 		upgradeCostType = config.UpgradeCostType
 		size = config.Size
 		maxHP = config.MaxHP
-	case "barracks":
+	case "training_grounds":
 		config, err := s.ConfigRepo.GetTrainingGroundsConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
@@ -266,7 +269,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
-	case "barracks":
+	case "training_grounds":
 		config, err := s.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
