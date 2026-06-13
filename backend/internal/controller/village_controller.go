@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/pranav7002/MVC_Assignment/internal/middleware"
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 )
 
@@ -21,48 +22,61 @@ type VillageController struct {
 }
 
 func (villageController *VillageController) BuildingHandler(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "userID")
-
-	buildings, err := villageController.VillageService.GetBuildings(userID)
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
 		return
 	}
 
-	writeJSON(w, http.StatusOK, buildings)
+	buildings, err := villageController.VillageService.GetBuildings(userID)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, buildings)
 }
 
 func (villageController *VillageController) BuildingCreationHandler(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "userID")
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
 
 	reqBody := new(models.BuildingCreationRequestBody)
 
 	err := json.NewDecoder(r.Body).Decode(reqBody)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "Please provide the correct input!!")
+		WriteError(w, http.StatusBadRequest, "Please provide the correct input!!")
 		return
 	}
 
 	if err := villageController.VillageService.CreateBuilding(userID, *reqBody); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		WriteError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	writeJSON(w, http.StatusOK, "Building Created successfully!")
+	WriteJSON(w, http.StatusOK, "Building Created successfully!")
 }
 
 func (villageController *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "userID")
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+	
 	buildingID, err := strconv.ParseInt(chi.URLParam(r, "buildingID"), 10, 64)
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
+		WriteError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
 		return
 	}
 
 	reqBody := new(models.BuildingPositionRequestBody)
 
 	if err := json.NewDecoder(r.Body).Decode(reqBody); err != nil {
-		writeError(w, http.StatusBadRequest, "Please provide the correct input!!")
+		WriteError(w, http.StatusBadRequest, "Please provide the correct input!!")
 		return
 	}
 
@@ -71,21 +85,26 @@ func (villageController *VillageController) BuildingPositionHandler(w http.Respo
 		return
 	}
 
-	writeJSON(w, http.StatusOK, "Building moved successfully!")
+	WriteJSON(w, http.StatusOK, "Building moved successfully!")
 }
 
 func (villageController *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *http.Request) {	
-	userID := chi.URLParam(r, "userID")
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+	
 	buildingID, err := strconv.ParseInt(chi.URLParam(r, "BuildingID"), 10, 64) 
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
+		WriteError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
 		return
 	}
 
 	if err := villageController.VillageService.UpgradeBuilding(userID, buildingID); err != nil {
-		writeError(w, http.StatusBadRequest, err.Error())
+		WriteError(w, http.StatusBadRequest, err.Error())
 		return 
 	} 
 
-	writeJSON(w, http.StatusOK, "Building upgraded successfully!")
+	WriteJSON(w, http.StatusOK, "Building upgraded successfully!")
 }

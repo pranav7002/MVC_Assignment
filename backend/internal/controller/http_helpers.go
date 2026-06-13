@@ -11,7 +11,7 @@ type APIResponse struct {
 	Error string `json:"error:omitempty"`
 }
 
-func writeJSON(w http.ResponseWriter, status int, data any) {
+func WriteJSON(w http.ResponseWriter, status int, data any) {
 	w.Header().Set("content-type", "application/json")
 
 	w.WriteHeader(status)
@@ -20,7 +20,7 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	}
 }	
 
-func writeError(w http.ResponseWriter, status int, message string) {
+func WriteError(w http.ResponseWriter, status int, message string) {
 	w.Header().Set("content-type", "application/json")
 
 	w.WriteHeader(status)
