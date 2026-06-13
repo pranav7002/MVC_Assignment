@@ -7,12 +7,14 @@ import (
 type VillageRepositoryInterface interface {
 	GetUserBuildings(userID string) ([]models.Building, error)
 	GetBuilding(buildingID int64) (models.Building, error)
+	GetUserBuildingsByName(userID string, buildingName string) ([]models.Building, error)
 	InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error
 	UpdateBuilding(userID string, buildingID int64, hp int) error
 	MoveBuilding(userID string, buildingID int64, posX, posY int) error
 	GetVillage(userID string) (models.Village, error)
 	GetBuildingCount(userID string, buildingType string, buildingName string) (int, error)
 	RemoveResource(userID string, resourceType string, amount int) error
+	AddResource(userID string, resourceType string, amount int) error
 }
 
 type ConfigRepositoryInterface interface {
@@ -22,6 +24,7 @@ type ConfigRepositoryInterface interface {
 	GetResourceConfig(name string, level int) (models.ResourceConfig, error)
 	GetStorageConfig(name string, level int) (models.StorageConfig, error)
 	GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error)
+	GetAllResourceConfig() ([]models.ResourceConfig, error)
 }
 
 type VillageService struct {
@@ -294,3 +297,4 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 
 	return nil
 }
+

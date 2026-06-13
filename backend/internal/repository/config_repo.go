@@ -119,3 +119,21 @@ func (configRepo *ConfigRepository) GetTrainingGroundsConfig(name string, level 
 
 	return config, nil
 }
+
+func (configRepo *ConfigRepository) GetAllResourceConfig() ([]models.ResourceConfig, error) {
+	ctx := context.Background()
+
+	query := `SELECT * FROM resource_config`
+	rows, err := configRepo.DB.Query(ctx, query)
+	if err != nil {
+		return []models.ResourceConfig{}, err
+	}
+	defer rows.Close()
+
+	config, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ResourceConfig])
+	if err != nil {
+		return []models.ResourceConfig{}, err
+	}
+
+	return config, nil
+}
