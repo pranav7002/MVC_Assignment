@@ -25,17 +25,18 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 
 	TroopHousingSpace := make(map[string]int)
 	var troop models.TroopConfig
+	var found bool
+
 	for _,t := range troopConfig {
 		TroopHousingSpace[t.Name] = t.HousingSpace
 
-		found := false
 		if t.Name == troopName {
 			troop = t
 			found = true
 		}
-		if !found {
-			return ErrInvalidTroop
-		}
+	}
+	if !found {
+		return ErrInvalidTroop
 	}
 
 	trainingCost := troop.TrainingCost * quantity
