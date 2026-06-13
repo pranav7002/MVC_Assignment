@@ -169,7 +169,7 @@ func (r *VillageRepository) GetBuilding(buildingID int64) (models.Building, erro
 	FROM 
 		building_instance
 	WHERE 
-		id == $1
+		id = $1
 	`
 
 	rows, err := r.DB.Query(ctx, query, buildingID) 
@@ -192,11 +192,10 @@ func (r *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp i
 	query := `
 	UPDATE building_instance
 	SET 
-		hp = $1 
-		AND level = level + 1
+		hp = $1, level = level + 1
 	WHERE 
-		id == $2
-		AND user_id == $3
+		id = $2
+		AND user_id = $3
 	`
 
 	result, err := r.DB.Exec(ctx, query, hp, buildingID, userID)

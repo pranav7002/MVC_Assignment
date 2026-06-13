@@ -120,6 +120,24 @@ func (r *ConfigRepository) GetTrainingGroundsConfig(name string, level int) (mod
 	return config, nil
 }
 
+func (r *ConfigRepository) GetAllTrainingGroundsConfig() ([]models.TrainingGroundsConfig, error) {
+	ctx := context.Background()
+
+	query := `SELECT * FROM training_grounds_config`
+	rows, err := r.DB.Query(ctx, query)
+	if err != nil {
+		return []models.TrainingGroundsConfig{}, err
+	}
+	defer rows.Close()
+
+	config, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.TrainingGroundsConfig])
+	if err != nil {
+		return []models.TrainingGroundsConfig{}, err
+	}
+
+	return config, nil
+}
+
 func (r *ConfigRepository) GetAllResourceConfig() ([]models.ResourceConfig, error) {
 	ctx := context.Background()
 
@@ -133,6 +151,42 @@ func (r *ConfigRepository) GetAllResourceConfig() ([]models.ResourceConfig, erro
 	config, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ResourceConfig])
 	if err != nil {
 		return []models.ResourceConfig{}, err
+	}
+
+	return config, nil
+}
+
+func (r *ConfigRepository) GetTroopConfig(name string) (models.TroopConfig, error) {
+	ctx := context.Background()
+
+	query := `SELECT * FROM troop_config WHERE name = $1`
+	rows, err := r.DB.Query(ctx, query, name)
+	if err != nil {
+		return models.TroopConfig{}, err
+	}
+	defer rows.Close()
+
+	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.TroopConfig])
+	if err != nil {
+		return models.TroopConfig{}, err
+	}
+
+	return config, nil
+}
+
+func (r *ConfigRepository) GetAllTroopConfig() ([]models.TroopConfig, error) {
+	ctx := context.Background()
+
+	query := `SELECT * FROM troop_config`
+	rows, err := r.DB.Query(ctx, query)
+	if err != nil {
+		return []models.TroopConfig{}, err
+	}
+	defer rows.Close()
+
+	config, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.TroopConfig])
+	if err != nil {
+		return []models.TroopConfig{}, err
 	}
 
 	return config, nil

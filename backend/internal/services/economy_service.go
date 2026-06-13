@@ -23,11 +23,11 @@ func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
 	}
 
 	goldPerSecPerLevel := make(map[int]int)
-	for _, resourceBuilding := range resourceConfig {
-		if resourceBuilding.Name == "elixir_collector" {
+	for _, cfg := range resourceConfig {
+		if cfg.Name == "elixir_collector" {
 			continue
 		}
-		goldPerSecPerLevel[resourceBuilding.Level] = resourceBuilding.ResourcePerSec
+		goldPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
 	}
 
 	var goldPerSec int
@@ -61,11 +61,11 @@ func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
 	}
 
 	elixirPerSecPerLevel := make(map[int]int)
-	for _, resourceBuilding := range resourceConfig {
-		if resourceBuilding.Name == "gold_mine" {
+	for _, cfg := range resourceConfig {
+		if cfg.Name == "gold_mine" {
 			continue
 		}
-		elixirPerSecPerLevel[resourceBuilding.Level] = resourceBuilding.ResourcePerSec
+		elixirPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
 	}
 
 	var elixirPerSec int

@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Create ENUMs
-CREATE TYPE building_type AS ENUM ('defense', 'resource', 'storage', 'barracks', 'town_hall');
+CREATE TYPE building_type AS ENUM ('defense', 'resource', 'storage', 'training_grounds', 'town_hall');
 CREATE TYPE battle_result AS ENUM ('LOSS', 'ONE_STAR', 'TWO_STARS', 'THREE_STARS');
 CREATE TYPE resource_type AS ENUM ('gold', 'elixir');
 
@@ -32,7 +32,6 @@ CREATE TABLE troops_trained (
     id BIGSERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     troop_name VARCHAR(50) NOT NULL,
-    troop_level INT NOT NULL DEFAULT 1,
     quantity INT NOT NULL DEFAULT 0
 );
 CREATE INDEX idx_troops_trained_user_id ON troops_trained(user_id);
