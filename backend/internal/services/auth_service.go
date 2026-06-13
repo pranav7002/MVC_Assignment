@@ -17,18 +17,18 @@ type AuthService struct {
 	SecretKey []byte 
 }
 
-func (authService *AuthService) RegisterUser(username, password string) error {
+func (s *AuthService) RegisterUser(username, password string) error {
 	hash, err := getHashPassword(password)
 	if err != nil {
 		return err
 	}
 
-	err = authService.UserRepo.InsertUser(username, hash)
+	err = s.UserRepo.InsertUser(username, hash)
 	return err
 }
 
-func (authService *AuthService) LoginUser(username, password string) (bool, error) {
-	hash, err := authService.UserRepo.GetAttributeFromUsername(username, "password_hash")
+func (s *AuthService) LoginUser(username, password string) (bool, error) {
+	hash, err := s.UserRepo.GetAttributeFromUsername(username, "password_hash")
 	if err != nil {
 		return false, err
 	}
@@ -51,8 +51,8 @@ func checkPassword(hash, password string) bool {
 	return err == nil
 }
 
-func (authService *AuthService) CreateToken(username string) (string, error) {
-	userID, err := authService.UserRepo.GetAttributeFromUsername(username, "id")
+func (s *AuthService) CreateToken(username string) (string, error) {
+	userID, err := s.UserRepo.GetAttributeFromUsername(username, "id")
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +63,7 @@ func (authService *AuthService) CreateToken(username string) (string, error) {
 			"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		})
 
-	tokenString, err := token.SignedString(authService.SecretKey)
+	tokenString, err := token.SignedString(s.SecretKey)
 	if err != nil {
 		return "", err
 	}

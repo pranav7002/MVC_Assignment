@@ -12,12 +12,12 @@ type ConfigRepository struct {
 	DB *pgxpool.Pool
 }
 
-func (configRepo *ConfigRepository) GetGameProgressionConfig(thLevel int, buildingType string, buildingName string) (models.GameProgressionConfig, error) {
+func (r *ConfigRepository) GetGameProgressionConfig(thLevel int, buildingType string, buildingName string) (models.GameProgressionConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM game_progression_config WHERE building_type = $1 AND building_name = $2 AND town_hall_level = $3`
 
-	rows, err := configRepo.DB.Query(ctx, query, buildingType, buildingName, thLevel)
+	rows, err := r.DB.Query(ctx, query, buildingType, buildingName, thLevel)
 	if err != nil {
 		return models.GameProgressionConfig{}, err
 	}
@@ -30,11 +30,11 @@ func (configRepo *ConfigRepository) GetGameProgressionConfig(thLevel int, buildi
 	return gameProgConfig, nil
 }
 
-func (configRepo *ConfigRepository) GetTownHallConfig(name string, level int) (models.TownHallConfig, error) {
+func (r *ConfigRepository) GetTownHallConfig(name string, level int) (models.TownHallConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM town_hall_config WHERE name = $1 AND level = $2`
-	rows, err := configRepo.DB.Query(ctx, query, name, level)
+	rows, err := r.DB.Query(ctx, query, name, level)
 	if err != nil {
 		return models.TownHallConfig{}, err
 	}
@@ -48,11 +48,11 @@ func (configRepo *ConfigRepository) GetTownHallConfig(name string, level int) (m
 	return config, nil
 }
 
-func (configRepo *ConfigRepository) GetDefenseConfig(name string, level int) (models.DefenseConfig, error) {
+func (r *ConfigRepository) GetDefenseConfig(name string, level int) (models.DefenseConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM defense_config WHERE name = $1 AND level = $2`
-	rows, err := configRepo.DB.Query(ctx, query, name, level)
+	rows, err := r.DB.Query(ctx, query, name, level)
 	if err != nil {
 		return models.DefenseConfig{}, err
 	}
@@ -66,11 +66,11 @@ func (configRepo *ConfigRepository) GetDefenseConfig(name string, level int) (mo
 	return config, nil
 }
 
-func (configRepo *ConfigRepository) GetResourceConfig(name string, level int) (models.ResourceConfig, error) {
+func (r *ConfigRepository) GetResourceConfig(name string, level int) (models.ResourceConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM resource_config WHERE name = $1 AND level = $2`
-	rows, err := configRepo.DB.Query(ctx, query, name, level)
+	rows, err := r.DB.Query(ctx, query, name, level)
 	if err != nil {
 		return models.ResourceConfig{}, err
 	}
@@ -84,11 +84,11 @@ func (configRepo *ConfigRepository) GetResourceConfig(name string, level int) (m
 	return config, nil
 }
 
-func (configRepo *ConfigRepository) GetStorageConfig(name string, level int) (models.StorageConfig, error) {
+func (r *ConfigRepository) GetStorageConfig(name string, level int) (models.StorageConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM storage_config WHERE name = $1 AND level = $2`
-	rows, err := configRepo.DB.Query(ctx, query, name, level)
+	rows, err := r.DB.Query(ctx, query, name, level)
 	if err != nil {
 		return models.StorageConfig{}, err
 	}
@@ -102,11 +102,11 @@ func (configRepo *ConfigRepository) GetStorageConfig(name string, level int) (mo
 	return config, nil
 }
 
-func (configRepo *ConfigRepository) GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error) {
+func (r *ConfigRepository) GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM training_grounds_config WHERE name = $1 AND level = $2`
-	rows, err := configRepo.DB.Query(ctx, query, name, level)
+	rows, err := r.DB.Query(ctx, query, name, level)
 	if err != nil {
 		return models.TrainingGroundsConfig{}, err
 	}
@@ -120,11 +120,11 @@ func (configRepo *ConfigRepository) GetTrainingGroundsConfig(name string, level 
 	return config, nil
 }
 
-func (configRepo *ConfigRepository) GetAllResourceConfig() ([]models.ResourceConfig, error) {
+func (r *ConfigRepository) GetAllResourceConfig() ([]models.ResourceConfig, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM resource_config`
-	rows, err := configRepo.DB.Query(ctx, query)
+	rows, err := r.DB.Query(ctx, query)
 	if err != nil {
 		return []models.ResourceConfig{}, err
 	}

@@ -18,7 +18,7 @@ type EconomyServiceInterface interface {
 	CollectElixir(userID string, reqTime time.Time) error
 }
 
-func (economyController *EconomyController) ResourceCollectionHandler(w http.ResponseWriter, r *http.Request) {
+func (c *EconomyController) ResourceCollectionHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
@@ -35,12 +35,12 @@ func (economyController *EconomyController) ResourceCollectionHandler(w http.Res
 
 	switch reqBody.ResourceType {
 	case "gold":
-		if err := economyController.EconomyService.CollectGold(userID, reqTime); err != nil {
+		if err := c.EconomyService.CollectGold(userID, reqTime); err != nil {
 			WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 			return
 		}
 	case "elixir":
-		if err := economyController.EconomyService.CollectElixir(userID, reqTime); err != nil {
+		if err := c.EconomyService.CollectElixir(userID, reqTime); err != nil {
 			WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 			return
 		}

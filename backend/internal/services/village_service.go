@@ -34,21 +34,21 @@ type VillageService struct {
 	ConfigRepo  ConfigRepositoryInterface
 }
 
-func (villageService *VillageService) GetBuildings(userID string) ([]models.Building, error) {
-	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
+func (s *VillageService) GetBuildings(userID string) ([]models.Building, error) {
+	buildings, err := s.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
 		return nil, ErrServer
 	}
 	return buildings, nil
 }
 
-func (villageService *VillageService) CreateBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody) error {
-	village, err := villageService.VillageRepo.GetVillage(userID)
+func (s *VillageService) CreateBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody) error {
+	village, err := s.VillageRepo.GetVillage(userID)
 	if err != nil {
 		return ErrServer
 	}
 
-	buildingCount, err := villageService.VillageRepo.GetBuildingCount(
+	buildingCount, err := s.VillageRepo.GetBuildingCount(
 		userID,
 		buildingReqBody.BuildingType,
 		buildingReqBody.BuildingName,
@@ -57,7 +57,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		return ErrServer
 	}
 
-	gameProgConfig, err := villageService.ConfigRepo.GetGameProgressionConfig(
+	gameProgConfig, err := s.ConfigRepo.GetGameProgressionConfig(
 		village.TownHallLevel,
 		buildingReqBody.BuildingType,
 		buildingReqBody.BuildingName,
@@ -81,7 +81,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 
 	switch buildingReqBody.BuildingType {
 	case "town_hall":
-		config, err := villageService.ConfigRepo.GetTownHallConfig(buildingReqBody.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTownHallConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -90,7 +90,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		size = config.Size
 		maxHP = config.MaxHP
 	case "storage":
-		config, err := villageService.ConfigRepo.GetStorageConfig(buildingReqBody.BuildingName, 1)
+		config, err := s.ConfigRepo.GetStorageConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -99,7 +99,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		size = config.Size
 		maxHP = config.MaxHP
 	case "resource":
-		config, err := villageService.ConfigRepo.GetResourceConfig(buildingReqBody.BuildingName, 1)
+		config, err := s.ConfigRepo.GetResourceConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -108,7 +108,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		size = config.Size
 		maxHP = config.MaxHP
 	case "defense":
-		config, err := villageService.ConfigRepo.GetDefenseConfig(buildingReqBody.BuildingName, 1)
+		config, err := s.ConfigRepo.GetDefenseConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -117,7 +117,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		size = config.Size
 		maxHP = config.MaxHP
 	case "barracks":
-		config, err := villageService.ConfigRepo.GetTrainingGroundsConfig(buildingReqBody.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTrainingGroundsConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -140,7 +140,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		}
 	}
 
-	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
+	buildings, err := s.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
 		return ErrServer
 	}
@@ -162,19 +162,19 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		}
 	}
 
-	if err := villageService.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
+	if err := s.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
 		return ErrServer
 	}
 
-	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
+	if err := s.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
 		return ErrServer
 	}
 
 	return nil
 }
 
-func (villageService *VillageService) MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error {
-	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
+func (s *VillageService) MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error {
+	buildings, err := s.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
 		return ErrServer
 	}
@@ -204,23 +204,23 @@ func (villageService *VillageService) MoveBuilding(userID string, buildingID int
 		}
 	}
 
-	if err := villageService.VillageRepo.MoveBuilding(userID, buildingID, reqBody.PosX, reqBody.PosY); err != nil {
+	if err := s.VillageRepo.MoveBuilding(userID, buildingID, reqBody.PosX, reqBody.PosY); err != nil {
 		return ErrServer
 	}
 
 	return nil
 }
 
-func (villageService *VillageService) UpgradeBuilding(userID string, buildingID int64) error {
-	village, err := villageService.VillageRepo.GetVillage(userID)
+func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error {
+	village, err := s.VillageRepo.GetVillage(userID)
 	if err != nil {
 		return ErrServer
 	}
-	building, err := villageService.VillageRepo.GetBuilding(buildingID)
+	building, err := s.VillageRepo.GetBuilding(buildingID)
 	if err != nil {
 		return ErrServer
 	}
-	gameProgConfig, err := villageService.ConfigRepo.GetGameProgressionConfig(village.TownHallLevel, building.BuildingType, building.BuildingName)
+	gameProgConfig, err := s.ConfigRepo.GetGameProgressionConfig(village.TownHallLevel, building.BuildingType, building.BuildingName)
 	if err != nil {
 		return ErrServer
 	}
@@ -235,7 +235,7 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 
 	switch building.BuildingType {
 	case "town_hall":
-		config, err := villageService.ConfigRepo.GetTownHallConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTownHallConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -243,7 +243,7 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "storage":
-		config, err := villageService.ConfigRepo.GetStorageConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetStorageConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -251,7 +251,7 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "resource":
-		config, err := villageService.ConfigRepo.GetResourceConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetResourceConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -259,7 +259,7 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "defense":
-		config, err := villageService.ConfigRepo.GetDefenseConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetDefenseConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -267,7 +267,7 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "barracks":
-		config, err := villageService.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -289,11 +289,11 @@ func (villageService *VillageService) UpgradeBuilding(userID string, buildingID 
 		}
 	}
 
-	if err := villageService.VillageRepo.UpdateBuilding(userID, buildingID, maxHP); err != nil {
+	if err := s.VillageRepo.UpdateBuilding(userID, buildingID, maxHP); err != nil {
 		return ErrServer
 	}
 
-	if err := villageService.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
+	if err := s.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
 		return ErrServer
 	}
 

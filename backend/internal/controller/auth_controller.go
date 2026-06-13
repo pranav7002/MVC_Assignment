@@ -22,7 +22,7 @@ type UserRequestBody struct {
 	Password string `json:"password"`
 }
 
-func (authController *AuthController) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	userReqBody := new(UserRequestBody)
 
 	err := json.NewDecoder(r.Body).Decode(userReqBody)
@@ -31,7 +31,7 @@ func (authController *AuthController) RegisterHandler(w http.ResponseWriter, r *
 		return
 	}
 
-	err = authController.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)
+	err = c.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)
 
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
@@ -41,7 +41,7 @@ func (authController *AuthController) RegisterHandler(w http.ResponseWriter, r *
 	WriteJSON(w, http.StatusOK, "User registered successfully!")
 }
 
-func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	userReqBody := new(UserRequestBody)
 
 	err := json.NewDecoder(r.Body).Decode(userReqBody)
@@ -50,7 +50,7 @@ func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	isAuthenticated, err := authController.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
+	isAuthenticated, err := c.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
 	if err == pgx.ErrNoRows {
 		WriteError(w, http.StatusUnauthorized, "Incorrect username entered!!")
 		return
@@ -64,7 +64,7 @@ func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *htt
 		return
 	}
 
-	tokenString, err := authController.AuthService.CreateToken(userReqBody.Username)
+	tokenString, err := c.AuthService.CreateToken(userReqBody.Username)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return

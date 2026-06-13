@@ -8,16 +8,16 @@ type EconomyService struct {
 	ConfigRepo  ConfigRepositoryInterface
 }
 
-func (economyService *EconomyService) CollectGold(userID string, reqTime time.Time) error {
-	village, err := economyService.VillageRepo.GetVillage(userID) 
+func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
+	village, err := s.VillageRepo.GetVillage(userID) 
 	if err != nil {
 		return ErrServer
 	}
-	resourceConfig, err := economyService.ConfigRepo.GetAllResourceConfig()
+	resourceConfig, err := s.ConfigRepo.GetAllResourceConfig()
 	if err != nil {
 		return ErrServer
 	}
-	goldMines, err := economyService.VillageRepo.GetUserBuildingsByName(userID, "gold_mine") 
+	goldMines, err := s.VillageRepo.GetUserBuildingsByName(userID, "gold_mine") 
 	if err != nil {
 		return ErrServer
 	}
@@ -39,23 +39,23 @@ func (economyService *EconomyService) CollectGold(userID string, reqTime time.Ti
 	secondsElapsed := timeElapsed.Seconds()
 	goldCollected := int(secondsElapsed) * goldPerSec
 
-	if err := economyService.VillageRepo.AddResourceFromColletor(userID, "gold", goldCollected, reqTime); err != nil {
+	if err := s.VillageRepo.AddResourceFromColletor(userID, "gold", goldCollected, reqTime); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (economyService *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
-	village, err := economyService.VillageRepo.GetVillage(userID) 
+func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
+	village, err := s.VillageRepo.GetVillage(userID) 
 	if err != nil {
 		return ErrServer
 	}
-	resourceConfig, err := economyService.ConfigRepo.GetAllResourceConfig()
+	resourceConfig, err := s.ConfigRepo.GetAllResourceConfig()
 	if err != nil {
 		return ErrServer
 	}
-	elixirCollectors, err := economyService.VillageRepo.GetUserBuildingsByName(userID, "elixir_collector") 
+	elixirCollectors, err := s.VillageRepo.GetUserBuildingsByName(userID, "elixir_collector") 
 	if err != nil {
 		return ErrServer
 	}
@@ -77,7 +77,7 @@ func (economyService *EconomyService) CollectElixir(userID string, reqTime time.
 	secondsElapsed := timeElapsed.Seconds()
 	elixirCollected := int(secondsElapsed) * elixirPerSec
 
-	if err := economyService.VillageRepo.AddResourceFromColletor(userID, "elixir", elixirCollected, reqTime); err != nil {
+	if err := s.VillageRepo.AddResourceFromColletor(userID, "elixir", elixirCollected, reqTime); err != nil {
 		return err
 	}
 
