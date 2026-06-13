@@ -7,8 +7,8 @@ import (
 )
 
 type APIResponse struct {
-	Data  any    `json:"data:omitempty"`
-	Error string `json:"error:omitempty"`
+	Data  any    `json:"data,omitempty"`
+	Error string `json:"error,omitempty"`
 }
 
 func WriteJSON(w http.ResponseWriter, status int, data any) {
