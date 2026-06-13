@@ -32,23 +32,6 @@ func (villageRepo *VillageRepository) GetUserBuildings(userID string) ([]models.
 	return buildings, nil
 }
 
-func (villageRepo *VillageRepository) GetGameProgressionConfig(thLevel int, buildingType string, buildingName string) (models.GameProgressionConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM game_progression_config WHERE building_type = $1 AND building_name = $2 AND town_hall_level = $3`
-
-	rows, err := villageRepo.DB.Query(ctx, query, buildingType, buildingName, thLevel)
-	if err != nil {
-		return models.GameProgressionConfig{}, err
-	}
-	defer rows.Close()
-
-	gameProgConfig, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.GameProgressionConfig])
-	if err != nil {
-		return models.GameProgressionConfig{}, err
-	}
-	return gameProgConfig, nil
-}
 
 func (villageRepo *VillageRepository) GetVillage(userID string) (models.Village, error) {
 	ctx := context.Background()
@@ -77,95 +60,6 @@ func (villageRepo *VillageRepository) GetBuildingCount(userID string, buildingTy
 	return count, nil
 }
 
-func (villageRepo *VillageRepository) GetTownHallConfig(name string, level int) (models.TownHallConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM town_hall_config WHERE name = $1 AND level = $2`
-	rows, err := villageRepo.DB.Query(ctx, query, name, level)
-	if err != nil {
-		return models.TownHallConfig{}, err
-	}
-	defer rows.Close()
-
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.TownHallConfig])
-	if err != nil {
-		return models.TownHallConfig{}, err
-	}
-
-	return config, nil
-}
-
-func (villageRepo *VillageRepository) GetDefenseConfig(name string, level int) (models.DefenseConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM defense_config WHERE name = $1 AND level = $2`
-	rows, err := villageRepo.DB.Query(ctx, query, name, level)
-	if err != nil {
-		return models.DefenseConfig{}, err
-	}
-	defer rows.Close()
-
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.DefenseConfig])
-	if err != nil {
-		return models.DefenseConfig{}, err
-	}
-
-	return config, nil
-}
-
-func (villageRepo *VillageRepository) GetResourceConfig(name string, level int) (models.ResourceConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM resource_config WHERE name = $1 AND level = $2`
-	rows, err := villageRepo.DB.Query(ctx, query, name, level)
-	if err != nil {
-		return models.ResourceConfig{}, err
-	}
-	defer rows.Close()
-
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.ResourceConfig])
-	if err != nil {
-		return models.ResourceConfig{}, err
-	}
-
-	return config, nil
-}
-
-func (villageRepo *VillageRepository) GetStorageConfig(name string, level int) (models.StorageConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM storage_config WHERE name = $1 AND level = $2`
-	rows, err := villageRepo.DB.Query(ctx, query, name, level)
-	if err != nil {
-		return models.StorageConfig{}, err
-	}
-	defer rows.Close()
-
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.StorageConfig])
-	if err != nil {
-		return models.StorageConfig{}, err
-	}
-
-	return config, nil
-}
-
-func (villageRepo *VillageRepository) GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error) {
-	ctx := context.Background()
-
-	query := `SELECT * FROM training_grounds_config WHERE name = $1 AND level = $2`
-	rows, err := villageRepo.DB.Query(ctx, query, name, level)
-	if err != nil {
-		return models.TrainingGroundsConfig{}, err
-	}
-	defer rows.Close()
-
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.TrainingGroundsConfig])
-	if err != nil {
-		return models.TrainingGroundsConfig{}, err
-	}
-
-	return config, nil
-}
 
 func (villageRepo *VillageRepository) InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error {
 	ctx := context.Background()

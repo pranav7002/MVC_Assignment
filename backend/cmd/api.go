@@ -99,7 +99,11 @@ func (app *application) hydrate() {
 	authController := &controller.AuthController{AuthService: authService}
 
 	villageRepo := &repository.VillageRepository{DB: dbpool}
-	villageService := &services.VillageService{VillageRepo: villageRepo}
+	configRepo := &repository.ConfigRepository{DB: dbpool}
+	villageService := &services.VillageService{
+		VillageRepo: villageRepo,
+		ConfigRepo:  configRepo,
+	}
 	villageController := &controller.VillageController{VillageService: villageService}
 
 	app.authController = authController
