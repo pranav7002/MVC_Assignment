@@ -238,7 +238,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 
 	switch building.BuildingType {
 	case "town_hall":
-		config, err := s.ConfigRepo.GetTownHallConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTownHallConfig(building.BuildingName, building.Level + 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -246,7 +246,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "storage":
-		config, err := s.ConfigRepo.GetStorageConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetStorageConfig(building.BuildingName, building.Level + 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -254,7 +254,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "resource":
-		config, err := s.ConfigRepo.GetResourceConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetResourceConfig(building.BuildingName, building.Level + 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -262,7 +262,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "defense":
-		config, err := s.ConfigRepo.GetDefenseConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetDefenseConfig(building.BuildingName, building.Level + 1)
 		if err != nil {
 			return ErrServer
 		}
@@ -270,7 +270,7 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		upgradeCostType = config.UpgradeCostType
 		maxHP = config.MaxHP
 	case "training_grounds":
-		config, err := s.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, 1)
+		config, err := s.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, building.Level + 1)
 		if err != nil {
 			return ErrServer
 		}

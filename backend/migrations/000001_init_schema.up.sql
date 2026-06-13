@@ -32,7 +32,7 @@ CREATE TABLE troops_trained (
     id BIGSERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     troop_name VARCHAR(50) NOT NULL,
-    quantity INT NOT NULL DEFAULT 0
+    quantity INT NOT NULL DEFAULT 0,
     UNIQUE(user_id, troop_name)
 );
 CREATE INDEX idx_troops_trained_user_id ON troops_trained(user_id);
