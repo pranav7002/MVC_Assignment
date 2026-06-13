@@ -63,7 +63,7 @@ func Seed(pool *pgxpool.Pool) {
 			('Mortar', 4, 180000, 'gold', 172800, 7, 550, 11);
 		`
 		if _, err = pool.Exec(ctx, defQuery); err != nil {
-			log.Println("Failed to seed defences: ", err)
+			log.Println("Failed to seed defenses: ", err)
 		}
 
 		resQuery := `
