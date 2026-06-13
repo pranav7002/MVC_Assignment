@@ -122,6 +122,23 @@ func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType
 	return nil
 }
 
+func (villageRepo *VillageRepository) AddResource(userID string, resourceType string, amount int) error {
+	ctx := context.Background()
+
+	query := fmt.Sprintf(`
+		UPDATE village 
+		SET %s = %s + $1 
+		WHERE user_id = $2
+	`, resourceType, resourceType)
+
+	_, err := villageRepo.DB.Exec(ctx, query, amount, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (villageRepo *VillageRepository) GetBuilding(buildingID int64) (models.Building, error) {
 	ctx := context.Background()
 
@@ -170,4 +187,29 @@ func (villageRepo *VillageRepository) UpdateBuilding(userID string, buildingID i
 	}
 
 	return nil
+}
+
+func (villageRepo *VillageRepository) GetUserBuildingsByName(userID string, buildingName string) ([]models.Building, error) {
+	ctx := context.Background()
+	query := `
+	SELECT * 
+	FROM 
+		building_instance 
+	WHERE 
+		user_id = $1 
+		AND building_name = $2
+	`
+
+	rows, err := villageRepo.DB.Query(ctx, query, userID, buildingName)
+	if err != nil {
+		return []models.Building{}, err
+	}
+	defer rows.Close()
+
+	buildings, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Building]);
+	if err != nil {
+		return []models.Building{}, err
+	}
+
+	return buildings, nil
 }
