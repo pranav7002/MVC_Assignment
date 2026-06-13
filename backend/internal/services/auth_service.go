@@ -1,14 +1,11 @@
 package services
 
 import (
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var secretKey = []byte(os.Getenv("JWT_SECRET"))
 
 type UserRepositoryInterface interface {
 	InsertUser(username, hash string) error
@@ -17,6 +14,7 @@ type UserRepositoryInterface interface {
 
 type AuthService struct {
 	UserRepo UserRepositoryInterface
+	SecretKey []byte 
 }
 
 func (authService *AuthService) RegisterUser(username, password string) error {
@@ -65,7 +63,7 @@ func (authService *AuthService) CreateToken(username string) (string, error) {
 			"exp":     time.Now().Add(time.Hour * 24).Unix(),
 		})
 
-	tokenString, err := token.SignedString(secretKey)
+	tokenString, err := token.SignedString(authService.SecretKey)
 	if err != nil {
 		return "", err
 	}

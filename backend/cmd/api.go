@@ -40,10 +40,10 @@ func (app *application) mount() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(customMiddleware.JWTMiddleware)
 
-			r.Get("/user/{userID}/buildings", app.villageController.BuildingHandler)
-			r.Post("/user/{userID}/buildings", app.villageController.BuildingCreationHandler)
-			r.Put("/user/{userID}/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
-			r.Put("/user/{userID}/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
+			r.Get("/buildings", app.villageController.BuildingHandler)
+			r.Post("/buildings", app.villageController.BuildingCreationHandler)
+			r.Put("/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
+			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
 		})
 	})
 
@@ -91,11 +91,14 @@ type dbConfig struct {
 	dsn string
 }
 
-func (app *application) hydrate() {
+func (app *application) hydrate(secretKey []byte) {
 	dbpool := app.dbpool
 
 	userRepo := &repository.UserRepository{DB: dbpool}
-	authService := &services.AuthService{UserRepo: userRepo}
+	authService := &services.AuthService{
+		UserRepo: userRepo,
+		SecretKey: secretKey,
+	}
 	authController := &controller.AuthController{AuthService: authService}
 
 	villageRepo := &repository.VillageRepository{DB: dbpool}

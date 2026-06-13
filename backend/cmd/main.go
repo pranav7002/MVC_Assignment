@@ -51,7 +51,8 @@ func main() {
 	defer pool.Close()
 
 	// Inject all dependencies
-	api.hydrate()
+	secretKey := os.Getenv("JWT_SECRET")
+	api.hydrate([]byte(secretKey))
 
 	database.Seed(pool)
 
