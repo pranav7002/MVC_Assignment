@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -122,8 +123,14 @@ func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType
 	return nil
 }
 
-func (villageRepo *VillageRepository) AddResource(userID string, resourceType string, amount int) error {
+func (villageRepo *VillageRepository) AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error {
 	ctx := context.Background()
+
+	tx, err := villageRepo.DB.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
 	query := fmt.Sprintf(`
 		UPDATE village 
@@ -131,10 +138,25 @@ func (villageRepo *VillageRepository) AddResource(userID string, resourceType st
 		WHERE user_id = $2
 	`, resourceType, resourceType)
 
-	_, err := villageRepo.DB.Exec(ctx, query, amount, userID)
+	_, err = tx.Exec(ctx, query, amount, userID)
 	if err != nil {
 		return err
 	}
+
+	query = fmt.Sprintf(`
+		UPDATE village 
+		SET %s_last_collected_at = $1
+		WHERE user_id = $2	
+	`, resourceType)
+
+	_, err = tx.Exec(ctx, query, collectionTime, userID)
+	if err != nil {
+		return err
+	}
+
+    if err := tx.Commit(ctx); err != nil {
+        return err
+    }
 
 	return nil
 }

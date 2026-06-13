@@ -11,7 +11,6 @@ import (
 
 type EconomyController struct {
 	EconomyService EconomyServiceInterface
-	VillageService VillageServiceInterface
 }
 
 type EconomyServiceInterface interface {

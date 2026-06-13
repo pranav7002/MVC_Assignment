@@ -40,10 +40,14 @@ func (app *application) mount() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(customMiddleware.JWTMiddleware)
 
+			// VILLAGE BUILDING
 			r.Get("/buildings", app.villageController.BuildingHandler)
 			r.Post("/buildings", app.villageController.BuildingCreationHandler)
 			r.Put("/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
 			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
+
+			// ECONOMY
+			r.Put("/economy/collect", app.economyController.ResourceCollectionHandler)
 		})
 	})
 
@@ -80,6 +84,7 @@ type application struct {
 
 	authController    *controller.AuthController
 	villageController *controller.VillageController
+	economyController *controller.EconomyController
 }
 
 type config struct {
@@ -109,6 +114,14 @@ func (app *application) hydrate(secretKey []byte) {
 	}
 	villageController := &controller.VillageController{VillageService: villageService}
 
+	economyService := &services.EconomyService{
+		VillageRepo: villageRepo,
+		UserRepo: userRepo,
+		ConfigRepo: configRepo,
+	}
+	economyController := &controller.EconomyController{EconomyService: economyService}
+
 	app.authController = authController
 	app.villageController = villageController
+	app.economyController = economyController
 }

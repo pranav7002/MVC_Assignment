@@ -1,6 +1,8 @@
 package services
 
 import (
+	"time"
+
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 )
 
@@ -14,7 +16,7 @@ type VillageRepositoryInterface interface {
 	GetVillage(userID string) (models.Village, error)
 	GetBuildingCount(userID string, buildingType string, buildingName string) (int, error)
 	RemoveResource(userID string, resourceType string, amount int) error
-	AddResource(userID string, resourceType string, amount int) error
+	AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error
 }
 
 type ConfigRepositoryInterface interface {
