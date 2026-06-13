@@ -13,7 +13,7 @@ type VillageRepository struct {
 	DB *pgxpool.Pool
 }
 
-func (villageRepo *VillageRepository) FetchUserBuildings(userID string) ([]models.Building, error) {
+func (villageRepo *VillageRepository) GetUserBuildings(userID string) ([]models.Building, error) {
 	ctx := context.Background()
 
 	query := `SELECT * FROM building_instance WHERE user_id = $1`
@@ -95,19 +95,19 @@ func (villageRepo *VillageRepository) GetTownHallConfig(name string, level int) 
 	return config, nil
 }
 
-func (villageRepo *VillageRepository) GetDefenceConfig(name string, level int) (models.DefenceConfig, error) {
+func (villageRepo *VillageRepository) GetDefenseConfig(name string, level int) (models.DefenseConfig, error) {
 	ctx := context.Background()
 
-	query := `SELECT * FROM defence_config WHERE name = $1 AND level = $2`
+	query := `SELECT * FROM defense_config WHERE name = $1 AND level = $2`
 	rows, err := villageRepo.DB.Query(ctx, query, name, level)
 	if err != nil {
-		return models.DefenceConfig{}, err
+		return models.DefenseConfig{}, err
 	}
 	defer rows.Close()
 
-	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.DefenceConfig])
+	config, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.DefenseConfig])
 	if err != nil {
-		return models.DefenceConfig{}, err
+		return models.DefenseConfig{}, err
 	}
 
 	return config, nil
@@ -223,6 +223,56 @@ func (villageRepo *VillageRepository) RemoveResource(userID string, resourceType
 	_, err := villageRepo.DB.Exec(ctx, query, amount, userID)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (villageRepo *VillageRepository) GetBuilding(buildingID int64) (models.Building, error) {
+	ctx := context.Background()
+
+	query := `
+	SELECT *
+	FROM 
+		building_instance
+	WHERE 
+		id == $1
+	`
+
+	rows, err := villageRepo.DB.Query(ctx, query, buildingID) 
+	if err != nil {
+		return models.Building{}, err
+	}
+	defer rows.Close()
+
+	building, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.Building]);
+	if err != nil {
+		return models.Building{}, err
+	}
+
+	return building, nil
+}
+
+func (villageRepo *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp int) error {
+	ctx := context.Background()
+
+	query := `
+	UPDATE building_instance
+	SET 
+		hp = $1 
+		AND level = level + 1
+	WHERE 
+		id == $2
+		AND user_id == $3
+	`
+
+	result, err := villageRepo.DB.Exec(ctx, query, hp, buildingID, userID)
+	if err != nil {
+		return err
+	}
+
+	if result.RowsAffected() == 0 {
+		return fmt.Errorf("building not found or does not belong to user")
 	}
 
 	return nil

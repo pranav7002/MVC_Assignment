@@ -27,21 +27,18 @@ func (authController *AuthController) RegisterHandler(w http.ResponseWriter, r *
 
 	err := json.NewDecoder(r.Body).Decode(userReqBody)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Please provide the correct input!!"))
+		writeError(w, http.StatusBadRequest, "Please provide the correct input!!")
 		return
 	}
 
 	err = authController.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)
 
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something bad happened on the server :/"))
+		writeError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("User registered successfully!"))
+	writeJSON(w, http.StatusOK, "User registered successfully!")
 }
 
 func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,35 +46,29 @@ func (authController *AuthController) LoginHandler(w http.ResponseWriter, r *htt
 
 	err := json.NewDecoder(r.Body).Decode(userReqBody)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Please provide the correct input!!"))
+		writeError(w, http.StatusBadRequest, "Please provide the correct input!!")
 		return
 	}
 
 	isAuthenticated, err := authController.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
 	if err == pgx.ErrNoRows {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Incorrect username entered!!"))
+		writeError(w, http.StatusUnauthorized, "Incorrect username entered!!")
 		return
 	} else if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something bad happened on the server :/"))
+		writeError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return
 	}
 
 	if !isAuthenticated {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("Incorrect password please check again"))
+		writeError(w, http.StatusBadRequest, "Incorrect password please check again")
 		return
 	}
 
 	tokenString, err := authController.AuthService.CreateToken(userReqBody.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something bad happened on the server :/"))
+		writeError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(tokenString))
+	writeJSON(w, http.StatusOK, tokenString)
 }
