@@ -1,21 +1,20 @@
 package services
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 )
 
 type VillageRepositoryInterface interface {
-	FetchUserBuildings(userID string) ([]models.Building, error)
+	GetUserBuildings(userID string) ([]models.Building, error)
+	GetBuilding(buildingID int64) (models.Building, error)
 	InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error
+	UpdateBuilding(userID string, buildingID int64, hp int) error
 	MoveBuilding(userID string, buildingID int64, posX, posY int) error
 	GetGameProgressionConfig(thLevel int, buildingType string, buildingName string) (models.GameProgressionConfig, error)
 	GetVillage(userID string) (models.Village, error)
 	GetBuildingCount(userID string, buildingType string, buildingName string) (int, error)
 	GetTownHallConfig(name string, level int) (models.TownHallConfig, error)
-	GetDefenceConfig(name string, level int) (models.DefenceConfig, error)
+	GetDefenseConfig(name string, level int) (models.DefenseConfig, error)
 	GetResourceConfig(name string, level int) (models.ResourceConfig, error)
 	GetStorageConfig(name string, level int) (models.StorageConfig, error)
 	GetTrainingGroundsConfig(name string, level int) (models.TrainingGroundsConfig, error)
@@ -27,9 +26,9 @@ type VillageService struct {
 }
 
 func (villageService *VillageService) GetBuildings(userID string) ([]models.Building, error) {
-	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
+	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
-		return nil, err
+		return nil, ErrServer
 	}
 	return buildings, nil
 }
@@ -37,7 +36,7 @@ func (villageService *VillageService) GetBuildings(userID string) ([]models.Buil
 func (villageService *VillageService) CreateBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody) error {
 	village, err := villageService.VillageRepo.GetVillage(userID)
 	if err != nil {
-		return err
+		return ErrServer
 	}
 
 	buildingCount, err := villageService.VillageRepo.GetBuildingCount(
@@ -46,7 +45,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		buildingReqBody.BuildingName,
 	)
 	if err != nil {
-		return err
+		return ErrServer
 	}
 
 	gameProgConfig, err := villageService.VillageRepo.GetGameProgressionConfig(
@@ -55,15 +54,15 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 		buildingReqBody.BuildingName,
 	)
 	if err != nil {
-		return err
+		return ErrServer
 	}
 
 	// CHECK
 	if gameProgConfig.MaxBuilt == 0 {
-		return errors.New("building not available at this town hall level")
+		return ErrBuildingNotUnlocked
 	}
 	if buildingCount == int(gameProgConfig.MaxBuilt) {
-		return errors.New("more buildings not allowed at this town hall level")
+		return ErrBuildingLimitReached 
 	}
 
 	var upgradeCost int
@@ -75,7 +74,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	case "town_hall":
 		config, err := villageService.VillageRepo.GetTownHallConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
-			return err
+			return ErrServer
 		}
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
@@ -84,7 +83,7 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	case "storage":
 		config, err := villageService.VillageRepo.GetStorageConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
-			return err
+			return ErrServer
 		}
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
@@ -93,16 +92,16 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	case "resource":
 		config, err := villageService.VillageRepo.GetResourceConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
-			return err
+			return ErrServer
 		}
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
 		size = config.Size
 		maxHP = config.MaxHP
-	case "defence":
-		config, err := villageService.VillageRepo.GetDefenceConfig(buildingReqBody.BuildingName, 1)
+	case "defense":
+		config, err := villageService.VillageRepo.GetDefenseConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
-			return err
+			return ErrServer
 		}
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
@@ -111,30 +110,30 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	case "barracks":
 		config, err := villageService.VillageRepo.GetTrainingGroundsConfig(buildingReqBody.BuildingName, 1)
 		if err != nil {
-			return err
+			return ErrServer
 		}
 		upgradeCost = config.UpgradeCost
 		upgradeCostType = config.UpgradeCostType
 		size = config.Size
 		maxHP = config.MaxHP
 	default:
-		return fmt.Errorf("invalid building type: %s", buildingReqBody.BuildingType)
+		return ErrInvalidBuildingType
 	}
 
 	switch upgradeCostType {
 	case "gold":
 		if village.Gold < upgradeCost {
-			return errors.New("Insufficient Gold!!")
+			return ErrInsufficientResources
 		}
 	case "elixir":
 		if village.Elixir < upgradeCost {
-			return errors.New("Insufficient Elixir!!")
+			return ErrInsufficientResources
 		}
 	}
 
-	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
+	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
-		return err
+		return ErrServer
 	}
 
 	var villageBitmap [44][44]bool
@@ -149,33 +148,33 @@ func (villageService *VillageService) CreateBuilding(userID string, buildingReqB
 	for i := buildingReqBody.PosX; i < buildingReqBody.PosX + size; i++ {
 		for j := buildingReqBody.PosY; j < buildingReqBody.PosY + size; j++ {
 			if villageBitmap[i][j] {
-				return errors.New("Collision Detected!!")
+				return ErrCollisionDetected
 			}
 		}
 	}
 
 	if err := villageService.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
-		return err
+		return ErrServer
 	}
 
 	if err := villageService.VillageRepo.InsertBuilding(userID, buildingReqBody, maxHP, size); err != nil {
-		return err
+		return ErrServer
 	}
 
 	return nil
 }
 
 func (villageService *VillageService) MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error {
-	buildings, err := villageService.VillageRepo.FetchUserBuildings(userID)
+	buildings, err := villageService.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
-		return err
+		return ErrServer
 	}
 
 	var b models.Building
 	var villageBitmap [44][44]bool
 	for _, building := range buildings {
-		for i := building.PosX; i <= building.PosX+building.Size; i++ {
-			for j := building.PosY; j <= building.PosY+building.Size; j++ {
+		for i := building.PosX; i < building.PosX+building.Size; i++ {
+			for j := building.PosY; j < building.PosY+building.Size; j++ {
 				if building.ID == buildingID { 
 					b = building
 					continue 
@@ -188,16 +187,105 @@ func (villageService *VillageService) MoveBuilding(userID string, buildingID int
 	for i := reqBody.PosX; i < reqBody.PosX + b.Size; i++ {
 		for j := reqBody.PosY; j < reqBody.PosY + b.Size; j++ {
 			if i > 43 || j > 43 {
-				return errors.New("Out of Bounds!!")
+				return ErrOutOfBounds
 			}
 			if villageBitmap[i][j] {
-				return errors.New("Collision Detected!!")
+				return ErrCollisionDetected
 			}
 		}
 	}
 
 	if err := villageService.VillageRepo.MoveBuilding(userID, buildingID, reqBody.PosX, reqBody.PosY); err != nil {
-		return err
+		return ErrServer
+	}
+
+	return nil
+}
+
+func (villageService *VillageService) UpgradeBuilding(userID string, buildingID int64) error {
+	village, err := villageService.VillageRepo.GetVillage(userID)
+	if err != nil {
+		return ErrServer
+	}
+	building, err := villageService.VillageRepo.GetBuilding(buildingID)
+	if err != nil {
+		return ErrServer
+	}
+	gameProgConfig, err := villageService.VillageRepo.GetGameProgressionConfig(village.TownHallLevel, building.BuildingType, building.BuildingName)
+	if err != nil {
+		return ErrServer
+	}
+
+	if building.Level >= int(gameProgConfig.MaxLevel) {
+		return ErrHighestLevelReached
+	}
+
+	var upgradeCost int
+	var upgradeCostType string
+	var maxHP int
+
+	switch building.BuildingType {
+	case "town_hall":
+		config, err := villageService.VillageRepo.GetTownHallConfig(building.BuildingName, 1)
+		if err != nil {
+			return ErrServer
+		}
+		upgradeCost = config.UpgradeCost
+		upgradeCostType = config.UpgradeCostType
+		maxHP = config.MaxHP
+	case "storage":
+		config, err := villageService.VillageRepo.GetStorageConfig(building.BuildingName, 1)
+		if err != nil {
+			return ErrServer
+		}
+		upgradeCost = config.UpgradeCost
+		upgradeCostType = config.UpgradeCostType
+		maxHP = config.MaxHP
+	case "resource":
+		config, err := villageService.VillageRepo.GetResourceConfig(building.BuildingName, 1)
+		if err != nil {
+			return ErrServer
+		}
+		upgradeCost = config.UpgradeCost
+		upgradeCostType = config.UpgradeCostType
+		maxHP = config.MaxHP
+	case "defense":
+		config, err := villageService.VillageRepo.GetDefenseConfig(building.BuildingName, 1)
+		if err != nil {
+			return ErrServer
+		}
+		upgradeCost = config.UpgradeCost
+		upgradeCostType = config.UpgradeCostType
+		maxHP = config.MaxHP
+	case "barracks":
+		config, err := villageService.VillageRepo.GetTrainingGroundsConfig(building.BuildingName, 1)
+		if err != nil {
+			return ErrServer
+		}
+		upgradeCost = config.UpgradeCost
+		upgradeCostType = config.UpgradeCostType
+		maxHP = config.MaxHP
+	default:
+		return ErrInvalidBuildingType
+	}
+
+	switch upgradeCostType {
+	case "gold":
+		if village.Gold < upgradeCost {
+			return ErrInsufficientResources
+		}
+	case "elixir":
+		if village.Elixir < upgradeCost {
+			return ErrInsufficientResources
+		}
+	}
+
+	if err := villageService.VillageRepo.UpdateBuilding(userID, buildingID, maxHP); err != nil {
+		return ErrServer
+	}
+
+	if err := villageService.VillageRepo.RemoveResource(userID, upgradeCostType, upgradeCost); err != nil {
+		return ErrServer
 	}
 
 	return nil

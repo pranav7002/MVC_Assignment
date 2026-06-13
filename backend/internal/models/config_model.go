@@ -44,7 +44,7 @@ type TownHallConfig struct {
 	Size               int    `json:"size" db:"size"`
 }
 
-type DefenceConfig struct {
+type DefenseConfig struct {
 	Name               string `json:"name" db:"name"`
 	Level              int    `json:"level" db:"level"`
 	UpgradeCost        int    `json:"upgrade_cost" db:"upgrade_cost"`
