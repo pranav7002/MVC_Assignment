@@ -15,6 +15,7 @@ type VillageServiceInterface interface {
 	CreateBuilding(userID string, reqBody models.BuildingCreationRequestBody) error
 	MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error
 	UpgradeBuilding(userID string, buildingID int64) error
+	GetUserVillage(userID string) (models.VillageResBody, error)
 }
 
 type VillageController struct {
@@ -107,4 +108,20 @@ func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *htt
 	} 
 
 	WriteJSON(w, http.StatusOK, "Building upgraded successfully!")
+}
+
+func (c *VillageController) VillageHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return 
+	}
+
+	res, err := c.VillageService.GetUserVillage(userID)
+	if err != nil {
+		WriteError(w, http.StatusBadRequest, err.Error())
+		return 
+	}
+
+	WriteJSON(w, http.StatusOK, res)
 }

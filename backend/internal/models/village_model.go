@@ -36,3 +36,9 @@ type BuildingPositionRequestBody struct {
 	PosX int `json:"pos_x"`
 	PosY int `json:"pos_y"`
 }
+
+type VillageResBody struct {
+	TownHallLevel         int       `json:"town_hall_level" db:"town_hall_level"`
+	Gold                  int       `json:"gold" db:"gold"`
+	Elixir                int       `json:"elixir" db:"elixir"`
+}

@@ -86,3 +86,11 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 	return nil
 }
 
+func (s *TroopService) GetTrainedTroops(userID string) ([]models.TroopTrained, error) {
+	troopTrained, err := s.TroopRepo.GetUserTrainedTroops(userID)
+	if err != nil {
+		return []models.TroopTrained{}, ErrServer
+	}
+
+	return troopTrained, ErrServer
+}

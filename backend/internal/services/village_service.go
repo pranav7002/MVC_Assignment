@@ -303,3 +303,17 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 	return nil
 }
 
+func (s *VillageService) GetUserVillage(userID string) (models.VillageResBody, error) {
+	village, err := s.VillageRepo.GetVillage(userID)
+	if err != nil {
+		return models.VillageResBody{}, ErrServer
+	}
+
+	res := models.VillageResBody{
+		TownHallLevel: village.TownHallLevel,
+		Gold: village.Gold,
+		Elixir: village.Elixir,
+	}
+
+	return res, nil
+}

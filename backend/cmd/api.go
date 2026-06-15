@@ -42,6 +42,7 @@ func (app *application) mount() http.Handler {
 
 			// VILLAGE BUILDING
 			r.Get("/buildings", app.villageController.BuildingHandler)
+			r.Get("/village", app.villageController.VillageHandler)
 			r.Post("/buildings", app.villageController.BuildingCreationHandler)
 			r.Put("/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
 			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
@@ -51,6 +52,7 @@ func (app *application) mount() http.Handler {
 
 			// TROOPS
 			r.Post("/troops/train", app.troopController.TrainTroopHandler)
+			r.Get("/troops", app.troopController.TroopHandler)
 		})
 	})
 

@@ -10,6 +10,7 @@ import (
 
 type TroopServiceInterface interface {
 	TrainTroop(userID string, troopName string, quantity int) error
+	GetTrainedTroops(userID string) ([]models.TroopTrained, error)
 }
 
 type TroopController struct {
@@ -35,4 +36,20 @@ func (c *TroopController) TrainTroopHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	WriteJSON(w, http.StatusOK, "Troops trained successfully!")
+}
+
+func (c *TroopController) TroopHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+
+	troops, err := c.TroopService.GetTrainedTroops(userID) 
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, troops)
 }
