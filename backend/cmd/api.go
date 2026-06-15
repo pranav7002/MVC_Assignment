@@ -53,6 +53,7 @@ func (app *application) mount() http.Handler {
 			// TROOPS
 			r.Post("/troops/train", app.troopController.TrainTroopHandler)
 			r.Get("/troops", app.troopController.TroopHandler)
+			r.Delete("/troops/{troopName}", app.troopController.TroopDeleteHandler)
 		})
 	})
 

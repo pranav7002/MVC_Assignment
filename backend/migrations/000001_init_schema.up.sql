@@ -29,7 +29,6 @@ CREATE TABLE village (
 
 -- Troops Trained
 CREATE TABLE troops_trained (
-    id BIGSERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     troop_name VARCHAR(50) NOT NULL,
     quantity INT NOT NULL DEFAULT 0,

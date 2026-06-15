@@ -68,3 +68,19 @@ func (r *TroopRepository) TrainTroop(userID string, troopName string, quantity i
 
 	return nil
 }
+
+func (r *TroopRepository) DeleteTroop(userID, troopName string) error {
+	ctx := context.Background()
+
+	query := `
+		UPDATE troops_trained 
+		SET quantity = quantity - 1 
+		WHERE user_id = $1 AND troop_name = $2 AND quantity > 0
+	`
+
+	if err := r.DB.Exec(ctx, query, userID, troopName); err != nil {
+		return err
+	}
+
+	return nil
+}

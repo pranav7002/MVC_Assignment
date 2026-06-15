@@ -5,6 +5,7 @@ import "github.com/pranav7002/MVC_Assignment/internal/models"
 type TroopRepositoryInterface interface {
 	GetUserTrainedTroops(userID string) ([]models.TroopTrained, error)
 	TrainTroop(userID string, troopName string, quantity int, trainingCost int) error
+	DeleteTroop(userID, troopName string) error
 }
 
 type TroopService struct {
@@ -92,5 +93,12 @@ func (s *TroopService) GetTrainedTroops(userID string) ([]models.TroopTrained, e
 		return []models.TroopTrained{}, ErrServer
 	}
 
-	return troopTrained, ErrServer
+	return troopTrained, nil
+}
+
+func (s *TroopService) DeleteTrainedTroop(userID, troopName string) error {
+	if err := s.TroopRepo.DeleteTroop(userID, troopName); err != nil {
+		return ErrServer
+	}
+	return nil
 }
