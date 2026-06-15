@@ -28,7 +28,7 @@ func Seed(pool *pgxpool.Pool) {
 			('Archer', 8, 22, 4, 24, 1, 50),
 			('Goblin', 11, 25, 1, 32, 1, 25),
 			('Giant', 12, 400, 1, 12, 4, 150),
-			('Wall Breaker', 10, 20, 1, 24, 2, 200);
+			('Wizard', 13, 30, 3, 16, 4, 200);
 		`
 		if _, err = pool.Exec(ctx, troopQuery); err != nil {
 			log.Println("Failed to seed troops: ", err)

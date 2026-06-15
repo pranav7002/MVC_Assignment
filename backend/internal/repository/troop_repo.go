@@ -78,7 +78,7 @@ func (r *TroopRepository) DeleteTroop(userID, troopName string) error {
 		WHERE user_id = $1 AND troop_name = $2 AND quantity > 0
 	`
 
-	if err := r.DB.Exec(ctx, query, userID, troopName); err != nil {
+	if _, err := r.DB.Exec(ctx, query, userID, troopName); err != nil {
 		return err
 	}
 
