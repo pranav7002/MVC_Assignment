@@ -27,5 +27,6 @@ type TroopDrop struct {
 
 type BattleGrid struct {
 	OccupiedGrid [GridSize][GridSize]bool 
-	BuildingGrid [GridSize][GridSize]int
+	TypeGrid [GridSize][GridSize]string
+	IDGrid       [GridSize][GridSize]int    
 }
