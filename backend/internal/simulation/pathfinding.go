@@ -42,6 +42,8 @@ func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 	dirs := [8]Position{
 		{1, 0}, {-1, 0},
 		{0, 1}, {0, -1},
+		{1, 1}, {1, -1},
+		{-1, 1}, {-1, -1},
 	}
 
 	queue = append(queue, Position{p.X, p.Y})

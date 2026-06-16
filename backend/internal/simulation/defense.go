@@ -8,13 +8,12 @@ type BuildingEntity struct {
     Size      int
     HP        int
     Destroyed bool
-    // Only for defense buildings:
     DPS          int
     MaxRange     int
-    MinRange     int           // Mortar dead zone (e.g., 4 cells)
-    AOERange     int           // only for Mortar (e.g., 2 cells)
-    TargetTroop  int           // ID of troop currently being targeted
-    CooldownTick int           // tick when this defense can fire again
+    MinRange     int           
+    AOERange     int           
+    TargetTroop  int           
+    CooldownTick int           
 }
 
 const cooldownTicks int = 10
@@ -25,22 +24,27 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 		return
 	}
 
+	if b.Type != "defense" {
+		return
+	}
+
 	if tick != b.CooldownTick {
 		return 
 	}
 
 	t := findTargetTroop(troops, b)
 	if t == nil {
+		b.CooldownTick++ 
 		return
 	}
 
 	switch b.Name {
-	case "mortar":
+	case "Mortar":
 		targets := findTargetsInAOERange(troops, t.Pos, b.AOERange)
 		for _, target := range targets {
 			target.HP = target.HP - b.DPS
-			if (t.HP <= 0) {
-				t.Dead = true
+			if (target.HP <= 0) {
+				target.Dead = true
 			}
 		}
 	default:
