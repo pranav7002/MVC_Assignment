@@ -52,7 +52,8 @@ type DefenseConfig struct {
 	UpgradeDurationSec int    `json:"upgrade_duration_sec" db:"upgrade_duration_sec"`
 	DPS                int    `json:"dps" db:"dps"`
 	MaxHP              int    `json:"max_hp" db:"max_hp"`
-	Range              int    `json:"range" db:"range"`
+	MaxRange           int    `json:"max_range" db:"max_range"`
+	MinRange           int    `json:"min_range" db:"min_range"`
 	AOERange           int    `json:"aoe_range" db:"aoe_range"`
 	Size               int    `json:"size" db:"size"`
 }

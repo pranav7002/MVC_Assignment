@@ -119,7 +119,8 @@ CREATE TABLE defense_config (
     upgrade_duration_sec INT NOT NULL,
     dps INT NOT NULL,
     max_hp INT NOT NULL,
-    range INT NOT NULL,
+    max_range INT NOT NULL,
+    min_range INT NOT NULL DEFAULT 0,
     aoe_range INT NOT NULL DEFAULT 0,
     size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)

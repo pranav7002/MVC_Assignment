@@ -21,10 +21,10 @@ func (t *TroopEntity) UpdateTroop(buildings []*BuildingEntity, g *BattleGrid) {
 		return
 	}
 
-	// 1. Troop has no target 
+	// 1. Troop has no target or can change target building is destroyed 
 	hasTarget, b := buildingExists(t.TargetID, buildings) 
-	if !hasTarget {
-		target := FindTarget(t, g)
+	target := FindTarget(t, g)
+	if !hasTarget || b.ID != target.ID {
 		if target.Path == nil {
 			return
 		}

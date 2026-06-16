@@ -2,7 +2,7 @@ package simulation
 
 // Backwards implementation of https://www.youtube.com/watch?v=KiCBXu4P-2Y&t=44s
 
-func FindTarget(t *TroopEntity, g *BattleGrid) Target {
+func FindTarget(t *TroopEntity, g *BattleGrid) BuildingTarget {
 	var path []Position
 	var id int
 	switch t.Name {
@@ -21,10 +21,10 @@ func FindTarget(t *TroopEntity, g *BattleGrid) Target {
 	}
 
 	if path == nil {
-		return Target{}
+		return BuildingTarget{}
 	}
 
-	return Target{
+	return BuildingTarget{
 		ID : id,
 		Path: path,
 	}

@@ -15,7 +15,8 @@ type BuildingInput struct {
     Size         int      `json:"size"`          
     HP           int      `json:"hp"`           
     DPS          int      `json:"dps"`          
-    Range        int      `json:"range"`        
+    MaxRange     int      `json:"max_range"`        
+    MinRange     int      `json:"min_range"`
     AOERange     int      `json:"aoe_range"`    
 }
 
@@ -34,7 +35,7 @@ type BattleGrid struct {
 	IDGrid       [GridSize][GridSize]int    
 }
 
-type Target struct {
+type BuildingTarget struct {
 	ID int
 	Path []Position
 }
