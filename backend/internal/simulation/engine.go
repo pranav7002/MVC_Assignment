@@ -4,12 +4,15 @@ type Battle struct {
 	BattleGrid *BattleGrid
 	Buildings []*BuildingEntity
 	Troops []*TroopEntity
+	TownHallDestroyed bool
+	TotalBuildingHP int
 	Tick int 
 }
 
-func StartEngine(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battle {
+func NewBattle(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battle {
 	var buildings []*BuildingEntity
 	var troops []*TroopEntity
+	var totalBuildingHP int
 
 	for _, b := range buildingInputs {
 		buildings = append(buildings, &BuildingEntity{
@@ -26,8 +29,10 @@ func StartEngine(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battl
 			MinRange: b.MinRange,               
 			AOERange: b.AOERange,             
 			TargetTroop: 0,        
-			CooldownTick: 10,
+			Cooldown: 0,
 		})
+
+		totalBuildingHP = totalBuildingHP + b.HP
 	}
 
 	for i, t := range troopInputs {
@@ -52,5 +57,58 @@ func StartEngine(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battl
 		Buildings: buildings,
 		Troops: troops, 
 		Tick: 0, 
+		TotalBuildingHP: totalBuildingHP,
 	}
+}
+
+func (b *Battle) Simulate() (int, int) {
+	finalHP := 0
+	allTroopsDead := false
+	allBuildingsDestroyed := false
+	stars := 0
+	destructionPct := 0
+
+	for b.Tick != 1800 {
+		for _, troop := range b.Troops {
+			troop.Update(b.Buildings, b.BattleGrid)
+		}
+		for _, building := range b.Buildings {
+			building.Update(b.Tick, b.Troops, b.BattleGrid)
+			if building.Name == "Town Hall" && building.Destroyed {
+				b.TownHallDestroyed = true
+			}
+		}
+
+		for _, troop := range b.Troops {
+			if !troop.Dead {
+				break 
+			}
+			allTroopsDead = true
+		}	
+		for _, building := range b.Buildings {
+			if !building.Destroyed {
+				break
+			}
+			allBuildingsDestroyed = true
+		}
+
+		if allBuildingsDestroyed || allTroopsDead || b.Tick == 1800 {
+			for _, building := range b.Buildings {
+				finalHP += building.HP
+			}
+			destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
+			if destructionPct >= 50 {
+				stars++
+			}
+			if b.TownHallDestroyed {
+				stars++
+			}
+			if allBuildingsDestroyed {
+				stars++
+			}
+			break
+		}
+		b.Tick++
+	}
+	return destructionPct, stars
 }

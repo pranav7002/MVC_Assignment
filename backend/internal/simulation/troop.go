@@ -16,21 +16,21 @@ type TroopEntity struct {
 const buffer float64 = 0.5
 
 func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
-	if t.Dead {
-		return
+	if t.Dead {  
+		return 
 	}
 
-	// 1. Troop has no target or can change target building is destroyed 
+	// 1. Troop has no target 
 	hasTarget, b := buildingExists(t.TargetID, buildings) 
-	target := FindTarget(t, g)
-	if !hasTarget || b.ID != target.ID {
+	if !hasTarget {
+		target := FindTarget(t, g)
 		if target.Path == nil {
-			return
+			return 
 		}
 
 		t.TargetID = target.ID
 		t.Path = target.Path
-		return
+		return 
 	}
 
 	// 2. Target in Attack Range 
@@ -43,8 +43,11 @@ func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
 	}
 
 	// 3. Troop has target, not in range
+	if len(t.Path) > 1 {
 	t.Pos = t.Path[1]
 	t.Path = t.Path[1:]
+	}
+	return 
 }
 
 func buildingExists(id int, buildings []*BuildingEntity) (bool, *BuildingEntity) {

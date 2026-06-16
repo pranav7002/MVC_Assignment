@@ -13,10 +13,8 @@ type BuildingEntity struct {
     MinRange     int           
     AOERange     int           
     TargetTroop  int           
-    CooldownTick int           
+    Cooldown uint8           
 }
-
-const cooldownTicks int = 10
 
 func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) {
 	if b.Destroyed { 
@@ -24,17 +22,17 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 		return
 	}
 
+	if b.Cooldown != 0 {
+		b.Cooldown--
+		return
+	}
+
 	if b.Type != "defense" {
 		return
 	}
 
-	if tick != b.CooldownTick {
-		return 
-	}
-
 	t := findTargetTroop(troops, b)
 	if t == nil {
-		b.CooldownTick++ 
 		return
 	}
 
@@ -53,7 +51,7 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 			t.Dead = true
 		}
 	}
-	b.CooldownTick = b.CooldownTick + cooldownTicks
+	b.Cooldown = 10
 }
 
 func removeBuilding(b *BuildingEntity, g *BattleGrid) {
