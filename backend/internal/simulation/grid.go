@@ -1,16 +1,5 @@
 package simulation
 
-// type BuildingInput struct {
-//     ID           int      `json:"id"`
-//     Name         string   `json:"name"`          
-//     Type         string   `json:"type"`  // "defense", "resource", "storage", "town_hall", "training_grounds"        
-//     Pos          Position `json:"pos"`
-//     Size         int      `json:"size"`          
-//     HP           int      `json:"hp"`           
-//     DPS          int      `json:"dps"`          
-//     Range        int      `json:"range"`        
-// }
-
 const GridSize int = 20
 
 func NewGrid(buildings []BuildingInput) *BattleGrid {
