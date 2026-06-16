@@ -2,28 +2,36 @@ package simulation
 
 // Backwards implementation of https://www.youtube.com/watch?v=KiCBXu4P-2Y&t=44s
 
-func findPath(t TroopDrop, g *BattleGrid) []Position {
+func FindTarget(t *TroopEntity, g *BattleGrid) Target {
 	var path []Position
+	var id int
 	switch t.Name {
 	case "Goblin":
-		path = bfs(t.Pos, g, "storage")
+		path, id = bfs(t.Pos, g, "storage")
 		if path == nil {
-			path = bfs(t.Pos, g, "")
+			path, id = bfs(t.Pos, g, "")
 		}
 	case "Giant": 
-		path = bfs(t.Pos, g, "defense")
+		path, id = bfs(t.Pos, g, "defense")
 		if path == nil {
-			path = bfs(t.Pos, g, "")
+			path, id = bfs(t.Pos, g, "")
 		}
 	default: 
-		path = bfs(t.Pos, g, "")
+		path, id = bfs(t.Pos, g, "")
 	}
 
-	return path
+	if path == nil {
+		return Target{}
+	}
+
+	return Target{
+		ID : id,
+		Path: path,
+	}
 }
 
 // filter = "" for any building 
-func bfs(p Position, g *BattleGrid, filter string) []Position {
+func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 	queue := make([]Position, 0)
 	parent := make(map[Position]Position)
 
@@ -34,19 +42,20 @@ func bfs(p Position, g *BattleGrid, filter string) []Position {
 	dirs := [8]Position{
 		{1, 0}, {-1, 0},
 		{0, 1}, {0, -1},
-		{1, 1}, {1, -1},
-		{-1, 1}, {-1, -1},
 	}
 
 	queue = append(queue, Position{p.X, p.Y})
 	visited[p.X][p.Y] = true
 
+	var ID int
 	var current Position
 	for len(queue) > 0 {
 		current = queue[0]
 		queue = queue[1:]
 
-		if isAdjacent(current, g, filter) {
+		var isAdj bool
+		isAdj, ID = isAdjacent(current, g, filter); 
+		if isAdj {
 			reached = true
 			break
 		}
@@ -78,7 +87,7 @@ func bfs(p Position, g *BattleGrid, filter string) []Position {
 	}
 
 	if !reached {
-		return nil
+		return nil, 0
 	}
 	
 	start := Position{p.X, p.Y}
@@ -95,10 +104,10 @@ func bfs(p Position, g *BattleGrid, filter string) []Position {
 		path[i], path[j] = path[j], path[i]
 	}
 
-	return path
+	return path, ID
 }
 
-func isAdjacent(p Position, g *BattleGrid, filter string) bool {
+func isAdjacent(p Position, g *BattleGrid, filter string) (bool, int) {
 	dirs := [8]Position{
 		{1, 0}, {-1, 0},
 		{0, 1}, {0, -1},
@@ -118,8 +127,8 @@ func isAdjacent(p Position, g *BattleGrid, filter string) bool {
 		}
 
 		if filter == "" || filter == g.TypeGrid[n.X][n.Y] {
-			return true
+			return true, g.IDGrid[n.X][n.Y]
 		}
 	}	
-	return false 
+	return false, 0
 }

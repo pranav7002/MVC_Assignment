@@ -53,6 +53,7 @@ type DefenseConfig struct {
 	DPS                int    `json:"dps" db:"dps"`
 	MaxHP              int    `json:"max_hp" db:"max_hp"`
 	Range              int    `json:"range" db:"range"`
+	AOERange           int    `json:"aoe_range" db:"aoe_range"`
 	Size               int    `json:"size" db:"size"`
 }
 

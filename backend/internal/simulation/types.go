@@ -1,5 +1,7 @@
 package simulation
 
+import "math"
+
 type Position struct {
     X int `json:"x"`
     Y int `json:"y"`
@@ -14,6 +16,7 @@ type BuildingInput struct {
     HP           int      `json:"hp"`           
     DPS          int      `json:"dps"`          
     Range        int      `json:"range"`        
+    AOERange     int      `json:"aoe_range"`    
 }
 
 type TroopDrop struct {
@@ -27,6 +30,16 @@ type TroopDrop struct {
 
 type BattleGrid struct {
 	OccupiedGrid [GridSize][GridSize]bool 
-	TypeGrid [GridSize][GridSize]string
+	TypeGrid 	 [GridSize][GridSize]string
 	IDGrid       [GridSize][GridSize]int    
+}
+
+type Target struct {
+	ID int
+	Path []Position
+}
+
+func Dist(n, m Position) float64{
+	dist := math.Sqrt(math.Pow(float64(m.X - n.X), 2) + math.Pow(float64(m.Y - n.Y), 2))
+	return dist
 }

@@ -120,6 +120,7 @@ CREATE TABLE defense_config (
     dps INT NOT NULL,
     max_hp INT NOT NULL,
     range INT NOT NULL,
+    aoe_range INT NOT NULL DEFAULT 0,
     size INT NOT NULL DEFAULT 3,
     PRIMARY KEY (name, level)
 );
