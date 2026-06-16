@@ -2,7 +2,7 @@ package simulation
 
 const GridSize int = 20
 
-func NewGrid(buildings []BuildingInput) *BattleGrid {
+func NewGrid(buildings []*BuildingEntity) *BattleGrid {
 	var og [GridSize][GridSize]bool 
 	var tg [GridSize][GridSize]string
 	var ig [GridSize][GridSize]int

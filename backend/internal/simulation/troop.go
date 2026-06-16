@@ -5,7 +5,6 @@ type TroopEntity struct {
     Name     string
     Pos      Position
     HP       int
-    MaxHP    int
     DPS      int
     Range    int
     Speed    int           
@@ -16,7 +15,7 @@ type TroopEntity struct {
 
 const buffer float64 = 0.5
 
-func (t *TroopEntity) UpdateTroop(buildings []*BuildingEntity, g *BattleGrid) {
+func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
 	if t.Dead {
 		return
 	}

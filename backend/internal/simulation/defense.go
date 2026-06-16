@@ -19,8 +19,8 @@ type BuildingEntity struct {
 
 const cooldownTicks int = 10
 
-func (b *BuildingEntity) UpdateBuilding(tick int, troops []*TroopEntity, g *BattleGrid) {
-	if b.Destroyed {
+func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) {
+	if b.Destroyed { 
 		removeBuilding(b, g)
 		return
 	}
