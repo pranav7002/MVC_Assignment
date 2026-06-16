@@ -4,19 +4,19 @@ package simulation
 
 // type BuildingInput struct {
 //     ID           int      `json:"id"`
-//     Name         string   `json:"name"`          
-//     Type         string   `json:"type"`         
+//     Name         string   `json:"name"`
+//     Type         string   `json:"type"`
 //     Pos          Position `json:"pos"`
-//     Size         int      `json:"size"`          
-//     HP           int      `json:"hp"`           
-//     DPS          int      `json:"dps"`          
-//     Range        int      `json:"range"`        
+//     Size         int      `json:"size"`
+//     HP           int      `json:"hp"`
+//     DPS          int      `json:"dps"`
+//     Range        int      `json:"range"`
 // }
 
 // type TroopDrop struct {
-//     Name         string   `json:"name"`        
-//     Pos          Position `json:"pos"`           
-//     HP           int      `json:"hp"`           
+//     Name         string   `json:"name"`
+//     Pos          Position `json:"pos"`
+//     HP           int      `json:"hp"`
 //     DPS          int      `json:"dps"`
 //     Range        int      `json:"range"`
 //     Speed        int      `json:"speed"`
@@ -46,11 +46,11 @@ func findNearestBuilding(p Position, g *BattleGrid) []Position {
 
 	var visited [GridSize][GridSize]bool 
 
-	dirs := [4]Position{
-		{1, 0},
-		{-1, 0},
-		{0, 1},
-		{0, -1},
+	dirs := [8]Position{
+		{1, 0}, {-1, 0},
+		{0, 1}, {0, -1},
+		{1, 1}, {1, -1},
+		{-1, 1}, {-1, -1},
 	}
 
 	queue = append(queue, Position{p.X, p.Y})
@@ -72,6 +72,13 @@ func findNearestBuilding(p Position, g *BattleGrid) []Position {
 			// out of bounds
 			if n.X < 0 || n.Y < 0 || n.X > GridSize - 1 || n.Y > GridSize - 1 {
 				continue
+			}
+
+			// skip if any adjacent to diagonal is blocked 
+			if d.X != 0 && d.Y != 0 {
+				if g.OccupiedGrid[current.X][n.Y] || g.OccupiedGrid[n.X][current.Y] {
+					continue
+				}
 			}
 
 			// skip visited locations and blocked cells 
@@ -107,11 +114,11 @@ func findNearestBuilding(p Position, g *BattleGrid) []Position {
 }
 
 func isAdjacentToBuilding(p Position, g *BattleGrid) bool {
-	dirs := [4]Position{
-		{1, 0},
-		{-1, 0},
-		{0, 1},
-		{0, -1},
+	dirs := [8]Position{
+		{1, 0}, {-1, 0},
+		{0, 1}, {0, -1},
+		{1, 1}, {1, -1},
+		{-1, 1}, {-1, -1},
 	}
 
 	for _, d := range dirs {
