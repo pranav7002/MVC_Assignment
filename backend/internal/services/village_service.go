@@ -37,6 +37,8 @@ type VillageService struct {
 	ConfigRepo  ConfigRepositoryInterface
 }
 
+const gridSize int = 20
+
 func (s *VillageService) GetBuildings(userID string) ([]models.Building, error) {
 	buildings, err := s.VillageRepo.GetUserBuildings(userID)
 	if err != nil {
@@ -148,10 +150,10 @@ func (s *VillageService) CreateBuilding(userID string, buildingReqBody models.Bu
 		return ErrServer
 	}
 
-	var villageBitmap [44][44]bool
+	var villageBitmap [gridSize][gridSize]bool
 	for _, building := range buildings {
-		for i := building.PosX; i < building.PosX + building.Size; i++ {
-			for j := building.PosY; j < building.PosY + building.Size; j++ {
+		for i := building.PosX; i < building.PosX + size; i++ {
+			for j := building.PosY; j < building.PosY + size; j++ {
 				villageBitmap[i][j] = true
 			}
 		}
@@ -159,6 +161,9 @@ func (s *VillageService) CreateBuilding(userID string, buildingReqBody models.Bu
 
 	for i := buildingReqBody.PosX; i < buildingReqBody.PosX + size; i++ {
 		for j := buildingReqBody.PosY; j < buildingReqBody.PosY + size; j++ {
+			if i > gridSize - 1 || j > gridSize - 1 {
+				return ErrOutOfBounds
+			}
 			if villageBitmap[i][j] {
 				return ErrCollisionDetected
 			}
@@ -183,7 +188,7 @@ func (s *VillageService) MoveBuilding(userID string, buildingID int64, reqBody m
 	}
 
 	var b models.Building
-	var villageBitmap [44][44]bool
+	var villageBitmap [gridSize][gridSize]bool
 	for _, building := range buildings {
 		for i := building.PosX; i < building.PosX+building.Size; i++ {
 			for j := building.PosY; j < building.PosY+building.Size; j++ {
@@ -198,7 +203,7 @@ func (s *VillageService) MoveBuilding(userID string, buildingID int64, reqBody m
 
 	for i := reqBody.PosX; i < reqBody.PosX + b.Size; i++ {
 		for j := reqBody.PosY; j < reqBody.PosY + b.Size; j++ {
-			if i > 43 || j > 43 {
+			if i > gridSize - 1  || j > gridSize - 1 {
 				return ErrOutOfBounds
 			}
 			if villageBitmap[i][j] {
