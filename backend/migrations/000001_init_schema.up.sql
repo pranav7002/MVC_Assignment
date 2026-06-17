@@ -143,7 +143,6 @@ CREATE TABLE troop_config (
     dps INT NOT NULL,
     health INT NOT NULL,
     range INT NOT NULL,
-    speed INT NOT NULL,
     housing_space INT NOT NULL,
     training_cost INT NOT NULL
 );

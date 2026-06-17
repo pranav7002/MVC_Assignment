@@ -7,7 +7,6 @@ type TroopEntity struct {
     HP       int
     DPS      int
     Range    int
-    Speed    int           
     Dead     bool
     TargetID int          // ID of the building troop is targeting
     Path     []Position   
@@ -47,7 +46,6 @@ func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
 	t.Pos = t.Path[1]
 	t.Path = t.Path[1:]
 	}
-	return 
 }
 
 func buildingExists(id int, buildings []*BuildingEntity) (bool, *BuildingEntity) {

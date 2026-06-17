@@ -28,7 +28,7 @@ func NewBattle(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battle 
 			MaxRange: b.MaxRange,   
 			MinRange: b.MinRange,               
 			AOERange: b.AOERange,             
-			TargetTroop: 0,        
+			TargetTroop: -1,        
 			Cooldown: 0,
 		})
 
@@ -42,10 +42,9 @@ func NewBattle(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battle 
 			Pos: t.Pos,    
 			HP: t.HP,        
 			DPS: t.DPS,   
-			Range: t.Range,    
-			Speed: t.Speed,             
+			Range: t.Range,              
 			Dead: false,   
-			TargetID: 0,          
+			TargetID: -1,          
 			Path: nil,    
 		})
 	}
@@ -79,17 +78,19 @@ func (b *Battle) Simulate() (int, int) {
 			}
 		}
 
+		allTroopsDead = true
 		for _, troop := range b.Troops {
 			if !troop.Dead {
-				break 
-			}
-			allTroopsDead = true
-		}	
-		for _, building := range b.Buildings {
-			if !building.Destroyed {
+				allTroopsDead = false
 				break
 			}
-			allBuildingsDestroyed = true
+		}
+		allBuildingsDestroyed = true
+		for _, building := range b.Buildings {
+			if !building.Destroyed {
+				allBuildingsDestroyed = false
+				break
+			}
 		}
 
 		if allBuildingsDestroyed || allTroopsDead || b.Tick == 1800 {

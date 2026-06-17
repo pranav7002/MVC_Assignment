@@ -54,6 +54,9 @@ func (app *application) mount() http.Handler {
 			r.Post("/troops/train", app.troopController.TrainTroopHandler)
 			r.Get("/troops", app.troopController.TroopHandler)
 			r.Delete("/troops/{troopName}", app.troopController.TroopDeleteHandler)
+
+			// BATTLE 
+			r.Post("/battle/{defendersID}", app.battleController.RunSimulation)
 		})
 	})
 
@@ -92,6 +95,7 @@ type application struct {
 	villageController *controller.VillageController
 	economyController *controller.EconomyController
 	troopController   *controller.TroopController
+	battleController  *controller.BattleController
 }
 
 type config struct {
@@ -136,8 +140,20 @@ func (app *application) hydrate(secretKey []byte) {
 	}
 	troopController := &controller.TroopController{TroopService: troopService}
 
+	battleRepo := &repository.BattleRepository{DB: dbpool}
+	battleService := &services.BattleService{
+		BattleRepo:  battleRepo,
+		VillageRepo: villageRepo,
+		ConfigRepo:  configRepo,
+	}
+	battleController := &controller.BattleController{
+		BattleService:  battleService,
+		VillageService: villageService,
+	}
+
 	app.authController = authController
 	app.villageController = villageController
 	app.economyController = economyController
 	app.troopController = troopController
+	app.battleController = battleController
 }

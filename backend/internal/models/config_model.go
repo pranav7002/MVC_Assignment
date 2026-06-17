@@ -74,7 +74,6 @@ type TroopConfig struct {
 	DPS          int    `json:"dps" db:"dps"`
 	Health       int    `json:"health" db:"health"`
 	Range        int    `json:"range" db:"range"`
-	Speed        int    `json:"speed" db:"speed"`
 	HousingSpace int    `json:"housing_space" db:"housing_space"`
 	TrainingCost int    `json:"training_cost" db:"training_cost"`
 }

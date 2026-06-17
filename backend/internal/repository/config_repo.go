@@ -191,3 +191,21 @@ func (r *ConfigRepository) GetAllTroopConfig() ([]models.TroopConfig, error) {
 
 	return config, nil
 }
+
+func (r *ConfigRepository) GetAllDefenseConfig() ([]models.DefenseConfig, error) {
+	ctx := context.Background()
+
+	query := `SELECT * FROM defense_config` 
+	rows, err := r.DB.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	config, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.DefenseConfig])
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}

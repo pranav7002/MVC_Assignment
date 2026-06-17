@@ -30,6 +30,7 @@ type ConfigRepositoryInterface interface {
 	GetAllResourceConfig() ([]models.ResourceConfig, error)
 	GetAllTrainingGroundsConfig() ([]models.TrainingGroundsConfig, error)
 	GetAllTroopConfig() ([]models.TroopConfig, error)
+	GetAllDefenseConfig() ([]models.DefenseConfig, error)
 }
 
 type VillageService struct {
