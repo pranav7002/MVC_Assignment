@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -108,6 +109,14 @@ type dbConfig struct {
 }
 
 func (app *application) hydrate(secretKey []byte) {
+	var upgrader = websocket.Upgrader{
+    ReadBufferSize:  1024,              
+    WriteBufferSize: 1024,             
+    CheckOrigin: func(r *http.Request) bool {
+        return true             
+    },
+	}
+
 	dbpool := app.dbpool
 
 	userRepo := &repository.UserRepository{DB: dbpool}
@@ -149,6 +158,7 @@ func (app *application) hydrate(secretKey []byte) {
 	battleController := &controller.BattleController{
 		BattleService:  battleService,
 		VillageService: villageService,
+		WSUpgrader: upgrader,
 	}
 
 	app.authController = authController

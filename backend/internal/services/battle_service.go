@@ -51,7 +51,7 @@ func (s *BattleService) HydrateTroop(t []models.TroopDropRequestBody) ([]simulat
 		troopCfg := cfg[troop.Name]
 		troopDrop = append(troopDrop, simulation.TroopDrop{
 			Name: troopCfg.Name,
-			Pos: simulation.Position{int(troop.X), int(troop.Y)},   
+			Pos: simulation.Position{X: int(troop.X), Y: int(troop.Y)},   
 			HP: troopCfg.Health,
 			DPS: troopCfg.DPS,
 			Range: troopCfg.Range,
@@ -85,7 +85,7 @@ func (s *BattleService) HydrateBuilding(b []models.Building) ([]simulation.Build
 				ID: int(building.ID),     
 				Name: building.BuildingName,     
 				Type: building.BuildingType,        
-				Pos: simulation.Position{building.PosX, building.PosY},       
+				Pos: simulation.Position{X: building.PosX, Y: building.PosY},       
 				Size: building.Size,          
 				HP: building.HP,  
 				AOERange: cfg[BuildingKey{building.BuildingName, building.Level}].AOERange,
@@ -99,7 +99,7 @@ func (s *BattleService) HydrateBuilding(b []models.Building) ([]simulation.Build
 			ID: int(building.ID),     
 			Name: building.BuildingName,     
 			Type: building.BuildingType,        
-			Pos: simulation.Position{building.PosX, building.PosY},       
+			Pos: simulation.Position{X: building.PosX, Y: building.PosY},       
 			Size: building.Size,          
 			HP: building.HP,  
 		})
