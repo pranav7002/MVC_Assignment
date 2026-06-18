@@ -57,7 +57,7 @@ func (app *application) mount() http.Handler {
 			r.Delete("/troops/{troopName}", app.troopController.TroopDeleteHandler)
 
 			// BATTLE 
-			r.Post("/battle/{defendersID}", app.battleController.RunSimulation)
+			r.Get("/battle/ws/{defendersID}", app.battleController.HandleWebSocket)
 		})
 	})
 

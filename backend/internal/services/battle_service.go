@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 	"github.com/pranav7002/MVC_Assignment/internal/simulation"
 )
@@ -15,7 +17,11 @@ type BattleRepositoyInterface interface {
 	StoreBattle(userID, defendersID, result string, destructionPct, goldLooted, elixirLooted int) error
 }
 
-func (s *BattleService) FilterTroop(t []models.TroopDropRequestBody, buildings []models.Building) []models.TroopDropRequestBody {
+func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.Building) (simulation.TroopDrop, error) {
+	cfg, err := s.ConfigRepo.GetTroopConfig(t.Name)
+	if err != nil {
+		return simulation.TroopDrop{}, ErrServer
+	}
 	var villageBitmap [gridSize][gridSize]bool
 	for _, building := range buildings {
 		for i := building.PosX; i < building.PosX+building.Size; i++ {
@@ -24,41 +30,17 @@ func (s *BattleService) FilterTroop(t []models.TroopDropRequestBody, buildings [
 			}
 		}
 	}
-
-	troopInput := make([]models.TroopDropRequestBody, 0)
-	for _, troop := range t {
-		if !villageBitmap[troop.X][troop.Y] {
-			troopInput = append(troopInput, troop)
-		}
+	outOfBounds := t.X >= uint8(gridSize) || t.Y >= uint8(gridSize) || t.X < 0 || t.Y < 0
+	if villageBitmap[t.X][t.Y] || outOfBounds {
+		return simulation.TroopDrop{}, errors.New("Invalid drop location")
 	}
-
-	return troopInput
-}
-
-func (s *BattleService) HydrateTroop(t []models.TroopDropRequestBody) ([]simulation.TroopDrop, error) {
-	allCfg, err := s.ConfigRepo.GetAllTroopConfig()
-	if err != nil {
-		return nil, ErrServer
-	}
-	
-	cfg := make(map[string]models.TroopConfig)
-	for _, c := range allCfg {
-		cfg[c.Name] = c
-	}
-
-	var troopDrop []simulation.TroopDrop
-	for _, troop := range t {
-		troopCfg := cfg[troop.Name]
-		troopDrop = append(troopDrop, simulation.TroopDrop{
-			Name: troopCfg.Name,
-			Pos: simulation.Position{X: int(troop.X), Y: int(troop.Y)},   
-			HP: troopCfg.Health,
-			DPS: troopCfg.DPS,
-			Range: troopCfg.Range,
-		})
-	}
-
-	return troopDrop, nil
+	return simulation.TroopDrop{
+		Name: cfg.Name,             
+		Pos: simulation.Position{X: int(t.X), Y: int(t.Y)},          
+		HP: cfg.Health,         
+		DPS: cfg.DPS,          
+		Range: cfg.Range,       
+	}, nil
 }
 
 func (s *BattleService) HydrateBuilding(b []models.Building) ([]simulation.BuildingInput, error) {
