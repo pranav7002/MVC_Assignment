@@ -47,20 +47,19 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
     if err != nil {
         return  
     }
-	defer conn.Close()
 
 	attacker := &models.Client{
 		ID: userID,
 		Conn: conn,
 		Send: make(chan []byte),
 		Incoming: make(chan []byte),
+		Done: make(chan struct{}),
 	}
 
 	battleID := uuid.New().String()
 
     c.BattleManager.Mu.Lock()
     c.BattleManager.Battles[battleID] = append(c.BattleManager.Battles[battleID], attacker)
-	defer delete(c.BattleManager.Battles, battleID)
     c.BattleManager.Mu.Unlock()
 
 	go attacker.Read()
@@ -70,7 +69,16 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	go c.HandleTroopDrop(attacker, battle, buildings)
 
 	ticker := time.NewTicker(10 *time.Millisecond)
-	defer ticker.Stop()
+
+	defer func() {
+		conn.Close()
+		
+		c.BattleManager.Mu.Lock()
+		delete(c.BattleManager.Battles, battleID)
+		c.BattleManager.Mu.Unlock()
+
+		ticker.Stop()
+	}()
 
 	var finalResult simulation.Result
 	for range ticker.C {

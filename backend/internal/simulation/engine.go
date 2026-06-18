@@ -53,6 +53,7 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 		Buildings: buildings,
 		Tick: 0, 
 		TotalBuildingHP: totalBuildingHP,
+		Mu: new(sync.Mutex),
 	}
 }
 
