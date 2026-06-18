@@ -21,9 +21,9 @@ const CELL_SIZE = 40
 
 const BUILDING_INFO: Record<string, { type: string; size: number }> = {
     'Town Hall': { type: 'town_hall', size: 4 },
-    'Cannon': { type: 'defense', size: 3 },
+    Cannon: { type: 'defense', size: 3 },
     'Archer Tower': { type: 'defense', size: 3 },
-    'Mortar': { type: 'defense', size: 3 },
+    Mortar: { type: 'defense', size: 3 },
     'Gold Mine': { type: 'resource', size: 3 },
     'Elixir Collector': { type: 'resource', size: 3 },
     'Gold Storage': { type: 'storage', size: 3 },
@@ -35,15 +35,24 @@ export default function VillageCanvas() {
     const token = useAuthStore((state) => state.token)
 
     const [buildings, setBuildings] = useState<Building[]>([])
-    const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
-    const [hoverCell, setHoverCell] = useState<{ x: number; y: number } | null>(null)
+    const [selectedBuilding, setSelectedBuilding] = useState<string | null>(
+        null,
+    )
+    const [hoverCell, setHoverCell] = useState<{ x: number; y: number } | null>(
+        null,
+    )
     const [activeBuilding, setActiveBuilding] = useState<Building | null>(null)
-    const [movingBuildingId, setMovingBuildingId] = useState<number | null>(null)
+    const [movingBuildingId, setMovingBuildingId] = useState<number | null>(
+        null,
+    )
+    const [village, setVillage] = useState<{
+        gold: number
+        elixir: number
+    } | null>(null)
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const grassTileRef = useRef<HTMLImageElement | null>(null)
 
-    // --- Data Fetching ---
 
     async function loadBuildings() {
         try {
@@ -55,11 +64,25 @@ export default function VillageCanvas() {
         }
     }
 
-    useEffect(() => {
-        if (token) loadBuildings()
-    }, [token])
+    async function loadVillage() {
+        if (!token) return
+        try {
+            const res = await protectedFetch('/api/village', 'GET')
+            if (res.ok) {
+                const data = await res.json()
+                setVillage(data.data || data)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
 
-    // --- Grass Tile ---
+    useEffect(() => {
+        if (token) {
+            loadBuildings()
+            loadVillage()
+        }
+    }, [token])
 
     useEffect(() => {
         const img = new Image()
@@ -72,24 +95,36 @@ export default function VillageCanvas() {
 
     // --- Validation ---
 
-    function isValidPlacement(posX: number, posY: number, size: number, ignoreId?: number) {
-        if (posX < 0 || posY < 0 || posX + size > GRID_SIZE || posY + size > GRID_SIZE) {
+    function isValidPlacement(
+        posX: number,
+        posY: number,
+        size: number,
+        ignoreId?: number,
+    ) {
+        if (
+            posX < 0 ||
+            posY < 0 ||
+            posX + size > GRID_SIZE ||
+            posY + size > GRID_SIZE
+        ) {
             return false
         }
 
         for (const b of buildings) {
             if (ignoreId && b.id === ignoreId) continue
 
-            if (posX < b.pos_x + b.size && posX + size > b.pos_x &&
-                posY < b.pos_y + b.size && posY + size > b.pos_y) {
+            if (
+                posX < b.pos_x + b.size &&
+                posX + size > b.pos_x &&
+                posY < b.pos_y + b.size &&
+                posY + size > b.pos_y
+            ) {
                 return false
             }
         }
 
         return true
     }
-
-    // --- Canvas Drawing ---
 
     useEffect(() => {
         const canvas = canvasRef.current
@@ -105,7 +140,13 @@ export default function VillageCanvas() {
         if (grassTile) {
             for (let x = 0; x < GRID_SIZE; x++) {
                 for (let y = 0; y < GRID_SIZE; y++) {
-                    ctx.drawImage(grassTile, x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                    ctx.drawImage(
+                        grassTile,
+                        x * CELL_SIZE,
+                        y * CELL_SIZE,
+                        CELL_SIZE,
+                        CELL_SIZE,
+                    )
                 }
             }
         }
@@ -137,20 +178,34 @@ export default function VillageCanvas() {
             }
         })
 
-        // Hover preview (placing or moving)
+        // Hover preview 
         if (selectedBuilding && hoverCell) {
             const info = BUILDING_INFO[selectedBuilding]
             if (info) {
-                const valid = isValidPlacement(hoverCell.x, hoverCell.y, info.size, movingBuildingId || undefined)
+                const valid = isValidPlacement(
+                    hoverCell.x,
+                    hoverCell.y,
+                    info.size,
+                    movingBuildingId || undefined,
+                )
                 ctx.globalAlpha = 0.5
                 ctx.fillStyle = valid ? 'green' : 'red'
-                ctx.fillRect(hoverCell.x * CELL_SIZE, hoverCell.y * CELL_SIZE, info.size * CELL_SIZE, info.size * CELL_SIZE)
+                ctx.fillRect(
+                    hoverCell.x * CELL_SIZE,
+                    hoverCell.y * CELL_SIZE,
+                    info.size * CELL_SIZE,
+                    info.size * CELL_SIZE,
+                )
                 ctx.globalAlpha = 1
             }
         }
-    }, [buildings, selectedBuilding, hoverCell, activeBuilding, movingBuildingId])
-
-    // --- Event Handlers ---
+    }, [
+        buildings,
+        selectedBuilding,
+        hoverCell,
+        activeBuilding,
+        movingBuildingId,
+    ])
 
     function handleMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
         const rect = canvasRef.current!.getBoundingClientRect()
@@ -169,14 +224,26 @@ export default function VillageCanvas() {
             const info = BUILDING_INFO[selectedBuilding]
             if (!info) return
 
-            if (!isValidPlacement(hoverCell.x, hoverCell.y, info.size, movingBuildingId || undefined)) return
+            if (
+                !isValidPlacement(
+                    hoverCell.x,
+                    hoverCell.y,
+                    info.size,
+                    movingBuildingId || undefined,
+                )
+            )
+                return
 
             try {
                 if (movingBuildingId) {
-                    const res = await protectedFetch(`/api/buildings/${movingBuildingId}/move`, 'PUT', {
-                        pos_x: hoverCell.x,
-                        pos_y: hoverCell.y,
-                    })
+                    const res = await protectedFetch(
+                        `/api/buildings/${movingBuildingId}/move`,
+                        'PUT',
+                        {
+                            pos_x: hoverCell.x,
+                            pos_y: hoverCell.y,
+                        },
+                    )
                     if (!res.ok) throw new Error((await res.json()).error)
                 } else {
                     const res = await protectedFetch('/api/buildings', 'POST', {
@@ -197,9 +264,12 @@ export default function VillageCanvas() {
         }
 
         // Selecting an existing building
-        const clicked = buildings.find((b) =>
-            hoverCell.x >= b.pos_x && hoverCell.x < b.pos_x + b.size &&
-            hoverCell.y >= b.pos_y && hoverCell.y < b.pos_y + b.size,
+        const clicked = buildings.find(
+            (b) =>
+                hoverCell.x >= b.pos_x &&
+                hoverCell.x < b.pos_x + b.size &&
+                hoverCell.y >= b.pos_y &&
+                hoverCell.y < b.pos_y + b.size,
         )
         setActiveBuilding(clicked || null)
     }
@@ -207,7 +277,10 @@ export default function VillageCanvas() {
     async function handleUpgrade() {
         if (!activeBuilding) return
         try {
-            const res = await protectedFetch(`/api/buildings/${activeBuilding.id}/upgrade`, 'PUT')
+            const res = await protectedFetch(
+                `/api/buildings/${activeBuilding.id}/upgrade`,
+                'PUT',
+            )
             if (!res.ok) throw new Error((await res.json()).error)
             await loadBuildings()
             setActiveBuilding(null)
@@ -223,70 +296,96 @@ export default function VillageCanvas() {
         setActiveBuilding(null)
     }
 
-    // --- Render ---
+    async function handleCollect() {
+        try {
+            const res = await protectedFetch('/api/economy/collect', 'POST')
+            if (!res.ok) throw new Error((await res.json()).error)
+            await loadVillage() // Refresh balances
+        } catch (error: any) {
+            alert(error.message || 'Collection failed')
+        }
+    }
 
     return (
-        <div style={{ display: 'flex' }}>
-            {/* Sidebar */}
-            <div style={{ width: '280px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div>
+            {/* Resource Bar */}
+            <div>
+                <h1>My Village</h1>
 
-                {/* Info Panel */}
-                {activeBuilding && !selectedBuilding && (
-                    <div>
-                        <h3>{activeBuilding.building_name}</h3>
-                        <p>Level: {activeBuilding.level}</p>
-                        <p>HP: {activeBuilding.hp}</p>
+                <div>
+                    <div>Gold: {village?.gold ?? 0}</div>
 
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <button style={{ flex: 1 }} onClick={() => {
-                                setMovingBuildingId(activeBuilding.id)
-                                setSelectedBuilding(activeBuilding.building_name)
-                            }}>
-                                Move
-                            </button>
-                            <button style={{ flex: 1 }} onClick={handleUpgrade}>
-                                Upgrade
-                            </button>
-                        </div>
-                    </div>
-                )}
-
-                {/* Shop */}
-                <h2>Shop</h2>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {Object.entries(BUILDING_INFO).map(([name, info]) => (
-                        <button
-                            key={name}
-                            onClick={() => {
-                                setSelectedBuilding(name)
-                                setMovingBuildingId(null)
-                                setActiveBuilding(null)
-                            }}
-                        >
-                            {name} ({info.size}x{info.size})
-                        </button>
-                    ))}
+                    <div>Elixir: {village?.elixir ?? 0}</div>
                 </div>
 
-                {selectedBuilding && (
-                    <button onClick={cancelAction} style={{ marginTop: '16px' }}>
-                        {movingBuildingId ? 'Cancel Move' : 'Cancel Placement'}
-                    </button>
-                )}
+                <button onClick={handleCollect}>Collect Resources</button>
             </div>
 
-            {/* Canvas */}
-            <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                <canvas
-                    ref={canvasRef}
-                    width={GRID_SIZE * CELL_SIZE}
-                    height={GRID_SIZE * CELL_SIZE}
-                    onMouseMove={handleMouseMove}
-                    onClick={handleCanvasClick}
-                    onMouseLeave={() => setHoverCell(null)}
-                    style={{ cursor: selectedBuilding ? 'crosshair' : 'default' }}
-                />
+            <div>
+                {/* Sidebar */}
+                <div>
+                    {activeBuilding && !selectedBuilding && (
+                        <div>
+                            <h3>{activeBuilding.building_name}</h3>
+
+                            <p>Level: {activeBuilding.level}</p>
+
+                            <p>HP: {activeBuilding.hp}</p>
+
+                            <div>
+                                <button
+                                    onClick={() => {
+                                        setMovingBuildingId(activeBuilding.id)
+                                        setSelectedBuilding(
+                                            activeBuilding.building_name,
+                                        )
+                                    }}
+                                >
+                                    Move
+                                </button>
+
+                                <button onClick={handleUpgrade}>Upgrade</button>
+                            </div>
+                        </div>
+                    )}
+
+                    <h2>Shop</h2>
+
+                    <div>
+                        {Object.entries(BUILDING_INFO).map(([name, info]) => (
+                            <button
+                                key={name}
+                                onClick={() => {
+                                    setSelectedBuilding(name)
+                                    setMovingBuildingId(null)
+                                    setActiveBuilding(null)
+                                }}
+                            >
+                                {name} ({info.size}x{info.size})
+                            </button>
+                        ))}
+                    </div>
+
+                    {selectedBuilding && (
+                        <button onClick={cancelAction}>
+                            {movingBuildingId
+                                ? 'Cancel Move'
+                                : 'Cancel Placement'}
+                        </button>
+                    )}
+                </div>
+
+                {/* Canvas */}
+                <div>
+                    <canvas
+                        ref={canvasRef}
+                        width={GRID_SIZE * CELL_SIZE}
+                        height={GRID_SIZE * CELL_SIZE}
+                        onMouseMove={handleMouseMove}
+                        onClick={handleCanvasClick}
+                        onMouseLeave={() => setHoverCell(null)}
+                    />
+                </div>
             </div>
         </div>
     )
