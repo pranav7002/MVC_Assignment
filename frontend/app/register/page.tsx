@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { protectedFetch } from '../utils/api'
 
 export default function RegisterPage() {
     const router = useRouter()
@@ -20,19 +21,10 @@ export default function RegisterPage() {
                     setLoading(true)
 
                     try {
-                        const res = await fetch(
-                            'http://localhost:8080/api/auth/register',
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    username,
-                                    password,
-                                }),
-                            },
-                        )
+                        const res = await protectedFetch('/api/auth/register', 'POST', {
+                            username,
+                            password,
+                        })
 
                         if (!res.ok) {
                             const err = await res.json()

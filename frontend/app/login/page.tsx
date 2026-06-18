@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
+import { protectedFetch } from '../utils/api'
 
 export default function LoginPage() {
     const setToken = useAuthStore((state) => state.setToken)
@@ -23,19 +24,10 @@ export default function LoginPage() {
                     setLoading(true)
 
                     try {
-                        const res = await fetch(
-                            'http://localhost:8080/api/auth/login',
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    username,
-                                    password,
-                                }),
-                            },
-                        )
+                        const res = await protectedFetch('/api/auth/login', 'POST', {
+                            username,
+                            password,
+                        })
 
                         if (!res.ok) {
                             const err = await res.json()
