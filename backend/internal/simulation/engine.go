@@ -11,7 +11,12 @@ type Battle struct {
 	Tick int 
 }
 
-func NewBattle(buildingInputs []BuildingInput, troopInputs []TroopDrop) *Battle {
+type Result struct {
+	DestructionPct int
+	Stars int
+}
+
+func NewBattle(buildingInputs []BuildingInput) *Battle {
 	var buildings []*BuildingEntity
 	var totalBuildingHP int
 
@@ -60,7 +65,7 @@ func (b *Battle) Add(t TroopDrop) {
 		})
 }
 
-func (b *Battle) Step() (int, int) {
+func (b *Battle) Step() (Result, bool) {
 	finalHP := 0
 	allTroopsDead := false
 	allBuildingsDestroyed := false
@@ -106,8 +111,11 @@ func (b *Battle) Step() (int, int) {
 		if allBuildingsDestroyed {
 			stars++
 		}
+		return Result{
+			DestructionPct: destructionPct,
+			Stars: stars,
+		}, true
 	}
 	b.Tick++
-
-	return destructionPct, stars
+	return Result{}, false
 }

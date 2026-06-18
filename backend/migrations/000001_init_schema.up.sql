@@ -38,7 +38,7 @@ CREATE INDEX idx_troops_trained_user_id ON troops_trained(user_id);
 
 -- Battles
 CREATE TABLE battles (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     attacker_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     defender_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     gold_looted INT NOT NULL DEFAULT 0,

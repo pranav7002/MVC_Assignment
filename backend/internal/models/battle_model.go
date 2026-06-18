@@ -13,7 +13,7 @@ type TroopDropBody struct {
 }
 type BattleManager struct {
     Mu      sync.Mutex
-    Battles map[int][]*Client
+    Battles map[string][]*Client
 }
 type Client struct {
     ID       string
@@ -36,8 +36,8 @@ func (c *Client) Write() {
 }
 
 func (c *Client) Read() {
-	defer c.Conn.Close()
-	
+    defer close(c.Incoming)
+
 	for {
 		messageType, message, err := c.Conn.ReadMessage()
 		if err != nil {

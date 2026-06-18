@@ -43,7 +43,7 @@ func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.
 	}, nil
 }
 
-func (s *BattleService) HydrateBuilding(b []models.Building) ([]simulation.BuildingInput, error) {
+func (s *BattleService) HydrateBuildings(b []models.Building) ([]simulation.BuildingInput, error) {
 	type BuildingKey struct {
 		Name  string
 		Level int
