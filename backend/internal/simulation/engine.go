@@ -1,6 +1,9 @@
 package simulation
 
-import "math/rand"
+import (
+	"math/rand"
+	"sync"
+)
 
 type Battle struct {
 	BattleGrid *BattleGrid
@@ -9,6 +12,8 @@ type Battle struct {
 	TownHallDestroyed bool
 	TotalBuildingHP int
 	Tick int 
+
+	Mu *sync.Mutex
 }
 
 type Result struct {

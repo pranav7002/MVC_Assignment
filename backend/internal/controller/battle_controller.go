@@ -73,8 +73,10 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
 	var finalResult simulation.Result
 	for range ticker.C {
+		battle.Mu.Lock()
 		result, done := battle.Step()
-
+		battle.Mu.Unlock()
+		
 		msg, err := json.Marshal(&result) 
 		if err != nil {
 			return
@@ -101,6 +103,8 @@ func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.
 		if err != nil {
 			return
 		}
+		b.Mu.Lock()
 		b.Add(t)
+		b.Mu.Unlock()
 	}
 }
