@@ -60,6 +60,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
     c.BattleManager.Mu.Lock()
     c.BattleManager.Battles[battleID] = append(c.BattleManager.Battles[battleID], attacker)
+	defer delete(c.BattleManager.Battles, battleID)
     c.BattleManager.Mu.Unlock()
 
 	go attacker.Read()
@@ -81,15 +82,19 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			return
 		}
-		attacker.Send <- msg
+		select {
+		case attacker.Send <- msg:
 
 		if done {
 			finalResult = result
 			close(attacker.Send)
-			break
+			goto saveBattle
+		}
+		case <- attacker.Done:
+		return 
 		}
 	}
-
+	saveBattle:
 	c.BattleService.SaveBattleResult(userID, defendersID, finalResult.Stars, finalResult.DestructionPct)
 }
 

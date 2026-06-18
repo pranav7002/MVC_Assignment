@@ -4,14 +4,15 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"time"
+	"sync"
 
-	"github.com/gorilla/websocket"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/websocket"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pranav7002/MVC_Assignment/internal/controller"
 	customMiddleware "github.com/pranav7002/MVC_Assignment/internal/middleware"
+	"github.com/pranav7002/MVC_Assignment/internal/models"
 	"github.com/pranav7002/MVC_Assignment/internal/repository"
 	"github.com/pranav7002/MVC_Assignment/internal/services"
 )
@@ -23,8 +24,6 @@ func (app *application) mount() http.Handler {
 	r.Use(middleware.ClientIPFromRemoteAddr) // rate limiting and analytics
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-
-	r.Use(middleware.Timeout(60 * time.Second))
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
@@ -68,9 +67,6 @@ func (app *application) run(h http.Handler) error {
 	srv := &http.Server{
 		Addr:         app.config.addr,
 		Handler:      h,
-		WriteTimeout: time.Second * 30,
-		ReadTimeout:  time.Second * 10,
-		IdleTimeout:  time.Minute,
 	}
 
 	log.Printf("server has started at addr %s", app.config.addr)
@@ -159,6 +155,7 @@ func (app *application) hydrate(secretKey []byte) {
 		BattleService:  battleService,
 		VillageService: villageService,
 		WSUpgrader: upgrader,
+		BattleManager: &models.BattleManager{Mu: new(sync.Mutex)}, 
 	}
 
 	app.authController = authController
