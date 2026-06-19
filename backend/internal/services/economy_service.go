@@ -17,14 +17,14 @@ func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
 	if err != nil {
 		return ErrServer
 	}
-	goldMines, err := s.VillageRepo.GetUserBuildingsByName(userID, "gold_mine") 
+	goldMines, err := s.VillageRepo.GetUserBuildingsByName(userID, "Gold Mine") 
 	if err != nil {
 		return ErrServer
 	}
 
 	goldPerSecPerLevel := make(map[int]int)
 	for _, cfg := range resourceConfig {
-		if cfg.Name == "elixir_collector" {
+		if cfg.Name == "Elixir Collector" {
 			continue
 		}
 		goldPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
@@ -55,14 +55,14 @@ func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
 	if err != nil {
 		return ErrServer
 	}
-	elixirCollectors, err := s.VillageRepo.GetUserBuildingsByName(userID, "elixir_collector") 
+	elixirCollectors, err := s.VillageRepo.GetUserBuildingsByName(userID, "Elixir Collector") 
 	if err != nil {
 		return ErrServer
 	}
 
 	elixirPerSecPerLevel := make(map[int]int)
 	for _, cfg := range resourceConfig {
-		if cfg.Name == "gold_mine" {
+		if cfg.Name == "Gold Mine" {
 			continue
 		}
 		elixirPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
