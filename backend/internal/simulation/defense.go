@@ -7,6 +7,7 @@ type BuildingEntity struct {
 	Pos         Position
 	Size        int
 	HP          int
+	MaxHP       int
 	Destroyed   bool
 	DPS         int
 	MaxRange    int

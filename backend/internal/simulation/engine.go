@@ -33,6 +33,7 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 			Type:      b.Type,
 			Size:      b.Size,
 			HP:        b.HP,
+			MaxHP:     b.HP,
 			Destroyed: false,
 
 			DPS:         b.DPS,
@@ -86,12 +87,11 @@ func (b *Battle) Step() {
 
 func (b *Battle) GetState() (BattleState, bool) {
 	finalHP := 0
-	allTroopsDead := false
-	allBuildingsDestroyed := false
 	stars := 0
 	destructionPct := 0
 
 	troops := make([]TroopState, 0, len(b.Troops))
+	allTroopsDead := true
 	for _, t := range b.Troops {
 		troops = append(troops, TroopState{
 			ID:   t.ID,
@@ -100,23 +100,37 @@ func (b *Battle) GetState() (BattleState, bool) {
 			HP:   t.HP,
 			Dead: t.Dead,
 		})
+		if !t.Dead {
+			allTroopsDead = false
+		}
+	}
+	if len(b.Troops) == 0 {
+		allTroopsDead = false
 	}
 
 	buildings := make([]BuildingState, 0, len(b.Buildings))
+	allBuildingsDestroyed := true
 	for _, bg := range b.Buildings {
 		buildings = append(buildings, BuildingState{
-			ID:   bg.ID,
-			Name: bg.Name,
-			HP:   bg.HP,
-			Dead: bg.Destroyed,
+			ID:    bg.ID,
+			Name:  bg.Name,
+			HP:    bg.HP,
+			MaxHP: bg.MaxHP,
+			Dead:  bg.Destroyed,
 		})
+		if !bg.Destroyed {
+			allBuildingsDestroyed = false
+		}
 	}
 
-	if allBuildingsDestroyed || allTroopsDead || b.Tick == 1800 {
-		for _, building := range b.Buildings {
-			finalHP += building.HP
-		}
+	for _, building := range b.Buildings {
+		finalHP += building.HP
+	}
+	if b.TotalBuildingHP > 0 {
 		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
+	}
+
+	if allBuildingsDestroyed || allTroopsDead || b.Tick >= 1800 {
 		if destructionPct >= 50 {
 			stars++
 		}

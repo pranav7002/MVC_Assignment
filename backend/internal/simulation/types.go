@@ -55,10 +55,11 @@ type TroopState struct {
 }
 
 type BuildingState struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-	HP   int    `json:"hp"`
-	Dead bool   `json:"dead"`
+	ID    int    `json:"id"`
+	Name  string `json:"name"`
+	HP    int    `json:"hp"`
+	MaxHP int    `json:"max_hp"`
+	Dead  bool   `json:"dead"`
 }
 
 type BattleState struct {
