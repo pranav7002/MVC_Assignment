@@ -62,9 +62,9 @@ func (r *TroopRepository) TrainTroop(userID string, troopName string, quantity i
 		return err
 	}
 
-    if err := tx.Commit(ctx); err != nil {
-        return err
-    }
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -12,7 +12,7 @@ type ShopRepository struct {
 }
 
 func (r *ShopRepository) GetShopBuildings(ctx context.Context, thLevel int) ([]models.ShopBuilding, error) {
-	
+
 	query := `
 		SELECT 
 			g.building_type, 

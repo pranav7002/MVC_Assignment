@@ -1,6 +1,9 @@
 package services
 
-import "github.com/pranav7002/MVC_Assignment/internal/models"
+import (
+	"github.com/pranav7002/MVC_Assignment/internal/models"
+	"log"
+)
 
 type TroopRepositoryInterface interface {
 	GetUserTrainedTroops(userID string) ([]models.TroopTrained, error)
@@ -17,10 +20,12 @@ type TroopService struct {
 func (s *TroopService) TrainTroop(userID string, troopName string, quantity int) error {
 	village, err := s.VillageRepo.GetVillage(userID)
 	if err != nil {
-		return ErrServer 
+		log.Println("error:", err)
+		return ErrServer
 	}
 	troopConfig, err := s.ConfigRepo.GetAllTroopConfig()
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 
@@ -28,7 +33,7 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 	var troop models.TroopConfig
 	var found bool
 
-	for _,t := range troopConfig {
+	for _, t := range troopConfig {
 		TroopHousingSpace[t.Name] = t.HousingSpace
 
 		if t.Name == troopName {
@@ -44,26 +49,29 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 	housingSpaceRequired := troop.HousingSpace * quantity
 
 	if village.Elixir < trainingCost {
-		return ErrInsufficientElixir 
+		return ErrInsufficientElixir
 	}
 
 	trainingGrounds, err := s.VillageRepo.GetUserBuildingsByName(userID, "training_grounds")
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 	trainingGroundsConfig, err := s.ConfigRepo.GetAllTrainingGroundsConfig()
 	if err != nil {
-		return ErrServer
-	}
-	
-	troopTrained, err := s.TroopRepo.GetUserTrainedTroops(userID)
-	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 
-	var housingSpaceUsed int 
+	troopTrained, err := s.TroopRepo.GetUserTrainedTroops(userID)
+	if err != nil {
+		log.Println("error:", err)
+		return ErrServer
+	}
+
+	var housingSpaceUsed int
 	for _, t := range troopTrained {
-		housingSpaceUsed = housingSpaceUsed + t.Quantity * TroopHousingSpace[t.TroopName]
+		housingSpaceUsed = housingSpaceUsed + t.Quantity*TroopHousingSpace[t.TroopName]
 	}
 
 	housingSpacePerTrainingGroundPerLevel := make(map[int]int)
@@ -71,16 +79,17 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 		housingSpacePerTrainingGroundPerLevel[cfg.Level] = cfg.HousingSpace
 	}
 
-	var housingSpace int 
+	var housingSpace int
 	for _, trainingGround := range trainingGrounds {
 		housingSpace = housingSpace + housingSpacePerTrainingGroundPerLevel[trainingGround.Level]
 	}
 
-	if housingSpaceUsed + housingSpaceRequired > housingSpace {
+	if housingSpaceUsed+housingSpaceRequired > housingSpace {
 		return ErrInsufficientHousingSpace
 	}
 
 	if err := s.TroopRepo.TrainTroop(userID, troopName, quantity, trainingCost); err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 
@@ -98,6 +107,7 @@ func (s *TroopService) GetTrainedTroops(userID string) ([]models.TroopTrained, e
 
 func (s *TroopService) DeleteTrainedTroop(userID, troopName string) error {
 	if err := s.TroopRepo.DeleteTroop(userID, troopName); err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 	return nil

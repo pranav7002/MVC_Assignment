@@ -6,19 +6,19 @@ import (
 )
 
 type Battle struct {
-	BattleGrid *BattleGrid
-	Buildings []*BuildingEntity
-	Troops []*TroopEntity
+	BattleGrid        *BattleGrid
+	Buildings         []*BuildingEntity
+	Troops            []*TroopEntity
 	TownHallDestroyed bool
-	TotalBuildingHP int
-	Tick int 
+	TotalBuildingHP   int
+	Tick              int
 
 	Mu *sync.Mutex
 }
 
 type Result struct {
 	DestructionPct int
-	Stars int
+	Stars          int
 }
 
 func NewBattle(buildingInputs []BuildingInput) *Battle {
@@ -27,20 +27,20 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 
 	for _, b := range buildingInputs {
 		buildings = append(buildings, &BuildingEntity{
-			ID: b.ID,       
-			Name: b.Name,  
-			Pos: b.Pos,    
-			Type: b.Type,                 
-			Size: b.Size,     
-			HP: b.HP,       
+			ID:        b.ID,
+			Name:      b.Name,
+			Pos:       b.Pos,
+			Type:      b.Type,
+			Size:      b.Size,
+			HP:        b.HP,
 			Destroyed: false,
-			
-			DPS: b.DPS,      
-			MaxRange: b.MaxRange,   
-			MinRange: b.MinRange,               
-			AOERange: b.AOERange,             
-			TargetTroop: -1,        
-			Cooldown: 0,
+
+			DPS:         b.DPS,
+			MaxRange:    b.MaxRange,
+			MinRange:    b.MinRange,
+			AOERange:    b.AOERange,
+			TargetTroop: -1,
+			Cooldown:    0,
 		})
 
 		totalBuildingHP = totalBuildingHP + b.HP
@@ -49,26 +49,26 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 	g := NewGrid(buildings)
 
 	return &Battle{
-		BattleGrid: g,
-		Buildings: buildings,
-		Tick: 0, 
+		BattleGrid:      g,
+		Buildings:       buildings,
+		Tick:            0,
 		TotalBuildingHP: totalBuildingHP,
-		Mu: new(sync.Mutex),
+		Mu:              new(sync.Mutex),
 	}
 }
 
 func (b *Battle) Add(t TroopDrop) {
-		b.Troops = append(b.Troops, &TroopEntity{
-			ID: rand.Intn(1e9),   
-			Name: t.Name,   
-			Pos: t.Pos,    
-			HP: t.HP,        
-			DPS: t.DPS,   
-			Range: t.Range,              
-			Dead: false,   
-			TargetID: -1,          
-			Path: nil,    
-		})
+	b.Troops = append(b.Troops, &TroopEntity{
+		ID:       rand.Intn(1e9),
+		Name:     t.Name,
+		Pos:      t.Pos,
+		HP:       t.HP,
+		DPS:      t.DPS,
+		Range:    t.Range,
+		Dead:     false,
+		TargetID: -1,
+		Path:     nil,
+	})
 }
 
 func (b *Battle) Step() (Result, bool) {
@@ -119,7 +119,7 @@ func (b *Battle) Step() (Result, bool) {
 		}
 		return Result{
 			DestructionPct: destructionPct,
-			Stars: stars,
+			Stars:          stars,
 		}, true
 	}
 	b.Tick++

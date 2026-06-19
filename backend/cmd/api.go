@@ -56,6 +56,7 @@ func (app *application) mount() http.Handler {
 			r.Post("/buildings", app.villageController.BuildingCreationHandler)
 			r.Put("/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
 			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
+			r.Put("/village/upgrade-th", app.villageController.TownHallUpgradeHandler)
 
 			// ECONOMY
 			r.Post("/economy/collect", app.economyController.ResourceCollectionHandler)
@@ -69,7 +70,7 @@ func (app *application) mount() http.Handler {
 			r.Get("/troops", app.troopController.TroopHandler)
 			r.Delete("/troops/{troopName}", app.troopController.TroopDeleteHandler)
 
-			// BATTLE 
+			// BATTLE
 			r.Get("/battle/ws/{defendersID}", app.battleController.HandleWebSocket)
 		})
 	})
@@ -79,8 +80,8 @@ func (app *application) mount() http.Handler {
 
 func (app *application) run(h http.Handler) error {
 	srv := &http.Server{
-		Addr:         app.config.addr,
-		Handler:      h,
+		Addr:    app.config.addr,
+		Handler: h,
 	}
 
 	log.Printf("server has started at addr %s", app.config.addr)
@@ -121,18 +122,18 @@ type dbConfig struct {
 
 func (app *application) hydrate(secretKey []byte) {
 	var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,              
-    WriteBufferSize: 1024,             
-    CheckOrigin: func(r *http.Request) bool {
-        return true             
-    },
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
 	}
 
 	dbpool := app.dbpool
 
 	userRepo := &repository.UserRepository{DB: dbpool}
 	authService := &services.AuthService{
-		UserRepo: userRepo,
+		UserRepo:  userRepo,
 		SecretKey: secretKey,
 	}
 	authController := &controller.AuthController{AuthService: authService}
@@ -147,8 +148,8 @@ func (app *application) hydrate(secretKey []byte) {
 
 	economyService := &services.EconomyService{
 		VillageRepo: villageRepo,
-		UserRepo: userRepo,
-		ConfigRepo: configRepo,
+		UserRepo:    userRepo,
+		ConfigRepo:  configRepo,
 	}
 	economyController := &controller.EconomyController{EconomyService: economyService}
 
@@ -169,8 +170,8 @@ func (app *application) hydrate(secretKey []byte) {
 	battleController := &controller.BattleController{
 		BattleService:  battleService,
 		VillageService: villageService,
-		WSUpgrader: upgrader,
-		BattleManager: &models.BattleManager{Mu: new(sync.Mutex)}, 
+		WSUpgrader:     upgrader,
+		BattleManager:  &models.BattleManager{Mu: new(sync.Mutex)},
 	}
 
 	app.authController = authController

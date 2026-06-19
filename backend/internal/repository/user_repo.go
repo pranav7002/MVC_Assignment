@@ -51,7 +51,7 @@ func (r *UserRepository) InsertUser(username, hash string) error {
 	if err != nil {
 		return err
 	}
-	return  nil
+	return nil
 }
 
 func (r *UserRepository) GetAttributeFromUsername(username, column string) (string, error) {

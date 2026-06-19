@@ -46,7 +46,7 @@ func (c *EconomyController) ResourceCollectionHandler(w http.ResponseWriter, r *
 		}
 	default:
 		WriteError(w, http.StatusBadRequest, "Invalid resource type. Must be 'gold' or 'elixir'")
-		return 
+		return
 	}
 
 	WriteJSON(w, http.StatusOK, "Resource collected successfully!")

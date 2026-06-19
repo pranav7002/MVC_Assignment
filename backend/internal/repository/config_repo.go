@@ -30,11 +30,11 @@ func (r *ConfigRepository) GetGameProgressionConfig(thLevel int, buildingType st
 	return gameProgConfig, nil
 }
 
-func (r *ConfigRepository) GetTownHallConfig(name string, level int) (models.TownHallConfig, error) {
+func (r *ConfigRepository) GetTownHallConfig(level int) (models.TownHallConfig, error) {
 	ctx := context.Background()
 
-	query := `SELECT * FROM town_hall_config WHERE name = $1 AND level = $2`
-	rows, err := r.DB.Query(ctx, query, name, level)
+	query := `SELECT * FROM town_hall_config WHERE level = $1`
+	rows, err := r.DB.Query(ctx, query, level)
 	if err != nil {
 		return models.TownHallConfig{}, err
 	}
@@ -195,7 +195,7 @@ func (r *ConfigRepository) GetAllTroopConfig() ([]models.TroopConfig, error) {
 func (r *ConfigRepository) GetAllDefenseConfig() ([]models.DefenseConfig, error) {
 	ctx := context.Background()
 
-	query := `SELECT * FROM defense_config` 
+	query := `SELECT * FROM defense_config`
 	rows, err := r.DB.Query(ctx, query)
 	if err != nil {
 		return nil, err

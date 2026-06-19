@@ -11,12 +11,12 @@ func FindTarget(t *TroopEntity, g *BattleGrid) BuildingTarget {
 		if path == nil {
 			path, id = bfs(t.Pos, g, "")
 		}
-	case "Giant": 
+	case "Giant":
 		path, id = bfs(t.Pos, g, "defense")
 		if path == nil {
 			path, id = bfs(t.Pos, g, "")
 		}
-	default: 
+	default:
 		path, id = bfs(t.Pos, g, "")
 	}
 
@@ -25,19 +25,19 @@ func FindTarget(t *TroopEntity, g *BattleGrid) BuildingTarget {
 	}
 
 	return BuildingTarget{
-		ID : id,
+		ID:   id,
 		Path: path,
 	}
 }
 
-// filter = "" for any building 
+// filter = "" for any building
 func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 	queue := make([]Position, 0)
 	parent := make(map[Position]Position)
 
 	reached := false
 
-	var visited [GridSize][GridSize]bool 
+	var visited [GridSize][GridSize]bool
 
 	dirs := [8]Position{
 		{1, 0}, {-1, 0},
@@ -56,7 +56,7 @@ func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 		queue = queue[1:]
 
 		var isAdj bool
-		isAdj, ID = isAdjacent(current, g, filter); 
+		isAdj, ID = isAdjacent(current, g, filter)
 		if isAdj {
 			reached = true
 			break
@@ -66,18 +66,18 @@ func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 			n := Position{X: current.X + d.X, Y: current.Y + d.Y}
 
 			// out of bounds
-			if n.X < 0 || n.Y < 0 || n.X > GridSize - 1 || n.Y > GridSize - 1 {
+			if n.X < 0 || n.Y < 0 || n.X > GridSize-1 || n.Y > GridSize-1 {
 				continue
 			}
 
-			// skip if any adjacent to diagonal is blocked 
+			// skip if any adjacent to diagonal is blocked
 			if d.X != 0 && d.Y != 0 {
 				if g.OccupiedGrid[current.X][n.Y] || g.OccupiedGrid[n.X][current.Y] {
 					continue
 				}
 			}
 
-			// skip visited locations and blocked cells 
+			// skip visited locations and blocked cells
 			if visited[n.X][n.Y] || g.OccupiedGrid[n.X][n.Y] {
 				continue
 			}
@@ -91,7 +91,7 @@ func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 	if !reached {
 		return nil, 0
 	}
-	
+
 	start := Position{p.X, p.Y}
 	var path []Position
 
@@ -101,7 +101,7 @@ func bfs(p Position, g *BattleGrid, filter string) ([]Position, int) {
 	}
 	path = append(path, start)
 
-	// reverse 
+	// reverse
 	for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
 		path[i], path[j] = path[j], path[i]
 	}
@@ -118,9 +118,9 @@ func isAdjacent(p Position, g *BattleGrid, filter string) (bool, int) {
 	}
 
 	for _, d := range dirs {
-		n := Position{X:p.X + d.X , Y:p.Y + d.Y}
+		n := Position{X: p.X + d.X, Y: p.Y + d.Y}
 
-		if n.X < 0 || n.Y < 0 || n.X > GridSize - 1 || n.Y > GridSize - 1 {
+		if n.X < 0 || n.Y < 0 || n.X > GridSize-1 || n.Y > GridSize-1 {
 			continue
 		}
 
@@ -131,6 +131,6 @@ func isAdjacent(p Position, g *BattleGrid, filter string) (bool, int) {
 		if filter == "" || filter == g.TypeGrid[n.X][n.Y] {
 			return true, g.IDGrid[n.X][n.Y]
 		}
-	}	
+	}
 	return false, 0
 }

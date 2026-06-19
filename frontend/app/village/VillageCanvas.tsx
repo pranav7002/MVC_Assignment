@@ -35,6 +35,7 @@ export default function VillageCanvas() {
     const [buildings, setBuildings] = useState<Building[]>([])
     const [shopBuildings, setShopBuildings] = useState<ShopBuilding[]>([])
 
+    // building not on the grid, due to buying/moving
     const [selectedBuilding, setSelectedBuilding] = useState<{
         Name: string
         Level: number
@@ -46,8 +47,11 @@ export default function VillageCanvas() {
         y: number
     } | null>(null)
 
+    // clicked on a building, but it is still at its place
     const [activeBuilding, setActiveBuilding] = useState<Building | null>(null)
 
+    // i have kept this to store the building id for the api request, rest similar 
+    // to selected building, just only for buildings that are already placed and being moved 
     const [movingBuildingId, setMovingBuildingId] = useState<number | null>(
         null,
     )
@@ -253,7 +257,7 @@ export default function VillageCanvas() {
                     }
                 } else {
                     const info = shopBuildings.find(
-                        (b) => b.building_name === selectedBuilding.Name
+                        (b) => b.building_name === selectedBuilding.Name,
                     )
                     if (!info) return
 
@@ -291,14 +295,25 @@ export default function VillageCanvas() {
     async function handleUpgrade() {
         if (!activeBuilding) return
         try {
-            const res = await protectedFetch(
-                `/api/buildings/${activeBuilding.id}/upgrade`,
-                'PUT',
-            )
-            if (!res.ok) throw new Error((await res.json()).error)
-            await loadVillage()
-            await loadBuildings()
-            setActiveBuilding(null)
+            if (activeBuilding.building_name === 'Town Hall') {
+                const res = await protectedFetch(
+                    `/api/village/upgrade-th`,
+                    'PUT',
+                )
+                if (!res.ok) throw new Error((await res.json()).error)
+                await loadVillage()
+                await loadBuildings()
+                setActiveBuilding(null)
+            } else {
+                const res = await protectedFetch(
+                    `/api/buildings/${activeBuilding.id}/upgrade`,
+                    'PUT',
+                )
+                if (!res.ok) throw new Error((await res.json()).error)
+                await loadVillage()
+                await loadBuildings()
+                setActiveBuilding(null)
+            }
         } catch (error: any) {
             alert(error.message || 'Upgrade failed')
         }
@@ -311,9 +326,11 @@ export default function VillageCanvas() {
         setActiveBuilding(null)
     }
 
-    async function handleCollect() {
+    async function handleCollect(resourceType: string) {
         try {
-            const res = await protectedFetch('/api/economy/collect', 'POST')
+            const res = await protectedFetch('/api/economy/collect', 'POST', {
+                resource_type: `${resourceType}`
+            })
             if (!res.ok) throw new Error((await res.json()).error)
             await loadVillage()
         } catch (error: any) {
@@ -340,13 +357,22 @@ export default function VillageCanvas() {
                 <div>Elixir: {village?.elixir ?? 0}</div>
 
                 <button
-                    onClick={handleCollect}
+                    onClick={async () => handleCollect('gold')}
                     style={{
                         marginLeft: 'auto',
                         cursor: 'pointer',
                     }}
                 >
-                    Collect Resources
+                    Collect Gold
+                </button>
+                <button
+                    onClick={async () => handleCollect('elixir')}
+                    style={{
+                        marginLeft: 'auto',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Collect Elixir
                 </button>
             </div>
 

@@ -6,7 +6,7 @@ type TroopTrainingReqBody struct {
 }
 
 type TroopTrained struct {
-	UserID     string `json:"user_id" db:"user_id"`
-	TroopName  string `json:"troop_name" db:"troop_name"`
-	Quantity   int    `json:"quantity" db:"quantity"`
+	UserID    string `json:"user_id" db:"user_id"`
+	TroopName string `json:"troop_name" db:"troop_name"`
+	Quantity  int    `json:"quantity" db:"quantity"`
 }

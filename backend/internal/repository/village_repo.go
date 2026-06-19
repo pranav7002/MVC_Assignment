@@ -33,7 +33,6 @@ func (r *VillageRepository) GetUserBuildings(userID string) ([]models.Building, 
 	return buildings, nil
 }
 
-
 func (r *VillageRepository) GetVillage(userID string) (models.Village, error) {
 	ctx := context.Background()
 
@@ -63,7 +62,6 @@ func (r *VillageRepository) GetBuildingCount(userID string, buildingType string,
 
 	return count, nil
 }
-
 
 func (r *VillageRepository) InsertBuilding(userID string, buildingReqBody models.BuildingCreationRequestBody, hp int, size int) error {
 	ctx := context.Background()
@@ -157,9 +155,9 @@ func (r *VillageRepository) AddResourceFromColletor(userID string, resourceType 
 		return err
 	}
 
-    if err := tx.Commit(ctx); err != nil {
-        return err
-    }
+	if err := tx.Commit(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -175,13 +173,13 @@ func (r *VillageRepository) GetBuilding(buildingID int64) (models.Building, erro
 		id = $1
 	`
 
-	rows, err := r.DB.Query(ctx, query, buildingID) 
+	rows, err := r.DB.Query(ctx, query, buildingID)
 	if err != nil {
 		return models.Building{}, err
 	}
 	defer rows.Close()
 
-	building, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.Building]);
+	building, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.Building])
 	if err != nil {
 		return models.Building{}, err
 	}
@@ -189,8 +187,14 @@ func (r *VillageRepository) GetBuilding(buildingID int64) (models.Building, erro
 	return building, nil
 }
 
-func (r *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp int) error {
+func (r *VillageRepository) UpgradeBuilding(userID string, buildingID int64, hp int, upgradeCostType string, upgradeCost int) error {
 	ctx := context.Background()
+
+	tx, err := r.DB.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
 	query := `
 	UPDATE building_instance
@@ -200,15 +204,25 @@ func (r *VillageRepository) UpdateBuilding(userID string, buildingID int64, hp i
 		id = $2
 		AND user_id = $3
 	`
-
-	result, err := r.DB.Exec(ctx, query, hp, buildingID, userID)
+	result, err := tx.Exec(ctx, query, hp, buildingID, userID)
 	if err != nil {
 		return err
 	}
-
 	if result.RowsAffected() == 0 {
 		return fmt.Errorf("building not found or does not belong to user")
 	}
+
+	query = fmt.Sprintf(`
+		UPDATE village 
+		SET %s = %s - $1 
+		WHERE user_id = $2
+	`, upgradeCostType, upgradeCostType)
+
+	_, err = tx.Exec(ctx, query, upgradeCost, userID)
+	if err != nil {
+		return err
+	}
+	tx.Commit(ctx)
 
 	return nil
 }
@@ -230,10 +244,46 @@ func (r *VillageRepository) GetUserBuildingsByName(userID string, buildingName s
 	}
 	defer rows.Close()
 
-	buildings, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Building]);
+	buildings, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Building])
 	if err != nil {
 		return []models.Building{}, err
 	}
 
 	return buildings, nil
+}
+
+func (r *VillageRepository) UpgradeTownHall(userID string, upgradeCost int, upgradeCostType string, maxHP int) error {
+	ctx := context.Background()
+
+	tx, err := r.DB.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	query := `
+	UPDATE building_instance
+	SET 
+		hp = $1, level = level + 1
+	WHERE 
+		user_id = $2 AND building_name = 'Town Hall'
+	`
+	if _, err = tx.Exec(ctx, query, maxHP, userID); err != nil {
+		return err
+	}
+
+	query = `
+		UPDATE village 
+		SET gold = gold - $1, town_hall_level = town_hall_level + 1
+		WHERE user_id = $2
+	`
+	if _, err = tx.Exec(ctx, query, upgradeCost, userID); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(ctx); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -47,7 +47,7 @@ func (c *TroopController) TroopHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	troops, err := c.TroopService.GetTrainedTroops(userID) 
+	troops, err := c.TroopService.GetTrainedTroops(userID)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -63,7 +63,7 @@ func (c *TroopController) TroopDeleteHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	troopName := chi.URLParam(r ,"troopName")
+	troopName := chi.URLParam(r, "troopName")
 
 	if err := c.TroopService.DeleteTrainedTroop(userID, troopName); err != nil {
 		WriteError(w, http.StatusInternalServerError, err.Error())

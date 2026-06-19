@@ -13,8 +13,8 @@ type UserRepositoryInterface interface {
 }
 
 type AuthService struct {
-	UserRepo UserRepositoryInterface
-	SecretKey []byte 
+	UserRepo  UserRepositoryInterface
+	SecretKey []byte
 }
 
 func (s *AuthService) RegisterUser(username, password string) error {

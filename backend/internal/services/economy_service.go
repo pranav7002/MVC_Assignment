@@ -1,6 +1,9 @@
 package services
 
-import "time"
+import (
+	"log"
+	"time"
+)
 
 type EconomyService struct {
 	VillageRepo VillageRepositoryInterface
@@ -9,16 +12,19 @@ type EconomyService struct {
 }
 
 func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
-	village, err := s.VillageRepo.GetVillage(userID) 
+	village, err := s.VillageRepo.GetVillage(userID)
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 	resourceConfig, err := s.ConfigRepo.GetAllResourceConfig()
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
-	goldMines, err := s.VillageRepo.GetUserBuildingsByName(userID, "Gold Mine") 
+	goldMines, err := s.VillageRepo.GetUserBuildingsByName(userID, "Gold Mine")
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 
@@ -47,16 +53,19 @@ func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
 }
 
 func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
-	village, err := s.VillageRepo.GetVillage(userID) 
+	village, err := s.VillageRepo.GetVillage(userID)
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 	resourceConfig, err := s.ConfigRepo.GetAllResourceConfig()
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
-	elixirCollectors, err := s.VillageRepo.GetUserBuildingsByName(userID, "Elixir Collector") 
+	elixirCollectors, err := s.VillageRepo.GetUserBuildingsByName(userID, "Elixir Collector")
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 

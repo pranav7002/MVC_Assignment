@@ -2,13 +2,14 @@ package services
 
 import (
 	"errors"
+	"log"
 
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 	"github.com/pranav7002/MVC_Assignment/internal/simulation"
 )
 
 type BattleService struct {
-	BattleRepo 		  BattleRepositoyInterface
+	BattleRepo  BattleRepositoyInterface
 	VillageRepo VillageRepositoryInterface
 	ConfigRepo  ConfigRepositoryInterface
 }
@@ -35,11 +36,11 @@ func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.
 		return simulation.TroopDrop{}, errors.New("Invalid drop location")
 	}
 	return simulation.TroopDrop{
-		Name: cfg.Name,             
-		Pos: simulation.Position{X: int(t.X), Y: int(t.Y)},          
-		HP: cfg.Health,         
-		DPS: cfg.DPS,          
-		Range: cfg.Range,       
+		Name:  cfg.Name,
+		Pos:   simulation.Position{X: int(t.X), Y: int(t.Y)},
+		HP:    cfg.Health,
+		DPS:   cfg.DPS,
+		Range: cfg.Range,
 	}, nil
 }
 
@@ -64,26 +65,26 @@ func (s *BattleService) HydrateBuildings(b []models.Building) ([]simulation.Buil
 	for _, building := range b {
 		if building.BuildingType == "defense" {
 			buildingInput = append(buildingInput, simulation.BuildingInput{
-				ID: int(building.ID),     
-				Name: building.BuildingName,     
-				Type: building.BuildingType,        
-				Pos: simulation.Position{X: building.PosX, Y: building.PosY},       
-				Size: building.Size,          
-				HP: building.HP,  
+				ID:       int(building.ID),
+				Name:     building.BuildingName,
+				Type:     building.BuildingType,
+				Pos:      simulation.Position{X: building.PosX, Y: building.PosY},
+				Size:     building.Size,
+				HP:       building.HP,
 				AOERange: cfg[BuildingKey{building.BuildingName, building.Level}].AOERange,
 				MinRange: cfg[BuildingKey{building.BuildingName, building.Level}].MinRange,
 				MaxRange: cfg[BuildingKey{building.BuildingName, building.Level}].MaxRange,
-				DPS: cfg[BuildingKey{building.BuildingName, building.Level}].DPS,
+				DPS:      cfg[BuildingKey{building.BuildingName, building.Level}].DPS,
 			})
 			continue
 		}
 		buildingInput = append(buildingInput, simulation.BuildingInput{
-			ID: int(building.ID),     
-			Name: building.BuildingName,     
-			Type: building.BuildingType,        
-			Pos: simulation.Position{X: building.PosX, Y: building.PosY},       
-			Size: building.Size,          
-			HP: building.HP,  
+			ID:   int(building.ID),
+			Name: building.BuildingName,
+			Type: building.BuildingType,
+			Pos:  simulation.Position{X: building.PosX, Y: building.PosY},
+			Size: building.Size,
+			HP:   building.HP,
 		})
 	}
 
@@ -93,6 +94,7 @@ func (s *BattleService) HydrateBuildings(b []models.Building) ([]simulation.Buil
 func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, destructionPct int) error {
 	defendersVillage, err := s.VillageRepo.GetVillage(defendersID)
 	if err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 
@@ -101,10 +103,14 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 
 	var result string
 	switch stars {
-	case 0: result = "LOSS"
-	case 1:	result = "ONE_STAR"
-	case 2: result = "TWO_STARS"
-	case 3: result = "THREE_STARS"
+	case 0:
+		result = "LOSS"
+	case 1:
+		result = "ONE_STAR"
+	case 2:
+		result = "TWO_STARS"
+	case 3:
+		result = "THREE_STARS"
 	}
 
 	if err := s.BattleRepo.StoreBattle(
@@ -115,6 +121,7 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 		goldLooted,
 		elixirLooted,
 	); err != nil {
+		log.Println("error:", err)
 		return ErrServer
 	}
 

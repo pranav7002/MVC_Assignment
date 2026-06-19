@@ -1,23 +1,23 @@
 package simulation
 
 type BuildingEntity struct {
-    ID        int
-    Name      string
-    Type      string           
-    Pos       Position
-    Size      int
-    HP        int
-    Destroyed bool
-    DPS          int
-    MaxRange     int
-    MinRange     int           
-    AOERange     int           
-    TargetTroop  int           
-    Cooldown uint8           
+	ID          int
+	Name        string
+	Type        string
+	Pos         Position
+	Size        int
+	HP          int
+	Destroyed   bool
+	DPS         int
+	MaxRange    int
+	MinRange    int
+	AOERange    int
+	TargetTroop int
+	Cooldown    uint8
 }
 
 func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) {
-	if b.Destroyed { 
+	if b.Destroyed {
 		removeBuilding(b, g)
 		return
 	}
@@ -41,13 +41,13 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 		targets := findTargetsInAOERange(troops, t.Pos, b.AOERange)
 		for _, target := range targets {
 			target.HP = target.HP - b.DPS
-			if (target.HP <= 0) {
+			if target.HP <= 0 {
 				target.Dead = true
 			}
 		}
 	default:
 		t.HP = t.HP - b.DPS
-		if (t.HP <= 0) {
+		if t.HP <= 0 {
 			t.Dead = true
 		}
 	}
@@ -55,11 +55,11 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 }
 
 func removeBuilding(b *BuildingEntity, g *BattleGrid) {
-	for i := b.Pos.X; i < b.Size + b.Pos.X; i++ {
-		for j := b.Pos.Y; j < b.Size + b.Pos.Y; j++ {
+	for i := b.Pos.X; i < b.Size+b.Pos.X; i++ {
+		for j := b.Pos.Y; j < b.Size+b.Pos.Y; j++ {
 			g.OccupiedGrid[i][j] = false
 			g.TypeGrid[i][j] = ""
-			g.IDGrid[i][j] = 0 
+			g.IDGrid[i][j] = 0
 		}
 	}
 }
@@ -68,8 +68,8 @@ func findTargetTroop(troops []*TroopEntity, b *BuildingEntity) *TroopEntity {
 	cx := b.Pos.X + (b.Size-1)/2
 	cy := b.Pos.Y + (b.Size-1)/2
 	for _, t := range troops {
-        if t.Dead { 
-			continue 
+		if t.Dead {
+			continue
 		}
 		if Dist(Position{cx, cy}, t.Pos) <= float64(b.MaxRange) && Dist(Position{cx, cy}, t.Pos) >= float64(b.MinRange) {
 			return t
@@ -78,7 +78,7 @@ func findTargetTroop(troops []*TroopEntity, b *BuildingEntity) *TroopEntity {
 	return nil
 }
 
-func findTargetsInAOERange(troops []*TroopEntity ,p Position, AOERange int) []*TroopEntity {
+func findTargetsInAOERange(troops []*TroopEntity, p Position, AOERange int) []*TroopEntity {
 	var targets []*TroopEntity
 	for _, t := range troops {
 		if Dist(t.Pos, p) <= float64(AOERange) {

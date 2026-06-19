@@ -15,6 +15,7 @@ type VillageServiceInterface interface {
 	CreateBuilding(userID string, reqBody models.BuildingCreationRequestBody) error
 	MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error
 	UpgradeBuilding(userID string, buildingID int64) error
+	UpgradeTownHall(userID string) error
 	GetUserVillage(userID string) (models.VillageResBody, error)
 }
 
@@ -67,7 +68,7 @@ func (c *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *ht
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
 		return
 	}
-	
+
 	buildingID, err := strconv.ParseInt(chi.URLParam(r, "buildingID"), 10, 64)
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
@@ -89,14 +90,14 @@ func (c *VillageController) BuildingPositionHandler(w http.ResponseWriter, r *ht
 	WriteJSON(w, http.StatusOK, "Building moved successfully!")
 }
 
-func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *http.Request) {	
+func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
 		return
 	}
-	
-	buildingID, err := strconv.ParseInt(chi.URLParam(r, "buildingID"), 10, 64) 
+
+	buildingID, err := strconv.ParseInt(chi.URLParam(r, "buildingID"), 10, 64)
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, "Invalid building ID. It must be an integer.")
 		return
@@ -104,8 +105,8 @@ func (c *VillageController) BuildingUpgradeHandler(w http.ResponseWriter, r *htt
 
 	if err := c.VillageService.UpgradeBuilding(userID, buildingID); err != nil {
 		WriteError(w, http.StatusBadRequest, err.Error())
-		return 
-	} 
+		return
+	}
 
 	WriteJSON(w, http.StatusOK, "Building upgraded successfully!")
 }
@@ -114,14 +115,29 @@ func (c *VillageController) VillageHandler(w http.ResponseWriter, r *http.Reques
 	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
 	if !ok {
 		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
-		return 
+		return
 	}
 
 	res, err := c.VillageService.GetUserVillage(userID)
 	if err != nil {
 		WriteError(w, http.StatusBadRequest, err.Error())
-		return 
+		return
 	}
 
 	WriteJSON(w, http.StatusOK, res)
+}
+
+func (c *VillageController) TownHallUpgradeHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+
+	if err := c.VillageService.UpgradeTownHall(userID); err != nil {
+		WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, "Town Hall upgraded successfully!")
 }

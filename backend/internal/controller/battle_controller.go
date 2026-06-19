@@ -5,13 +5,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi/v5"	
+	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pranav7002/MVC_Assignment/internal/middleware"
 	"github.com/pranav7002/MVC_Assignment/internal/models"
 	"github.com/pranav7002/MVC_Assignment/internal/simulation"
 )
+
 type BattleController struct {
 	BattleService  BattleServiceInterface
 	VillageService VillageServiceInterface
@@ -21,7 +22,7 @@ type BattleController struct {
 type BattleServiceInterface interface {
 	HydrateTroop(t models.TroopDropBody, buildings []models.Building) (simulation.TroopDrop, error)
 	HydrateBuildings(b []models.Building) ([]simulation.BuildingInput, error)
- 	SaveBattleResult(userID, defendersID string, stars, destructionPct int) error
+	SaveBattleResult(userID, defendersID string, stars, destructionPct int) error
 }
 
 func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -44,23 +45,23 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	}
 
 	conn, err := c.WSUpgrader.Upgrade(w, r, nil)
-    if err != nil {
-        return  
-    }
+	if err != nil {
+		return
+	}
 
 	attacker := &models.Client{
-		ID: userID,
-		Conn: conn,
-		Send: make(chan []byte),
+		ID:       userID,
+		Conn:     conn,
+		Send:     make(chan []byte),
 		Incoming: make(chan []byte),
-		Done: make(chan struct{}),
+		Done:     make(chan struct{}),
 	}
 
 	battleID := uuid.New().String()
 
-    c.BattleManager.Mu.Lock()
-    c.BattleManager.Battles[battleID] = append(c.BattleManager.Battles[battleID], attacker)
-    c.BattleManager.Mu.Unlock()
+	c.BattleManager.Mu.Lock()
+	c.BattleManager.Battles[battleID] = append(c.BattleManager.Battles[battleID], attacker)
+	c.BattleManager.Mu.Unlock()
 
 	go attacker.Read()
 	go attacker.Write()
@@ -68,11 +69,11 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	battle := simulation.NewBattle(buildingInput)
 	go c.HandleTroopDrop(attacker, battle, buildings)
 
-	ticker := time.NewTicker(10 *time.Millisecond)
+	ticker := time.NewTicker(10 * time.Millisecond)
 
 	defer func() {
 		conn.Close()
-		
+
 		c.BattleManager.Mu.Lock()
 		delete(c.BattleManager.Battles, battleID)
 		c.BattleManager.Mu.Unlock()
@@ -85,24 +86,24 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		battle.Mu.Lock()
 		result, done := battle.Step()
 		battle.Mu.Unlock()
-		
-		msg, err := json.Marshal(&result) 
+
+		msg, err := json.Marshal(&result)
 		if err != nil {
 			return
 		}
 		select {
 		case attacker.Send <- msg:
 
-		if done {
-			finalResult = result
-			close(attacker.Send)
-			goto saveBattle
-		}
-		case <- attacker.Done:
-		return 
+			if done {
+				finalResult = result
+				close(attacker.Send)
+				goto saveBattle
+			}
+		case <-attacker.Done:
+			return
 		}
 	}
-	saveBattle:
+saveBattle:
 	c.BattleService.SaveBattleResult(userID, defendersID, finalResult.Stars, finalResult.DestructionPct)
 }
 
@@ -110,9 +111,9 @@ func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.
 	var troopDrop models.TroopDropBody
 	for msg := range client.Incoming {
 		if err := json.Unmarshal(msg, &troopDrop); err != nil {
-			return 
+			return
 		}
-		t, err := c.BattleService.HydrateTroop(troopDrop, buildings) 
+		t, err := c.BattleService.HydrateTroop(troopDrop, buildings)
 		if err != nil {
 			return
 		}
