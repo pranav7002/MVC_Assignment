@@ -56,6 +56,7 @@ func (app *application) mount() http.Handler {
 			r.Post("/buildings", app.villageController.BuildingCreationHandler)
 			r.Put("/buildings/{buildingID}/move", app.villageController.BuildingPositionHandler)
 			r.Put("/buildings/{buildingID}/upgrade", app.villageController.BuildingUpgradeHandler)
+			r.Get("/buildings/{buildingID}/upgrade-info", app.villageController.BuildingUpgradeInfoHandler)
 			r.Put("/village/upgrade-th", app.villageController.TownHallUpgradeHandler)
 
 			// ECONOMY

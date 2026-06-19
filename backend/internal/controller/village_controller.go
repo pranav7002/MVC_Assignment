@@ -16,6 +16,7 @@ type VillageServiceInterface interface {
 	MoveBuilding(userID string, buildingID int64, reqBody models.BuildingPositionRequestBody) error
 	UpgradeBuilding(userID string, buildingID int64) error
 	UpgradeTownHall(userID string) error
+	GetBuildingUpgradeInfo(userID string, buildingID int64) (models.UpgradeInfoResBody, error)
 	GetUserVillage(userID string) (models.VillageResBody, error)
 }
 
@@ -140,4 +141,27 @@ func (c *VillageController) TownHallUpgradeHandler(w http.ResponseWriter, r *htt
 	}
 
 	WriteJSON(w, http.StatusOK, "Town Hall upgraded successfully!")
+}
+
+func (c *VillageController) BuildingUpgradeInfoHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+
+	buildingIDStr := chi.URLParam(r, "buildingID")
+	buildingID, err := strconv.ParseInt(buildingIDStr, 10, 64)
+	if err != nil {
+		WriteError(w, http.StatusBadRequest, "Invalid building ID")
+		return
+	}
+
+	info, err := c.VillageService.GetBuildingUpgradeInfo(userID, buildingID)
+	if err != nil {
+		WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, info)
 }

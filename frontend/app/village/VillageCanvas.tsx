@@ -50,6 +50,14 @@ export default function VillageCanvas() {
     // clicked on a building, but it is still at its place
     const [activeBuilding, setActiveBuilding] = useState<Building | null>(null)
 
+    const [upgradeInfo, setUpgradeInfo] = useState<{
+        is_max_level: boolean
+        upgrade_cost: number
+        upgrade_cost_type: string
+        next_max_hp: number
+        upgrade_duration_sec: number
+    } | null>(null)
+
     // i have kept this to store the building id for the api request, rest similar 
     // to selected building, just only for buildings that are already placed and being moved 
     const [movingBuildingId, setMovingBuildingId] = useState<number | null>(
@@ -290,6 +298,27 @@ export default function VillageCanvas() {
                 hoverCell.y < b.pos_y + b.size,
         )
         setActiveBuilding(clicked || null)
+
+        if (clicked) {
+            try {
+                const res = await protectedFetch(`/api/buildings/${clicked.id}/upgrade-info`, 'GET')
+                if (res.ok) {
+                    const rawText = await res.text()
+                    console.log("Raw successful response:", rawText)
+                    const data = JSON.parse(rawText)
+                    setUpgradeInfo(data.data)
+                } else {
+                    const rawText = await res.text()
+                    console.error("Backend returned error:", res.status, rawText)
+                    setUpgradeInfo(null)
+                }
+            } catch (err) {
+                console.error("Network or parsing error:", err)
+                setUpgradeInfo(null)
+            }
+        } else {
+            setUpgradeInfo(null)
+        }
     }
 
     async function handleUpgrade() {
@@ -303,6 +332,7 @@ export default function VillageCanvas() {
                 if (!res.ok) throw new Error((await res.json()).error)
                 await loadVillage()
                 await loadBuildings()
+                await loadShopBuildings()
                 setActiveBuilding(null)
             } else {
                 const res = await protectedFetch(
@@ -324,6 +354,7 @@ export default function VillageCanvas() {
         setHoverCell(null)
         setMovingBuildingId(null)
         setActiveBuilding(null)
+        setUpgradeInfo(null)
     }
 
     async function handleCollect(resourceType: string) {
@@ -410,14 +441,26 @@ export default function VillageCanvas() {
                                 Move
                             </button>
 
-                            <button
-                                style={{
-                                    cursor: 'pointer',
-                                }}
-                                onClick={handleUpgrade}
-                            >
-                                Upgrade
-                            </button>
+                            {upgradeInfo ? (
+                                upgradeInfo.is_max_level ? (
+                                    <p style={{ color: 'red', marginTop: '8px' }}>Max Level for current Town Hall</p>
+                                ) : (
+                                    <>
+                                        <p style={{ marginTop: '8px' }}>Upgrade Cost: {upgradeInfo.upgrade_cost} {upgradeInfo.upgrade_cost_type}</p>
+                                        <button
+                                            style={{
+                                                cursor: (upgradeInfo.upgrade_cost_type === 'gold' ? village.gold < upgradeInfo.upgrade_cost : village.elixir < upgradeInfo.upgrade_cost) ? 'not-allowed' : 'pointer',
+                                            }}
+                                            disabled={upgradeInfo.upgrade_cost_type === 'gold' ? village.gold < upgradeInfo.upgrade_cost : village.elixir < upgradeInfo.upgrade_cost}
+                                            onClick={handleUpgrade}
+                                        >
+                                            Upgrade 
+                                        </button>
+                                    </>
+                                )
+                            ) : (
+                                <p style={{ marginTop: '8px' }}>Loading upgrade info...</p>
+                            )}
                         </div>
                     )}
 
@@ -453,7 +496,7 @@ export default function VillageCanvas() {
                                         : 'pointer',
                                 }}
                             >
-                                {info.building_name}
+                                {`${info.building_name} ${info.cost_type} ${info.cost}`}
                             </button>
                         )
                     })}

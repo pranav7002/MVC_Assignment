@@ -349,3 +349,90 @@ func (s *VillageService) GetUserVillage(userID string) (models.VillageResBody, e
 
 	return res, nil
 }
+
+func (s *VillageService) GetBuildingUpgradeInfo(userID string, buildingID int64) (models.UpgradeInfoResBody, error) {
+	village, err := s.VillageRepo.GetVillage(userID)
+	if err != nil {
+		log.Println("error:", err)
+		return models.UpgradeInfoResBody{}, ErrServer
+	}
+	building, err := s.VillageRepo.GetBuilding(buildingID)
+	if err != nil {
+		log.Println("error:", err)
+		return models.UpgradeInfoResBody{}, ErrServer
+	}
+
+	if building.BuildingName == "Town Hall" {
+		config, err := s.ConfigRepo.GetTownHallConfig(building.Level + 1)
+		if err != nil {
+			return models.UpgradeInfoResBody{IsMaxLevel: true}, nil
+		}
+		return models.UpgradeInfoResBody{
+			IsMaxLevel:      false,
+			UpgradeCost:     config.UpgradeCost,
+			UpgradeCostType: config.UpgradeCostType,
+			NextMaxHP:       config.MaxHP,
+			UpgradeDuration: config.UpgradeDurationSec,
+		}, nil
+	}
+
+	gameProgConfig, err := s.ConfigRepo.GetGameProgressionConfig(village.TownHallLevel, building.BuildingType, building.BuildingName)
+	if err != nil {
+		log.Println("error:", err)
+		return models.UpgradeInfoResBody{}, ErrServer
+	}
+
+	if building.Level >= int(gameProgConfig.MaxLevel) {
+		return models.UpgradeInfoResBody{IsMaxLevel: true}, nil
+	}
+
+	res := models.UpgradeInfoResBody{IsMaxLevel: false}
+
+	switch building.BuildingType {
+	case "storage":
+		config, err := s.ConfigRepo.GetStorageConfig(building.BuildingName, building.Level+1)
+		if err != nil {
+			log.Println("error:", err)
+			return models.UpgradeInfoResBody{}, ErrServer
+		}
+		res.UpgradeCost = config.UpgradeCost
+		res.UpgradeCostType = config.UpgradeCostType
+		res.NextMaxHP = config.MaxHP
+		res.UpgradeDuration = config.UpgradeDurationSec
+	case "resource":
+		config, err := s.ConfigRepo.GetResourceConfig(building.BuildingName, building.Level+1)
+		if err != nil {
+			log.Println("error:", err)
+			return models.UpgradeInfoResBody{}, ErrServer
+		}
+		res.UpgradeCost = config.UpgradeCost
+		res.UpgradeCostType = config.UpgradeCostType
+		res.NextMaxHP = config.MaxHP
+		res.UpgradeDuration = config.UpgradeDurationSec
+	case "defense":
+		config, err := s.ConfigRepo.GetDefenseConfig(building.BuildingName, building.Level+1)
+		if err != nil {
+			log.Println("error:", err)
+			return models.UpgradeInfoResBody{}, ErrServer
+		}
+		res.UpgradeCost = config.UpgradeCost
+		res.UpgradeCostType = config.UpgradeCostType
+		res.NextMaxHP = config.MaxHP
+		res.UpgradeDuration = config.UpgradeDurationSec
+	case "training_grounds":
+		config, err := s.ConfigRepo.GetTrainingGroundsConfig(building.BuildingName, building.Level+1)
+		if err != nil {
+			log.Println("error:", err)
+			return models.UpgradeInfoResBody{}, ErrServer
+		}
+		res.UpgradeCost = config.UpgradeCost
+		res.UpgradeCostType = config.UpgradeCostType
+		res.NextMaxHP = config.MaxHP
+		res.UpgradeDuration = config.UpgradeDurationSec
+	default:
+		return models.UpgradeInfoResBody{}, ErrServer
+	}
+
+	return res, nil
+}
+

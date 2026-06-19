@@ -98,6 +98,17 @@ func Seed(pool *pgxpool.Pool) {
 			log.Println("Failed to seed storages: ", err)
 		}
 
+		trainQuery := `
+			INSERT INTO training_grounds_config (name, level, housing_space, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, max_hp) VALUES 
+			('Training Grounds', 1, 20, 200, 'elixir', 10, 400),
+			('Training Grounds', 2, 30, 500, 'elixir', 60, 450),
+			('Training Grounds', 3, 40, 1000, 'elixir', 900, 500),
+			('Training Grounds', 4, 50, 2000, 'elixir', 3600, 550);
+		`
+		if _, err = pool.Exec(ctx, trainQuery); err != nil {
+			log.Println("Failed to seed training grounds: ", err)
+		}
+
 		progQuery := `
 			INSERT INTO game_progression_config (town_hall_level, building_type, building_name, max_level, max_built) VALUES 
 			-- TH1
