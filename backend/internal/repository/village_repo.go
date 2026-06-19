@@ -292,12 +292,14 @@ func (r *VillageRepository) GetRandomVillage(attackerID string, attackerTHLevel 
 	ctx := context.Background()
 
 	query := `
-	SELECT v.id, v.user_id, v.town_hall_level, v.gold, v.elixir, v.gold_last_collected_at, v.elixir_last_collected_at
-	FROM village v
-	JOIN users u ON v.user_id = u.id
-	WHERE v.user_id != $1
-	ORDER BY ABS(v.town_hall_level - $2) ASC, ABS(u.trophies - $3) ASC, RANDOM()
-	LIMIT 1
+	SELECT * FROM (
+		SELECT v.id, v.user_id, v.town_hall_level, v.gold, v.elixir, v.gold_last_collected_at, v.elixir_last_collected_at
+		FROM village v
+		JOIN users u ON v.user_id = u.id
+		WHERE v.user_id != $1
+		ORDER BY ABS(v.town_hall_level - $2) ASC, ABS(u.trophies - $3) ASC
+		LIMIT 5
+	) sub ORDER BY RANDOM() LIMIT 1
 	`
 
 	rows, err := r.DB.Query(ctx, query, attackerID, attackerTHLevel, attackerTrophies)

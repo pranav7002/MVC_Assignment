@@ -422,6 +422,14 @@ export default function VillageCanvas() {
                 >
                     Troops
                 </button>
+                <button
+                    onClick={() => router.push('/matchmaking')}
+                    style={{
+                        cursor: 'pointer',
+                    }}
+                >
+                    Find Match
+                </button>
             </div>
 
             <div style={{ display: 'flex' }}>
