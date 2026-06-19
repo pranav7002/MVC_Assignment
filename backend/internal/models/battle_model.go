@@ -11,6 +11,11 @@ type TroopDropBody struct {
 	X    int    `json:"x"`
 	Y    int    `json:"y"`
 }
+
+type MatchmakingResBody struct {
+	DefendersID string     `json:"defenders_id"`
+	Buildings   []Building `json:"buildings"`
+}
 type BattleManager struct {
 	Mu      *sync.Mutex
 	Battles map[string][]*Client

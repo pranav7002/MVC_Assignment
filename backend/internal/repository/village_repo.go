@@ -287,3 +287,28 @@ func (r *VillageRepository) UpgradeTownHall(userID string, upgradeCost int, upgr
 
 	return nil
 }
+
+func (r *VillageRepository) GetRandomVillage(attackerID string, attackerTHLevel int, attackerTrophies int) (models.Village, error) {
+	ctx := context.Background()
+
+	query := `
+	SELECT v.id, v.user_id, v.town_hall_level, v.gold, v.elixir, v.gold_last_collected_at, v.elixir_last_collected_at
+	FROM village v
+	JOIN users u ON v.user_id = u.id
+	WHERE v.user_id != $1
+	ORDER BY ABS(v.town_hall_level - $2) ASC, ABS(u.trophies - $3) ASC, RANDOM()
+	LIMIT 1
+	`
+
+	rows, err := r.DB.Query(ctx, query, attackerID, attackerTHLevel, attackerTrophies)
+	if err != nil {
+		return models.Village{}, err
+	}
+	defer rows.Close()
+
+	village, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[models.Village])
+	if err != nil {
+		return models.Village{}, err
+	}
+	return village, nil
+}

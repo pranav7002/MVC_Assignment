@@ -72,6 +72,7 @@ func (app *application) mount() http.Handler {
 			r.Delete("/troops/{troopName}", app.troopController.TroopDeleteHandler)
 
 			// BATTLE
+			r.Get("/battle/match", app.battleController.MatchmakingHandler)
 			r.Get("/battle/ws/{defendersID}", app.battleController.HandleWebSocket)
 		})
 	})
@@ -167,6 +168,7 @@ func (app *application) hydrate(secretKey []byte) {
 		BattleRepo:  battleRepo,
 		VillageRepo: villageRepo,
 		ConfigRepo:  configRepo,
+		UserRepo:    userRepo,
 	}
 	battleController := &controller.BattleController{
 		BattleService:  battleService,

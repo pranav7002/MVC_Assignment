@@ -15,6 +15,7 @@ type VillageRepositoryInterface interface {
 	UpgradeBuilding(userID string, buildingID int64, hp int, upgradeCostType string, upgradeCost int) error
 	MoveBuilding(userID string, buildingID int64, posX, posY int) error
 	GetVillage(userID string) (models.Village, error)
+	GetRandomVillage(attackerID string, attackerTHLevel int, attackerTrophies int) (models.Village, error)
 	GetBuildingCount(userID string, buildingType string, buildingName string) (int, error)
 	RemoveResource(userID string, resourceType string, amount int) error
 	AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error

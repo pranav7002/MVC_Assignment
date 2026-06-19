@@ -68,3 +68,14 @@ func (r *UserRepository) GetAttributeFromUsername(username, column string) (stri
 
 	return attribute, nil
 }
+
+func (r *UserRepository) GetTrophies(userID string) (int, error) {
+	ctx := context.Background()
+	var trophies int
+	query := `SELECT trophies FROM users WHERE id = $1`
+	err := r.DB.QueryRow(ctx, query, userID).Scan(&trophies)
+	if err != nil {
+		return 0, err
+	}
+	return trophies, nil
+}

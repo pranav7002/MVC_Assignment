@@ -23,6 +23,23 @@ type BattleServiceInterface interface {
 	HydrateTroop(t models.TroopDropBody, buildings []models.Building) (simulation.TroopDrop, error)
 	HydrateBuildings(b []models.Building) ([]simulation.BuildingInput, error)
 	SaveBattleResult(userID, defendersID string, stars, destructionPct int) error
+	FindMatch(userID string) (models.MatchmakingResBody, error)
+}
+
+func (c *BattleController) MatchmakingHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+
+	match, err := c.BattleService.FindMatch(userID)
+	if err != nil {
+		WriteError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, match)
 }
 
 func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Request) {

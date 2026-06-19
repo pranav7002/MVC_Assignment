@@ -10,6 +10,7 @@ import (
 type UserRepositoryInterface interface {
 	InsertUser(username, hash string) error
 	GetAttributeFromUsername(username, column string) (string, error)
+	GetTrophies(userID string) (int, error)
 }
 
 type AuthService struct {

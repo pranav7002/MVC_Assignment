@@ -12,6 +12,7 @@ type BattleService struct {
 	BattleRepo  BattleRepositoyInterface
 	VillageRepo VillageRepositoryInterface
 	ConfigRepo  ConfigRepositoryInterface
+	UserRepo    UserRepositoryInterface
 }
 
 type BattleRepositoyInterface interface {
@@ -127,4 +128,35 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 	}
 
 	return nil
+}
+
+func (s *BattleService) FindMatch(userID string) (models.MatchmakingResBody, error) {
+	village, err := s.VillageRepo.GetVillage(userID)
+	if err != nil {
+		log.Println("error:", err)
+		return models.MatchmakingResBody{}, ErrServer
+	}
+
+	trophies, err := s.UserRepo.GetTrophies(userID)
+	if err != nil {
+		log.Println("error:", err)
+		return models.MatchmakingResBody{}, ErrServer
+	}
+
+	defenderVillage, err := s.VillageRepo.GetRandomVillage(userID, village.TownHallLevel, trophies)
+	if err != nil {
+		log.Println("error:", err)
+		return models.MatchmakingResBody{}, errors.New("no opponents found")
+	}
+
+	buildings, err := s.VillageRepo.GetUserBuildings(defenderVillage.UserID)
+	if err != nil {
+		log.Println("error:", err)
+		return models.MatchmakingResBody{}, ErrServer
+	}
+
+	return models.MatchmakingResBody{
+		DefendersID: defenderVillage.UserID,
+		Buildings:   buildings,
+	}, nil
 }
