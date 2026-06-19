@@ -27,7 +27,7 @@ interface ShopBuilding {
 }
 
 const GRID_SIZE = 20
-const CELL_SIZE = 40
+const CELL_SIZE = 45
 
 export default function VillageCanvas() {
     const token = useAuthStore((state) => state.token)
@@ -160,6 +160,7 @@ export default function VillageCanvas() {
         const ctx = canvas.getContext('2d')
         if (!ctx) return
 
+        ctx.imageSmoothingEnabled = false
         ctx.clearRect(0, 0, canvas.width, canvas.height)
 
         const grassTile = grassTileRef.current
@@ -177,27 +178,32 @@ export default function VillageCanvas() {
             }
         }
 
-        buildings.forEach((b) => {
+        [...buildings]
+            .sort((a, b) => (a.pos_y + a.size) - (b.pos_y + b.size))
+            .forEach((b) => {
             if (movingBuildingId === b.id) return
 
             const dx = b.pos_x * CELL_SIZE
-            const dy = b.pos_y * CELL_SIZE
-            const side = b.size * CELL_SIZE
+            const footprint = b.size * CELL_SIZE
+            const bottomY = (b.pos_y + b.size) * CELL_SIZE
 
             if (activeBuilding?.id === b.id) {
                 ctx.fillStyle = 'rgba(255, 255, 0, 0.4)'
-                ctx.fillRect(dx, dy, side, side)
+                ctx.fillRect(dx, b.pos_y * CELL_SIZE, footprint, footprint)
             }
 
-            const sprite = sprites[b.building_name]
-            if (sprite && sprite.complete) {
-                ctx.drawImage(sprite, dx, dy, side, side)
+            const sprite = sprites[`${b.building_name}_${b.level}`]
+            if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+                const spriteW = footprint
+                const spriteH = (sprite.naturalHeight / sprite.naturalWidth) * spriteW
+                const dy = bottomY - spriteH
+                ctx.drawImage(sprite, dx, dy, spriteW, spriteH)
             } else {
                 ctx.fillStyle = 'rgba(100, 100, 100, 0.9)'
-                ctx.fillRect(dx, dy, side, side)
+                ctx.fillRect(dx, b.pos_y * CELL_SIZE, footprint, footprint)
                 ctx.fillStyle = 'white'
                 ctx.font = '12px Arial'
-                ctx.fillText(b.building_name, dx + 4, dy + 18)
+                ctx.fillText(b.building_name, dx + 4, b.pos_y * CELL_SIZE + 18)
             }
         })
 

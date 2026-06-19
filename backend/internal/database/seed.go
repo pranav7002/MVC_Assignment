@@ -115,42 +115,42 @@ func Seed(pool *pgxpool.Pool) {
 			(1, 'defense', 'Cannon', 2, 2),
 			(1, 'defense', 'Archer Tower', 0, 0),
 			(1, 'defense', 'Mortar', 0, 0),
-			(1, 'resource', 'Gold Mine', 2, 1),
-			(1, 'resource', 'Elixir Collector', 2, 1),
-			(1, 'storage', 'Gold Storage', 2, 1),
+			(1, 'resource', 'Gold Mine', 1, 1),
+			(1, 'resource', 'Elixir Collector', 1, 1),
+			(1, 'storage', 'Gold Storage', 1, 1),
 			(1, 'storage', 'Elixir Storage', 2, 1),
 			(1, 'training_grounds', 'Training Grounds', 0, 0),
 			
 			-- TH2
-			(2, 'defense', 'Cannon', 3, 2),
+			(2, 'defense', 'Cannon', 2, 2),
 			(2, 'defense', 'Archer Tower', 2, 1),
 			(2, 'defense', 'Mortar', 0, 0),
-			(2, 'resource', 'Gold Mine', 4, 2),
-			(2, 'resource', 'Elixir Collector', 4, 2),
-			(2, 'storage', 'Gold Storage', 4, 1),
-			(2, 'storage', 'Elixir Storage', 4, 1),
+			(2, 'resource', 'Gold Mine', 2, 2),
+			(2, 'resource', 'Elixir Collector', 2, 2),
+			(2, 'storage', 'Gold Storage', 2, 1),
+			(2, 'storage', 'Elixir Storage', 2, 1),
 			(2, 'training_grounds', 'Training Grounds', 1, 1),
 			
 			-- TH3
-			(3, 'defense', 'Cannon', 4, 2),
+			(3, 'defense', 'Cannon', 3, 2),
 			(3, 'defense', 'Archer Tower', 3, 1),
 			(3, 'defense', 'Mortar', 1, 1),
-			(3, 'resource', 'Gold Mine', 6, 3),
-			(3, 'resource', 'Elixir Collector', 6, 3),
-			(3, 'storage', 'Gold Storage', 6, 2),
-			(3, 'storage', 'Elixir Storage', 6, 2),
+			(3, 'resource', 'Gold Mine', 2, 3),
+			(3, 'resource', 'Elixir Collector', 2, 3),
+			(3, 'storage', 'Gold Storage', 2, 2),
+			(3, 'storage', 'Elixir Storage', 2, 2),
 			(3, 'training_grounds', 'Training Grounds', 2, 1),
 			
 			-- TH4
-			(4, 'defense', 'Cannon', 5, 2),
+			(4, 'defense', 'Cannon', 4, 2),
 			(4, 'defense', 'Archer Tower', 4, 2),
 			(4, 'defense', 'Mortar', 2, 1),
-			(4, 'resource', 'Gold Mine', 8, 4),
-			(4, 'resource', 'Elixir Collector', 8, 4),
-			(4, 'storage', 'Gold Storage', 8, 2),
-			(4, 'storage', 'Elixir Storage', 8, 2),
-			(4, 'training_grounds', 'Training Grounds', 3, 2);
-		`
+			(4, 'resource', 'Gold Mine', 3, 4),
+			(4, 'resource', 'Elixir Collector', 3, 4),
+			(4, 'storage', 'Gold Storage', 3, 2),
+			(4, 'storage', 'Elixir Storage', 3, 2),
+			(4, 'training_grounds', 'Training Grounds', 2, 2);
+		`		
 		if _, err = pool.Exec(ctx, progQuery); err != nil {
 			log.Println("Failed to seed progression rules: ", err)
 		}

@@ -43,3 +43,27 @@ func Dist(n, m Position) float64 {
 	dist := math.Sqrt(math.Pow(float64(m.X-n.X), 2) + math.Pow(float64(m.Y-n.Y), 2))
 	return dist
 }
+
+// BATTLE EVENTS
+
+type TroopState struct {
+	ID   int      `json:"id"`
+	Name string   `json:"name"`
+	Pos  Position `json:"pos"`
+	HP   int      `json:"hp"`
+	Dead bool     `json:"dead"`
+}
+
+type BuildingState struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	HP   int    `json:"hp"`
+	Dead bool   `json:"dead"`
+}
+
+type BattleState struct {
+	DestructionPct int             `json:"destruction_pct"`
+	Stars          int             `json:"stars"`
+	Troops         []TroopState    `json:"troops"`
+	Buildings      []BuildingState `json:"buildings"`
+}
