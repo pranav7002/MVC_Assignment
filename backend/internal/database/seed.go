@@ -58,9 +58,7 @@ func Seed(pool *pgxpool.Pool) {
 			('Archer Tower', 4, 20000, 'gold', 14400, 25, 590, 10, 0, 0),
 			
 			('Mortar', 1, 8000, 'gold', 7200, 4, 400, 11, 4, 3),
-			('Mortar', 2, 32000, 'gold', 43200, 5, 450, 11, 4, 3),
-			('Mortar', 3, 120000, 'gold', 86400, 6, 500, 11, 4, 3),
-			('Mortar', 4, 180000, 'gold', 172800, 7, 550, 11, 4, 3);
+			('Mortar', 2, 32000, 'gold', 43200, 5, 450, 11, 4, 3);
 		`
 		if _, err = pool.Exec(ctx, defQuery); err != nil {
 			log.Println("Failed to seed defenses: ", err)
@@ -71,12 +69,10 @@ func Seed(pool *pgxpool.Pool) {
 			('Gold Mine', 1, 'gold', 500, 3, 150, 'elixir', 10, 400),
 			('Gold Mine', 2, 'gold', 1000, 6, 300, 'elixir', 60, 450),
 			('Gold Mine', 3, 'gold', 1500, 10, 700, 'elixir', 900, 500),
-			('Gold Mine', 4, 'gold', 2500, 13, 1400, 'elixir', 3600, 550),
 			
 			('Elixir Collector', 1, 'elixir', 500, 3, 150, 'gold', 10, 400),
 			('Elixir Collector', 2, 'elixir', 1000, 6, 300, 'gold', 60, 450),
-			('Elixir Collector', 3, 'elixir', 1500, 10, 700, 'gold', 900, 500),
-			('Elixir Collector', 4, 'elixir', 2500, 13, 1400, 'gold', 3600, 550);
+			('Elixir Collector', 3, 'elixir', 1500, 10, 700, 'gold', 900, 500);
 		`
 		if _, err = pool.Exec(ctx, resQuery); err != nil {
 			log.Println("Failed to seed resources: ", err)
@@ -87,12 +83,10 @@ func Seed(pool *pgxpool.Pool) {
 			('Gold Storage', 1, 'gold', 1500, 300, 'elixir', 60, 400),
 			('Gold Storage', 2, 'gold', 3000, 750, 'elixir', 1800, 450),
 			('Gold Storage', 3, 'gold', 6000, 1500, 'elixir', 7200, 500),
-			('Gold Storage', 4, 'gold', 12000, 3000, 'elixir', 14400, 550),
 			
 			('Elixir Storage', 1, 'elixir', 1500, 300, 'gold', 60, 400),
 			('Elixir Storage', 2, 'elixir', 3000, 750, 'gold', 1800, 450),
-			('Elixir Storage', 3, 'elixir', 6000, 1500, 'gold', 7200, 500),
-			('Elixir Storage', 4, 'elixir', 12000, 3000, 'gold', 14400, 550);
+			('Elixir Storage', 3, 'elixir', 6000, 1500, 'gold', 7200, 500);
 		`
 		if _, err = pool.Exec(ctx, storeQuery); err != nil {
 			log.Println("Failed to seed storages: ", err)
@@ -101,9 +95,7 @@ func Seed(pool *pgxpool.Pool) {
 		trainQuery := `
 			INSERT INTO training_grounds_config (name, level, housing_space, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, max_hp) VALUES 
 			('Training Grounds', 1, 20, 200, 'elixir', 10, 400),
-			('Training Grounds', 2, 30, 500, 'elixir', 60, 450),
-			('Training Grounds', 3, 40, 1000, 'elixir', 900, 500),
-			('Training Grounds', 4, 50, 2000, 'elixir', 3600, 550);
+			('Training Grounds', 2, 30, 500, 'elixir', 60, 450);
 		`
 		if _, err = pool.Exec(ctx, trainQuery); err != nil {
 			log.Println("Failed to seed training grounds: ", err)

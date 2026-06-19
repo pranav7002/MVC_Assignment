@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
+import { useBattleStore } from '../stores/battleStore'
 import { protectedFetch } from '../utils/api'
 import sprites from '../village/spriteLoader'
 
@@ -141,6 +142,7 @@ export default function MatchmakingPage() {
                 <button
                     onClick={() => {
                         if (defenderID) {
+                            useBattleStore.getState().setBattle(defenderID, buildings)
                             router.push(`/battle/${defenderID}`)
                         }
                     }}

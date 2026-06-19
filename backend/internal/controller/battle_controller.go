@@ -43,9 +43,9 @@ func (c *BattleController) MatchmakingHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
-	if !ok {
-		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		WriteError(w, http.StatusUnauthorized, "user_id query param required")
 		return
 	}
 	defendersID := chi.URLParam(r, "defendersID")
