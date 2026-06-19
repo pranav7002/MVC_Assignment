@@ -125,3 +125,60 @@ func (b *Battle) Step() (Result, bool) {
 	b.Tick++
 	return Result{}, false
 }
+
+func (b *Battle) GetState() BattleState {
+	troops := make([]TroopState, 0, len(b.Troops))
+	for _, t := range b.Troops {
+		troops = append(troops, TroopState{
+			ID:   t.ID,
+			Name: t.Name,
+			Pos:  t.Pos,
+			HP:   t.HP,
+			Dead: t.Dead,
+		})
+	}
+
+	buildings := make([]BuildingState, 0, len(b.Buildings))
+	for _, bg := range b.Buildings {
+		buildings = append(buildings, BuildingState{
+			ID:   bg.ID,
+			Name: bg.Name,
+			HP:   bg.HP,
+			Dead: bg.Destroyed,
+		})
+	}
+
+	finalHP := 0
+	for _, bg := range b.Buildings {
+		finalHP += bg.HP
+	}
+	destructionPct := 0
+	if b.TotalBuildingHP > 0 {
+		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
+	}
+
+	stars := 0
+	if destructionPct >= 50 {
+		stars++
+	}
+	if b.TownHallDestroyed {
+		stars++
+	}
+	allDestroyed := true
+	for _, bg := range b.Buildings {
+		if !bg.Destroyed {
+			allDestroyed = false
+			break
+		}
+	}
+	if allDestroyed {
+		stars++
+	}
+
+	return BattleState{
+		DestructionPct: destructionPct,
+		Stars:          stars,
+		Troops:         troops,
+		Buildings:      buildings,
+	}
+}
