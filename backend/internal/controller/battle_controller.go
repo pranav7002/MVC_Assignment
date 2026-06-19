@@ -81,21 +81,20 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		ticker.Stop()
 	}()
 
-	var finalResult simulation.Result
+	var finalState simulation.BattleState
 	for range ticker.C {
 		battle.Mu.Lock()
-		result, done := battle.Step()
+		battle.Step()
+		state, done := battle.GetState()
 		battle.Mu.Unlock()
-
-		msg, err := json.Marshal(&result)
+		msg, err := json.Marshal(&state)
 		if err != nil {
 			return
 		}
 		select {
 		case attacker.Send <- msg:
-
 			if done {
-				finalResult = result
+				finalState = state
 				close(attacker.Send)
 				goto saveBattle
 			}
@@ -103,8 +102,8 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 			return
 		}
 	}
-saveBattle:
-	c.BattleService.SaveBattleResult(userID, defendersID, finalResult.Stars, finalResult.DestructionPct)
+	saveBattle:
+	c.BattleService.SaveBattleResult(userID, defendersID, finalState.Stars, finalState.DestructionPct)
 }
 
 func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.Battle, buildings []models.Building) {

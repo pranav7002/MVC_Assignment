@@ -71,13 +71,7 @@ func (b *Battle) Add(t TroopDrop) {
 	})
 }
 
-func (b *Battle) Step() (Result, bool) {
-	finalHP := 0
-	allTroopsDead := false
-	allBuildingsDestroyed := false
-	stars := 0
-	destructionPct := 0
-
+func (b *Battle) Step() {
 	for _, troop := range b.Troops {
 		troop.Update(b.Buildings, b.BattleGrid)
 	}
@@ -87,46 +81,16 @@ func (b *Battle) Step() (Result, bool) {
 			b.TownHallDestroyed = true
 		}
 	}
-
-	allTroopsDead = true
-	for _, troop := range b.Troops {
-		if !troop.Dead {
-			allTroopsDead = false
-			break
-		}
-	}
-	allBuildingsDestroyed = true
-	for _, building := range b.Buildings {
-		if !building.Destroyed {
-			allBuildingsDestroyed = false
-			break
-		}
-	}
-
-	if allBuildingsDestroyed || allTroopsDead || b.Tick == 1800 {
-		for _, building := range b.Buildings {
-			finalHP += building.HP
-		}
-		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
-		if destructionPct >= 50 {
-			stars++
-		}
-		if b.TownHallDestroyed {
-			stars++
-		}
-		if allBuildingsDestroyed {
-			stars++
-		}
-		return Result{
-			DestructionPct: destructionPct,
-			Stars:          stars,
-		}, true
-	}
 	b.Tick++
-	return Result{}, false
 }
 
-func (b *Battle) GetState() BattleState {
+func (b *Battle) GetState() (BattleState, bool) {
+	finalHP := 0
+	allTroopsDead := false
+	allBuildingsDestroyed := false
+	stars := 0
+	destructionPct := 0
+
 	troops := make([]TroopState, 0, len(b.Troops))
 	for _, t := range b.Troops {
 		troops = append(troops, TroopState{
@@ -148,31 +112,26 @@ func (b *Battle) GetState() BattleState {
 		})
 	}
 
-	finalHP := 0
-	for _, bg := range b.Buildings {
-		finalHP += bg.HP
-	}
-	destructionPct := 0
-	if b.TotalBuildingHP > 0 {
-		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
-	}
-
-	stars := 0
-	if destructionPct >= 50 {
-		stars++
-	}
-	if b.TownHallDestroyed {
-		stars++
-	}
-	allDestroyed := true
-	for _, bg := range b.Buildings {
-		if !bg.Destroyed {
-			allDestroyed = false
-			break
+	if allBuildingsDestroyed || allTroopsDead || b.Tick == 1800 {
+		for _, building := range b.Buildings {
+			finalHP += building.HP
 		}
-	}
-	if allDestroyed {
-		stars++
+		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
+		if destructionPct >= 50 {
+			stars++
+		}
+		if b.TownHallDestroyed {
+			stars++
+		}
+		if allBuildingsDestroyed {
+			stars++
+		}
+		return BattleState{
+			DestructionPct: destructionPct,
+			Stars:          stars,
+			Troops:         troops,
+			Buildings:      buildings,
+		}, true
 	}
 
 	return BattleState{
@@ -180,5 +139,5 @@ func (b *Battle) GetState() BattleState {
 		Stars:          stars,
 		Troops:         troops,
 		Buildings:      buildings,
-	}
+	}, false
 }
