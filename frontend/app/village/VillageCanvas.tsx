@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
 import sprites from './spriteLoader'
@@ -31,6 +32,7 @@ const CELL_SIZE = 45
 
 export default function VillageCanvas() {
     const token = useAuthStore((state) => state.token)
+    const router = useRouter()
 
     const [buildings, setBuildings] = useState<Building[]>([])
     const [shopBuildings, setShopBuildings] = useState<ShopBuilding[]>([])
@@ -410,6 +412,15 @@ export default function VillageCanvas() {
                     }}
                 >
                     Collect Elixir
+                </button>
+                <button
+                    onClick={() => router.push('/troops')}
+                    style={{
+                        marginLeft: 'auto',
+                        cursor: 'pointer',
+                    }}
+                >
+                    Troops
                 </button>
             </div>
 

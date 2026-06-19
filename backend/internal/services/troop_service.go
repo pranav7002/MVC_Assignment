@@ -52,7 +52,7 @@ func (s *TroopService) TrainTroop(userID string, troopName string, quantity int)
 		return ErrInsufficientElixir
 	}
 
-	trainingGrounds, err := s.VillageRepo.GetUserBuildingsByName(userID, "training_grounds")
+	trainingGrounds, err := s.VillageRepo.GetUserBuildingsByName(userID, "Training Grounds")
 	if err != nil {
 		log.Println("error:", err)
 		return ErrServer
