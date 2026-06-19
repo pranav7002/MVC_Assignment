@@ -69,7 +69,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	battle := simulation.NewBattle(buildingInput)
 	go c.HandleTroopDrop(attacker, battle, buildings)
 
-	ticker := time.NewTicker(10 * time.Millisecond)
+	ticker := time.NewTicker(100 * time.Millisecond)
 
 	defer func() {
 		conn.Close()
@@ -121,3 +121,4 @@ func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.
 		b.Mu.Unlock()
 	}
 }
+

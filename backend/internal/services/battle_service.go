@@ -15,7 +15,7 @@ type BattleService struct {
 }
 
 type BattleRepositoyInterface interface {
-	StoreBattle(userID, defendersID, result string, destructionPct, goldLooted, elixirLooted int) error
+	StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted int) error
 }
 
 func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.Building) (simulation.TroopDrop, error) {
@@ -117,6 +117,7 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 		userID,
 		defendersID,
 		result,
+		stars,
 		destructionPct,
 		goldLooted,
 		elixirLooted,
