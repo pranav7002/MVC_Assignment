@@ -35,9 +35,11 @@ export default function VillageCanvas() {
     const [buildings, setBuildings] = useState<Building[]>([])
     const [shopBuildings, setShopBuildings] = useState<ShopBuilding[]>([])
 
-    const [selectedBuilding, setSelectedBuilding] = useState<string | null>(
-        null,
-    )
+    const [selectedBuilding, setSelectedBuilding] = useState<{
+        Name: string
+        Level: number
+        Size: number
+    } | null>(null)
 
     const [hoverCell, setHoverCell] = useState<{
         x: number
@@ -188,30 +190,24 @@ export default function VillageCanvas() {
         })
 
         if (selectedBuilding && hoverCell) {
-            const info = shopBuildings.find(
-                (b) => b.building_name === selectedBuilding,
+            const valid = isValidPlacement(
+                hoverCell.x,
+                hoverCell.y,
+                selectedBuilding.Size,
+                movingBuildingId || undefined,
             )
-            if (info) {
-                const valid = isValidPlacement(
-                    hoverCell.x,
-                    hoverCell.y,
-                    info.size,
-                    movingBuildingId || undefined,
-                )
-                ctx.globalAlpha = 0.5
-                ctx.fillStyle = valid ? 'green' : 'red'
-                ctx.fillRect(
-                    hoverCell.x * CELL_SIZE,
-                    hoverCell.y * CELL_SIZE,
-                    info.size * CELL_SIZE,
-                    info.size * CELL_SIZE,
-                )
-                ctx.globalAlpha = 1
-            }
+            ctx.globalAlpha = 0.5
+            ctx.fillStyle = valid ? 'green' : 'red'
+            ctx.fillRect(
+                hoverCell.x * CELL_SIZE,
+                hoverCell.y * CELL_SIZE,
+                selectedBuilding.Size * CELL_SIZE,
+                selectedBuilding.Size * CELL_SIZE,
+            )
+            ctx.globalAlpha = 1
         }
     }, [
         buildings,
-        shopBuildings,
         selectedBuilding,
         hoverCell,
         activeBuilding,
@@ -232,16 +228,11 @@ export default function VillageCanvas() {
         if (!hoverCell) return
 
         if (selectedBuilding) {
-            const info = shopBuildings.find(
-                (b) => b.building_name === selectedBuilding,
-            )
-            if (!info) return
-
             if (
                 !isValidPlacement(
                     hoverCell.x,
                     hoverCell.y,
-                    info.size,
+                    selectedBuilding.Size,
                     movingBuildingId || undefined,
                 )
             )
@@ -261,9 +252,14 @@ export default function VillageCanvas() {
                         throw new Error((await res.json()).error)
                     }
                 } else {
+                    const info = shopBuildings.find(
+                        (b) => b.building_name === selectedBuilding.Name
+                    )
+                    if (!info) return
+
                     const res = await protectedFetch('/api/buildings', 'POST', {
                         building_type: info.building_type,
-                        building_name: selectedBuilding,
+                        building_name: selectedBuilding.Name,
                         pos_x: hoverCell.x,
                         pos_y: hoverCell.y,
                     })
@@ -354,7 +350,6 @@ export default function VillageCanvas() {
                 </button>
             </div>
 
-
             <div style={{ display: 'flex' }}>
                 {/* Sidebar */}
                 <div
@@ -379,9 +374,11 @@ export default function VillageCanvas() {
                                 }}
                                 onClick={() => {
                                     setMovingBuildingId(activeBuilding.id)
-                                    setSelectedBuilding(
-                                        activeBuilding.building_name,
-                                    )
+                                    setSelectedBuilding({
+                                        Name: activeBuilding.building_name,
+                                        Level: activeBuilding.level,
+                                        Size: activeBuilding.size,
+                                    })
                                 }}
                             >
                                 Move
@@ -412,7 +409,11 @@ export default function VillageCanvas() {
                                 key={info.building_name}
                                 disabled={isMaxedOut}
                                 onClick={() => {
-                                    setSelectedBuilding(info.building_name)
+                                    setSelectedBuilding({
+                                        Name: info.building_name,
+                                        Level: 1,
+                                        Size: info.size,
+                                    })
                                     setMovingBuildingId(null)
                                     setActiveBuilding(null)
                                 }}
