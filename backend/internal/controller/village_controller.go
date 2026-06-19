@@ -31,7 +31,7 @@ func (c *VillageController) BuildingHandler(w http.ResponseWriter, r *http.Reque
 
 	buildings, err := c.VillageService.GetBuildings(userID)
 	if err != nil {
-		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
+		WriteError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 

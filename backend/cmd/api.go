@@ -60,6 +60,10 @@ func (app *application) mount() http.Handler {
 			// ECONOMY
 			r.Post("/economy/collect", app.economyController.ResourceCollectionHandler)
 
+			// SHOP
+			r.Get("/shop/buildings", app.shopController.ShopBuildingsHandler)
+			r.Get("/shop/troops", app.shopController.ShopTroopsHandler)
+
 			// TROOPS
 			r.Post("/troops/train", app.troopController.TrainTroopHandler)
 			r.Get("/troops", app.troopController.TroopHandler)
@@ -103,6 +107,7 @@ type application struct {
 	economyController *controller.EconomyController
 	troopController   *controller.TroopController
 	battleController  *controller.BattleController
+	shopController    *controller.ShopController
 }
 
 type config struct {
@@ -173,4 +178,11 @@ func (app *application) hydrate(secretKey []byte) {
 	app.economyController = economyController
 	app.troopController = troopController
 	app.battleController = battleController
+
+	shopRepo := &repository.ShopRepository{DB: dbpool}
+	shopService := &services.ShopService{
+		ShopRepo:    shopRepo,
+		VillageRepo: villageRepo,
+	}
+	app.shopController = &controller.ShopController{ShopService: shopService}
 }
