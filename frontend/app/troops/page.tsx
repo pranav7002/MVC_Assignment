@@ -102,112 +102,59 @@ export default function TroopsPage() {
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '16px',
-                }}
-            >
-                <button
-                    onClick={() => router.push('/village')}
-                    style={{ cursor: 'pointer' }}
-                >
-                    ← Back to Village
-                </button>
-
-                <h1>Troops</h1>
-
-                <div style={{ marginLeft: 'auto' }}>
-                    Gold: {village.gold} | Elixir: {village.elixir}
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            {/* ── Top Bar ── */}
+            <div className="topbar">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button className="btn" onClick={() => router.push('/village')}>← Village</button>
+                    <span className="topbar-title">Troops</span>
+                </div>
+                <div className="topbar-nav">
+                    <span className="resource-pill gold">⛏ {village.gold}</span>
+                    <span className="resource-pill elixir">🧪 {village.elixir}</span>
                 </div>
             </div>
 
-            <div
-                style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '12px',
-                }}
-            >
-                {troopConfigs.map((troop) => {
-                    const count = getTrainedCount(troop.name)
+            {/* ── Content ── */}
+            <div style={{ flex: 1, padding: '0 12px 12px 12px', paddingTop: '96px', overflow: 'auto', display: 'flex' }}>
+                <div style={{ display: 'flex', gap: '18px', flex: 1 }}>
+                    {troopConfigs.map((troop) => {
+                        const count = getTrainedCount(troop.name)
 
-                    return (
-                        <div
-                            key={troop.name}
-                            style={{
-                                border: '1px solid #ccc',
-                                padding: '12px',
-                                width: '180px',
-                                textAlign: 'center',
-                            }}
-                        >
-                            <img
-                                src={`/sprites/troops/${troop.name.toLowerCase()}.png`}
-                                alt={troop.name}
-                                style={{
-                                    width: '64px',
-                                    height: '64px',
-                                    imageRendering: 'pixelated',
-                                }}
-                            />
+                        return (
+                            <div key={troop.name} className="troop-card" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '220px 16px 24px 16px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '40%' }}>
+                                    <img
+                                        src={`/sprites/troops/${troop.name.toLowerCase()}.png`}
+                                        alt={troop.name}
+                                        style={{ width: '80%', height: '80%', objectFit: 'contain', imageRendering: 'pixelated' }}
+                                    />
+                                </div>
+                                <div style={{ fontSize: 'clamp(16px, 1.5vw, 22px)', fontWeight: 'bold', marginBottom: '10px', marginTop: '12px' }}>{troop.name}</div>
+                                <div className="troop-stat" style={{ fontSize: 'clamp(12px, 1.1vw, 15px)' }}>DPS: {troop.dps}  ·  HP: {troop.health}</div>
+                                <div className="troop-stat" style={{ fontSize: 'clamp(12px, 1.1vw, 15px)' }}>Range: {troop.range}  ·  Space: {troop.housing_space}</div>
+                                <div className="troop-stat" style={{ fontSize: 'clamp(12px, 1.1vw, 15px)', color: 'var(--elixir)' }}>{troop.training_cost} elixir</div>
 
-                            <div style={{ marginTop: '8px' }}>
-                                <strong>{troop.name}</strong>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', paddingTop: '14px' }}>
+                                    <button className="btn btn-green" onClick={() => handleTrain(troop.name)}>
+                                        + Train
+                                    </button>
+                                    {count > 0 && (
+                                        <>
+                                            <span style={{ color: 'var(--text-secondary)' }}>x{count}</span>
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => handleDelete(troop.name)}
+                                            >
+                                                −
+                                            </button>
+                                        </>
+                                    )}
+                                </div>
                             </div>
-
-                            <div style={{ fontSize: '12px', marginTop: '4px' }}>
-                                DPS: {troop.dps} | HP: {troop.health} | Range:{' '}
-                                {troop.range}
-                            </div>
-
-                            <div style={{ fontSize: '12px' }}>
-                                Cost: {troop.training_cost} elixir
-                            </div>
-
-                            <div style={{ fontSize: '12px' }}>
-                                Space: {troop.housing_space}
-                            </div>
-
-                            <div
-                                style={{
-                                    marginTop: '8px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '8px',
-                                }}
-                            >
-                                <button
-                                    onClick={() => handleTrain(troop.name)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    Train
-                                </button>
-
-                                {count > 0 && (
-                                    <>
-                                        <span>x{count}</span>
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(troop.name)
-                                            }
-                                            style={{
-                                                cursor: 'pointer',
-                                                color: 'red',
-                                            }}
-                                        >
-                                            Delete
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    )
-                })}
+                        )
+                    })}
+                </div>
             </div>
         </div>
     )

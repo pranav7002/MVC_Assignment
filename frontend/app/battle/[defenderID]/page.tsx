@@ -304,119 +304,100 @@ export default function BattlePage() {
     }
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* Header */}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '16px',
-                }}
-            >
-                <h1>Battle</h1>
-                <div>Destruction: {destructionPct}%</div>
-                <div>Stars: {'⭐'.repeat(starCount)}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            {/* ── HUD Top Bar ── */}
+            <div className="battle-hud">
+                <span className="topbar-title">Battle</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: 'auto' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Destruction: {destructionPct}%</span>
+                    <span className="star-display">
+                        {'★'.repeat(starCount)}{'☆'.repeat(3 - starCount)}
+                    </span>
+                </div>
             </div>
 
-            {/* Canvas */}
-            <div style={{ position: 'relative', display: 'inline-block' }}>
-                <canvas
-                    ref={canvasRef}
-                    width={GRID_SIZE * CELL_SIZE}
-                    height={GRID_SIZE * CELL_SIZE}
-                    onClick={handleCanvasClick}
-                    style={{
-                        border: '1px solid black',
-                        cursor: selectedTroop ? 'crosshair' : 'default',
-                    }}
-                />
-
-                {/* Result Overlay */}
-                {battleOver && (
-                    <div
+            {/* ── Canvas ── */}
+            <div className="canvas-wrap" style={{ right: !battleOver ? '200px' : '12px' }}>
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                    <canvas
+                        ref={canvasRef}
+                        width={GRID_SIZE * CELL_SIZE}
+                        height={GRID_SIZE * CELL_SIZE}
+                        onClick={handleCanvasClick}
                         style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            height: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
+                            cursor: selectedTroop ? 'crosshair' : 'default',
                         }}
-                    >
-                        <h2
-                            style={{
-                                fontSize: '48px',
-                                marginBottom: '16px',
-                            }}
-                        >
-                            {'⭐'.repeat(starCount)}
-                        </h2>
-                        <p style={{ fontSize: '24px' }}>
-                            Destruction: {destructionPct}%
-                        </p>
-                        <button
-                            onClick={() => {
-                                useBattleStore.getState().clear()
-                                router.push('/village')
-                            }}
-                            style={{
-                                marginTop: '20px',
-                                padding: '10px 20px',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                            }}
-                        >
-                            Back to Village
-                        </button>
-                    </div>
-                )}
+                    />
+
+                    {/* Result Overlay */}
+                    {battleOver && (
+                        <div className="battle-overlay">
+                            <h2>{'★'.repeat(starCount)}{'☆'.repeat(3 - starCount)}</h2>
+                            <p>Destruction: {destructionPct}%</p>
+                            <button
+                                className="btn btn-green"
+                                onClick={() => {
+                                    useBattleStore.getState().clear()
+                                    router.push('/village')
+                                }}
+                                style={{ padding: '12px 24px' }}
+                            >
+                                Back to Village
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
 
-            {/* Deploy Bar */}
+            {/* ── Troop Sidebar ── */}
             {!battleOver && (
-                <div
-                    style={{
-                        display: 'flex',
-                        gap: '8px',
-                        marginTop: '12px',
-                        flexWrap: 'wrap',
-                    }}
-                >
+                <div style={{
+                    position: 'fixed',
+                    top: '78px',
+                    right: '12px',
+                    bottom: '12px',
+                    width: '176px',
+                    background: '#E4D8C9',
+                    border: '2px solid #2C2623',
+                    borderRadius: '16px',
+                    padding: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                    overflowY: 'auto',
+                    zIndex: 99,
+                    boxShadow: '0 3px 0 #2C2623',
+                }}>
+                    <div style={{ fontSize: 'clamp(10px, 1vw, 12px)', textTransform: 'uppercase', letterSpacing: '2px', color: '#7A6F68', marginBottom: '4px' }}>Deploy</div>
                     {trainedTroops.map((t) => (
                         <button
                             key={t.troop_name}
                             onClick={() => setSelectedTroop(t.troop_name)}
                             disabled={t.quantity <= 0}
                             style={{
-                                padding: '8px 12px',
-                                cursor:
-                                    t.quantity > 0
-                                        ? 'pointer'
-                                        : 'not-allowed',
-                                border:
-                                    selectedTroop === t.troop_name
-                                        ? '2px solid blue'
-                                        : '1px solid #ccc',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '10px',
+                                border: selectedTroop === t.troop_name ? '2px solid #7FA2C7' : '2px solid #2C2623',
+                                borderRadius: '12px',
+                                background: selectedTroop === t.troop_name ? 'rgba(127,162,199,0.15)' : '#F1E8DC',
+                                cursor: t.quantity <= 0 ? 'not-allowed' : 'pointer',
+                                opacity: t.quantity <= 0 ? 0.3 : 1,
+                                fontFamily: 'var(--font-pixel)',
+                                fontSize: 'clamp(10px, 1vw, 12px)',
+                                color: 'var(--text-primary)',
+                                transition: 'all 0.2s ease',
                             }}
                         >
                             <img
                                 src={`/sprites/troops/${t.troop_name.toLowerCase()}.png`}
                                 alt={t.troop_name}
-                                style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    imageRendering: 'pixelated',
-                                    display: 'block',
-                                    margin: '0 auto 4px',
-                                }}
+                                style={{ width: '48px', height: '48px', imageRendering: 'pixelated' }}
                             />
-                            {t.troop_name} x{t.quantity}
+                            <span>{t.troop_name}</span>
+                            <span style={{ color: 'var(--text-muted)' }}>x{t.quantity}</span>
                         </button>
                     ))}
                 </div>

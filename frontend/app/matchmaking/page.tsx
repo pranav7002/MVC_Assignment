@@ -124,59 +124,38 @@ export default function MatchmakingPage() {
     }, [buildings])
 
     return (
-        <div style={{ padding: '20px' }}>
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '16px',
-                }}
-            >
-                <button
-                    onClick={() => router.push('/village')}
-                    style={{ cursor: 'pointer' }}
-                >
-                    ← Back to Village
-                </button>
-
-                <h1>Matchmaking</h1>
-
-                <button
-                    onClick={findMatch}
-                    disabled={loading}
-                    style={{
-                        marginLeft: 'auto',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                    }}
-                >
-                    {loading ? 'Searching...' : 'Skip'}
-                </button>
-
-                <button
-                    onClick={() => {
-                        if (defenderID && troopCount && troopCount > 0) {
-                            useBattleStore.getState().setBattle(defenderID, buildings)
-                            router.push(`/battle/${defenderID}`)
-                        }
-                    }}
-                    disabled={!defenderID || !troopCount || troopCount <= 0}
-                    style={{
-                        cursor: defenderID && troopCount && troopCount > 0 ? 'pointer' : 'not-allowed',
-                    }}
-                >
-                    {troopCount === 0 ? 'No Troops!' : 'Attack'}
-                </button>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            {/* ── Top Bar ── */}
+            <div className="topbar">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <button className="btn" onClick={() => router.push('/village')}>← Village</button>
+                    <span className="topbar-title">Matchmaking</span>
+                </div>
+                <div className="topbar-nav">
+                    <button className="btn" onClick={findMatch} disabled={loading}>
+                        {loading ? '...' : '↻ Skip'}
+                    </button>
+                    <button
+                        className="btn btn-green"
+                        onClick={() => {
+                            if (defenderID && troopCount && troopCount > 0) {
+                                useBattleStore.getState().setBattle(defenderID, buildings)
+                                router.push(`/battle/${defenderID}`)
+                            }
+                        }}
+                        disabled={!defenderID || !troopCount || troopCount <= 0}
+                    >
+                        {troopCount === 0 ? 'No Troops!' : '⚔ Attack'}
+                    </button>
+                </div>
             </div>
 
-            <div>
+            {/* ── Canvas ── */}
+            <div className="canvas-wrap" style={{ flex: 1 }}>
                 <canvas
                     ref={canvasRef}
                     width={GRID_SIZE * CELL_SIZE}
                     height={GRID_SIZE * CELL_SIZE}
-                    style={{
-                        border: '1px solid black',
-                    }}
                 />
             </div>
         </div>

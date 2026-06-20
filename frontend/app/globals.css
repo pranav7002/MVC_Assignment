@@ -1,26 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    --bg-page: #E4D8C9;
+    --bg-card: #F1E8DC;
+    --bg-sidebar: #E4D8C9;
+    --bg-topbar: #E4D8C9;
+    --bg-hover: #F7F0E6;
+
+    --text-primary: #2C2623;
+    --text-secondary: #7A6F68;
+    --text-muted: #9C9089;
+
+    --border-dark: #2C2623;
+    --border-light: #2C2623;
+    --border-mid: #2C2623;
+
+    --accent-mint: #8FBFA5;
+    --accent-mint-hover: #7DAF93;
+    --accent-lavender: #7FA2C7;
+    --accent-lavender-hover: #6D90B5;
+    --accent-coral: #E0B6C7;
+    --accent-coral-hover: #D1A3B5;
+
+    --gold: #F2D372;
+    --gold-bg: rgba(242, 211, 114, 0.2);
+    --elixir: #E0B6C7;
+    --elixir-bg: rgba(224, 182, 199, 0.2);
+
+    --danger: #D14A56;
+    --danger-hover: #BE3E4A;
+
+    --shadow-sm: 0 2px 0 #2C2623;
+    --shadow-md: 0 3px 0 #2C2623;
+    --shadow-hover: 0 4px 0 #2C2623;
+
+    --font-pixel: 'Pixelify Sans', sans-serif;
+
+    --background: #E4D8C9;
+    --foreground: #2C2623;
 }
 
 @theme inline {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
+    --color-background: #E4D8C9;
+    --color-foreground: #2C2623;
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
+* {
+    box-sizing: border-box;
 }
 
-body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+html, body {
+    background: #E4D8C9 !important;
+    color: #2C2623 !important;
+    font-family: var(--font-pixel);
+    font-size: clamp(12px, 1.1vw, 14px);
+    line-height: 1.4;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Top Bar ─────────────────────────────────── */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-topbar);
+    border: 2px solid var(--border-dark);
+    border-radius: 16px;
+    padding: 14px 24px;
+    margin: 12px 12px 0 12px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-md);
+}
+
+.topbar-title {
+    font-size: clamp(20px, 2vw, 28px);
+    color: var(--text-primary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.topbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Resource Pill ───────────────────────────── */
+.resource-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: clamp(11px, 1.1vw, 14px);
+    font-family: var(--font-pixel);
+    border: 2px solid var(--border-dark);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-sm);
+}
+
+.resource-pill.gold {
+    background: var(--gold-bg);
+    color: #8B6914;
+    border-color: var(--border-dark);
+}
+
+.resource-pill.elixir {
+    background: var(--elixir-bg);
+    color: #9B5A73;
+    border-color: var(--border-dark);
+}
+
+/* ── Sidebar ─────────────────────────────────── */
+.sidebar {
+    width: 240px;
+    min-width: 240px;
+    background: var(--bg-sidebar);
+    border: 2px solid var(--border-dark);
+    border-radius: 16px;
+    padding: 16px;
+    overflow-y: auto;
+    margin: 12px 0 12px 12px;
+    height: calc(100vh - 95px);
+    position: fixed;
+    top: 78px;
+    left: 0;
+    z-index: 99;
+    box-shadow: var(--shadow-md);
+}
+
+.sidebar-section-title {
+    font-size: clamp(10px, 1vw, 13px);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    margin-top: 12px;
+}
+
+.sidebar-section-title:first-child {
+    margin-top: 0;
+}
+
+/* ── Buttons ─────────────────────────────────── */
+.btn {
+    font-family: var(--font-pixel);
+    font-size: clamp(11px, 1vw, 13px);
+    padding: 8px 16px;
+    border: 2px solid var(--border-dark);
+    border-radius: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn:hover:not(:disabled) {
+    background: var(--bg-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-hover);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(1px);
+    box-shadow: none;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-green {
+    background: var(--accent-mint);
+    color: var(--text-primary);
+    border-color: var(--border-dark);
+}
+
+.btn-green:hover:not(:disabled) {
+    background: var(--accent-mint-hover);
+    border-color: var(--border-dark);
+}
+
+.btn-blue {
+    background: var(--accent-lavender);
+    color: var(--text-primary);
+    border-color: var(--border-dark);
+}
+
+.btn-blue:hover:not(:disabled) {
+    background: var(--accent-lavender-hover);
+    border-color: var(--border-dark);
+}
+
+.btn-danger {
+    background: var(--accent-coral);
+    color: var(--text-primary);
+    border-color: var(--border-dark);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: var(--accent-coral-hover);
+    border-color: var(--border-dark);
+}
+
+.btn-sidebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 10px;
+    margin-bottom: 2px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    font-family: var(--font-pixel);
+    font-size: clamp(11px, 1.1vw, 14px);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-sidebar:hover:not(:disabled) {
+    background: var(--bg-card);
+    border-color: var(--border-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-sidebar.active {
+    background: var(--accent-mint);
+    color: var(--text-primary);
+    border-color: var(--border-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-sidebar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* ── Inputs ──────────────────────────────────── */
+.input {
+    font-family: var(--font-pixel);
+    font-size: clamp(11px, 1.1vw, 14px);
+    padding: 12px 16px;
+    border: 2px solid var(--border-dark);
+    border-radius: 14px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    width: 100%;
+    outline: none;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.input:focus {
+    border-color: var(--accent-lavender);
+    box-shadow: 0 0 0 3px rgba(127, 162, 199, 0.2);
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ── Canvas Container ────────────────────────── */
+.canvas-wrap {
+    position: fixed;
+    top: 88px;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* When inside page-body (village page with sidebar), offset for sidebar */
+.page-body .canvas-wrap {
+    left: 276px;
+}
+
+.canvas-wrap canvas {
+    border-radius: 16px;
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--border-dark) !important;
+    width: min(calc(100vw - 320px), calc(100vh - 110px)) !important;
+    height: min(calc(100vw - 320px), calc(100vh - 110px)) !important;
+    object-fit: contain;
+}
+
+/* When no sidebar (battle/matchmaking), use full width for size calc */
+.canvas-wrap:not(.page-body .canvas-wrap) canvas {
+    width: min(calc(100vw - 40px), calc(100vh - 110px)) !important;
+    height: min(calc(100vw - 40px), calc(100vh - 110px)) !important;
+}
+
+/* ── Layout Helpers ──────────────────────────── */
+.page-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+
+/* ── Auth Pages ──────────────────────────────── */
+.auth-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: var(--bg-page);
+}
+
+.auth-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-dark);
+    border-radius: 20px;
+    padding: 36px;
+    width: 380px;
+    box-shadow: var(--shadow-md);
+}
+
+.auth-card h1 {
+    font-size: clamp(20px, 2.2vw, 28px);
+    text-align: center;
+    margin-bottom: 6px;
+    color: var(--text-primary);
+}
+
+.auth-card .subtitle {
+    font-size: clamp(10px, 1vw, 13px);
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 24px;
+}
+
+/* ── Troop Cards ─────────────────────────────── */
+.troop-card {
+    background: var(--bg-card);
+    border: 2px solid var(--border-dark);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s ease;
+}
+
+.troop-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.troop-card img {
+    image-rendering: pixelated;
+}
+
+.troop-stat {
+    font-size: clamp(10px, 1vw, 12px);
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* ── Battle HUD ──────────────────────────────── */
+.battle-hud {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 20px;
+    background: var(--bg-topbar);
+    border: 2px solid var(--border-dark);
+    border-radius: 16px;
+    margin: 12px 12px 0 12px;
+    font-size: clamp(11px, 1.1vw, 14px);
+    box-shadow: var(--shadow-md);
+}
+
+.star-display {
+    font-size: clamp(16px, 1.8vw, 22px);
+    letter-spacing: 4px;
+    color: #8B6914;
+}
+
+
+/* ── Battle Result Overlay ───────────────────── */
+.battle-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(228, 216, 201, 0.92);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+}
+
+.battle-overlay h2 {
+    font-size: 36px;
+    margin-bottom: 12px;
+    letter-spacing: 8px;
+    color: #8B6914;
+}
+
+.battle-overlay p {
+    font-size: clamp(12px, 1.3vw, 16px);
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+/* ── Building Info Panel ─────────────────────── */
+.building-info {
+    background: var(--bg-card);
+    border: 2px solid var(--border-dark);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.building-info h3 {
+    font-size: clamp(12px, 1.2vw, 15px);
+    margin: 0 0 8px 0;
+    color: var(--text-primary);
+}
+
+.building-info p {
+    font-size: clamp(10px, 1vw, 13px);
+    color: var(--text-secondary);
+    margin: 4px 0;
+}
+
+/* ── Scrollbar ───────────────────────────────── */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C4B8A8;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #A89C8E;
 }

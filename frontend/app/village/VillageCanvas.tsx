@@ -378,129 +378,79 @@ export default function VillageCanvas() {
     }
 
     return (
-        <div>
-            {/* Top Bar */}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    padding: '12px',
-                    marginBottom: '16px',
-                }}
-            >
-                <h1>My Village</h1>
-
-                <div>Gold: {village?.gold ?? 0}</div>
-
-                <div>Elixir: {village?.elixir ?? 0}</div>
-
-                <button
-                    onClick={async () => handleCollect('gold')}
-                    style={{
-                        marginLeft: 'auto',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Collect Gold
-                </button>
-                <button
-                    onClick={async () => handleCollect('elixir')}
-                    style={{
-                        marginLeft: 'auto',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Collect Elixir
-                </button>
-                <button
-                    onClick={() => router.push('/troops')}
-                    style={{
-                        marginLeft: 'auto',
-                        cursor: 'pointer',
-                    }}
-                >
-                    Troops
-                </button>
-                <button
-                    onClick={() => router.push('/matchmaking')}
-                    style={{
-                        cursor: 'pointer',
-                    }}
-                >
-                    Find Match
-                </button>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+            {/* ── Top Bar ── */}
+            <div className="topbar">
+                <span className="topbar-title">Vanguard</span>
+                <div className="topbar-nav">
+                    <button className="btn" onClick={async () => handleCollect('gold')}>Collect Gold</button>
+                    <button className="btn" onClick={async () => handleCollect('elixir')}>Collect Elixir</button>
+                    <button className="btn btn-blue" onClick={() => router.push('/troops')}>Troops</button>
+                    <button className="btn btn-danger" onClick={() => router.push('/matchmaking')}>⚔ Attack</button>
+                    <span className="resource-pill gold">💰 {village?.gold ?? 0}</span>
+                    <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}</span>
+                </div>
             </div>
 
-            <div style={{ display: 'flex' }}>
-                {/* Sidebar */}
-                <div
-                    style={{
-                        width: '250px',
-                        padding: '12px',
-                        marginRight: '20px',
-                    }}
-                >
+            <div className="page-body">
+                {/* ── Sidebar ── */}
+                <div className="sidebar">
+                    {/* Active Building Info */}
                     {activeBuilding && !selectedBuilding && (
-                        <div style={{ marginBottom: '16px' }}>
+                        <div className="building-info">
                             <h3>{activeBuilding.building_name}</h3>
-
                             <p>Level: {activeBuilding.level}</p>
-
                             <p>HP: {activeBuilding.hp}</p>
-
-                            <button
-                                style={{
-                                    marginRight: '8px',
-                                    cursor: 'pointer',
-                                }}
-                                onClick={() => {
-                                    setMovingBuildingId(activeBuilding.id)
-                                    setSelectedBuilding({
-                                        Name: activeBuilding.building_name,
-                                        Level: activeBuilding.level,
-                                        Size: activeBuilding.size,
-                                    })
-                                }}
-                            >
-                                Move
-                            </button>
-
-                            {upgradeInfo ? (
-                                upgradeInfo.is_max_level ? (
-                                    <p style={{ color: 'red', marginTop: '8px' }}>Max Level for current Town Hall</p>
+                            <div style={{ display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                    className="btn"
+                                    onClick={() => {
+                                        setMovingBuildingId(activeBuilding.id)
+                                        setSelectedBuilding({
+                                            Name: activeBuilding.building_name,
+                                            Level: activeBuilding.level,
+                                            Size: activeBuilding.size,
+                                        })
+                                    }}
+                                >
+                                    ✥ Move
+                                </button>
+                                {upgradeInfo ? (
+                                    upgradeInfo.is_max_level ? (
+                                        <p style={{ color: 'var(--danger)', fontSize: 'clamp(11px, 1.1vw, 14px)' }}>Max Level</p>
+                                    ) : (
+                                        <>
+                                            <p style={{ fontSize: 'clamp(11px, 1vw, 13px)', width: '100%' }}>
+                                                Cost: {upgradeInfo.upgrade_cost} {upgradeInfo.upgrade_cost_type}
+                                            </p>
+                                            <button
+                                                className="btn btn-green"
+                                                disabled={upgradeInfo.upgrade_cost_type === 'gold' ? village.gold < upgradeInfo.upgrade_cost : village.elixir < upgradeInfo.upgrade_cost}
+                                                onClick={handleUpgrade}
+                                            >
+                                                ⬆ Upgrade
+                                            </button>
+                                        </>
+                                    )
                                 ) : (
-                                    <>
-                                        <p style={{ marginTop: '8px' }}>Upgrade Cost: {upgradeInfo.upgrade_cost} {upgradeInfo.upgrade_cost_type}</p>
-                                        <button
-                                            style={{
-                                                cursor: (upgradeInfo.upgrade_cost_type === 'gold' ? village.gold < upgradeInfo.upgrade_cost : village.elixir < upgradeInfo.upgrade_cost) ? 'not-allowed' : 'pointer',
-                                            }}
-                                            disabled={upgradeInfo.upgrade_cost_type === 'gold' ? village.gold < upgradeInfo.upgrade_cost : village.elixir < upgradeInfo.upgrade_cost}
-                                            onClick={handleUpgrade}
-                                        >
-                                            Upgrade 
-                                        </button>
-                                    </>
-                                )
-                            ) : (
-                                <p style={{ marginTop: '8px' }}>Loading upgrade info...</p>
-                            )}
+                                    <p style={{ fontSize: 'clamp(11px, 1vw, 13px)', color: 'var(--text-muted)' }}>Loading...</p>
+                                )}
+                            </div>
                         </div>
                     )}
 
-                    <h2>Shop</h2>
-
+                    {/* Shop */}
+                    <div className="sidebar-section-title">Shop</div>
                     {shopBuildings.map((info) => {
                         const countBuilt = buildings.filter(
                             (b) => b.building_name === info.building_name,
                         ).length
-
                         const isMaxedOut = countBuilt >= info.max_built
 
                         return (
                             <button
                                 key={info.building_name}
+                                className={`btn-sidebar${selectedBuilding?.Name === info.building_name && !movingBuildingId ? ' active' : ''}`}
                                 disabled={isMaxedOut}
                                 onClick={() => {
                                     setSelectedBuilding({
@@ -511,38 +461,28 @@ export default function VillageCanvas() {
                                     setMovingBuildingId(null)
                                     setActiveBuilding(null)
                                 }}
-                                style={{
-                                    display: 'block',
-                                    width: '100%',
-                                    marginBottom: '8px',
-                                    padding: '6px',
-                                    cursor: isMaxedOut
-                                        ? 'not-allowed'
-                                        : 'pointer',
-                                }}
                             >
-                                {`${info.building_name} ${info.cost_type} ${info.cost}`}
+                                <span style={{ opacity: isMaxedOut ? 0.4 : 1 }}>{info.building_name}</span>
+                                <span style={{ marginLeft: 'auto', fontSize: 'clamp(10px, 1vw, 13px)', color: 'var(--text-muted)' }}>
+                                    {info.cost} {info.cost_type}
+                                </span>
                             </button>
                         )
                     })}
 
                     {selectedBuilding && (
                         <button
+                            className="btn btn-danger"
                             onClick={deselectEverything}
-                            style={{
-                                marginTop: '12px',
-                                cursor: 'pointer',
-                            }}
+                            style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}
                         >
-                            {movingBuildingId
-                                ? 'Cancel Move'
-                                : 'Cancel Placement'}
+                            {movingBuildingId ? '✕ Cancel Move' : '✕ Cancel'}
                         </button>
                     )}
                 </div>
 
-                {/* Canvas */}
-                <div>
+                {/* ── Canvas ── */}
+                <div className="canvas-wrap">
                     <canvas
                         ref={canvasRef}
                         width={GRID_SIZE * CELL_SIZE}
@@ -551,7 +491,6 @@ export default function VillageCanvas() {
                         onClick={handleCanvasClick}
                         onMouseLeave={() => setHoverCell(null)}
                         style={{
-                            border: '1px solid black',
                             cursor: selectedBuilding ? 'crosshair' : 'default',
                         }}
                     />
