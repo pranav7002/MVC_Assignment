@@ -63,6 +63,8 @@ func (c *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+    userReqBody.Username = strings.TrimSpace(userReqBody.Username)
+
 	isAuthenticated, err := c.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
 	if err == pgx.ErrNoRows {
 		WriteError(w, http.StatusUnauthorized, "Incorrect username entered!!")

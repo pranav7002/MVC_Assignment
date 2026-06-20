@@ -33,7 +33,7 @@ func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.
 		}
 	}
 	outOfBounds := t.X >= gridSize || t.Y >= gridSize || t.X < 0 || t.Y < 0
-	if villageBitmap[t.X][t.Y] || outOfBounds {
+	if outOfBounds || villageBitmap[t.X][t.Y]  {
 		return simulation.TroopDrop{}, errors.New("Invalid drop location")
 	}
 	return simulation.TroopDrop{

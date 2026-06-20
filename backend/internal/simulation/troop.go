@@ -50,7 +50,7 @@ func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
 
 func buildingExists(id int, buildings []*BuildingEntity) (bool, *BuildingEntity) {
 	for _, b := range buildings {
-		if b.ID == id {
+		if b.ID == id && !b.Destroyed {
 			return true, b
 		}
 	}
