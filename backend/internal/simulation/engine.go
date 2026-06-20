@@ -130,7 +130,7 @@ func (b *Battle) GetState() (BattleState, bool) {
 		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
 	}
 
-	if len(b.Troops) > 0 && (allBuildingsDestroyed || allTroopsDead || b.Tick >= 1800) {
+	if allBuildingsDestroyed || allTroopsDead || b.Tick >= 1800 {
 		if destructionPct >= 50 {
 			stars++
 		}

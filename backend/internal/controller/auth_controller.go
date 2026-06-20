@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -30,6 +31,18 @@ func (c *AuthController) RegisterHandler(w http.ResponseWriter, r *http.Request)
 		WriteError(w, http.StatusBadRequest, "Please provide the correct input!!")
 		return
 	}
+
+    userReqBody.Username = strings.TrimSpace(userReqBody.Username)
+
+    if userReqBody.Username == "" {
+        WriteError(w, http.StatusBadRequest, "Username can't be empty!")
+		return
+    } 
+
+    if len(userReqBody.Username) > 50 {
+        WriteError(w, http.StatusBadRequest, "Username longer than 50 characters!")
+		return
+    }
 
 	err = c.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)
 

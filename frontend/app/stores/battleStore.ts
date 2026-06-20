@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 
+// to transfer the buildings arr recievedn from matchmaking api to the battle page 
+
 interface Building {
     id: number
     building_name: string

@@ -120,7 +120,13 @@ export default function BattlePage() {
         }
 
         ws.onmessage = (event) => {
-            const state: BattleState = JSON.parse(event.data)
+            if (!event.data || event.data === '') return
+            let state: BattleState
+            try {
+                state = JSON.parse(event.data)
+            } catch {
+                return
+            }
             console.log('ws tick', { troops: state.troops.length, buildings: state.buildings.length, destruction: state.destruction_pct })
 
             setTroops(state.troops)
