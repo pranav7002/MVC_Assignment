@@ -110,7 +110,7 @@ func Seed(pool *pgxpool.Pool) {
 			(1, 'resource', 'Gold Mine', 1, 1),
 			(1, 'resource', 'Elixir Collector', 1, 1),
 			(1, 'storage', 'Gold Storage', 1, 1),
-			(1, 'storage', 'Elixir Storage', 2, 1),
+			(1, 'storage', 'Elixir Storage', 1, 1),
 			(1, 'training_grounds', 'Training Grounds', 0, 0),
 			
 			-- TH2

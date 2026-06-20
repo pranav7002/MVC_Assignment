@@ -293,7 +293,7 @@ func (r *VillageRepository) GetRandomVillage(attackerID string, attackerTHLevel 
 
 	query := `
 	SELECT * FROM (
-		SELECT v.id, v.user_id, v.town_hall_level, v.gold, v.elixir, v.gold_last_collected_at, v.elixir_last_collected_at
+		SELECT v.id, v.user_id, v.town_hall_level, v.gold, v.elixir, v.max_gold, v.max_elixir, v.gold_last_collected_at, v.elixir_last_collected_at
 		FROM village v
 		JOIN users u ON v.user_id = u.id
 		WHERE v.user_id != $1

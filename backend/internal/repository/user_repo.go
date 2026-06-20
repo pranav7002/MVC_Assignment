@@ -41,10 +41,10 @@ func (r *UserRepository) InsertUser(username, hash string) error {
 	query = `
 		INSERT INTO building_instance (user_id, building_type, building_name, level, pos_x, pos_y, size, is_upgrading, hp)
 		VALUES 
-		($1, 'town_hall', 'Town Hall', 1, 8, 8, 3, false, 1500),
-		($1, 'training_grounds', 'Training Grounds', 1, 5, 12, 2, false, 400),
-		($1, 'storage', 'Gold Storage', 1, 6, 6, 2, false, 400),
-		($1, 'storage', 'Elixir Storage', 1, 11, 11, 2, false, 400)
+		($1, 'town_hall', 'Town Hall', 1, 8, 8, 4, false, 1500),
+		($1, 'training_grounds', 'Training Grounds', 1, 4, 12, 3, false, 400),
+		($1, 'storage', 'Gold Storage', 1, 4, 4, 3, false, 400),
+		($1, 'storage', 'Elixir Storage', 1, 13, 13, 3, false, 400)
 	`
 	_, err = tx.Exec(ctx, query, userID)
 	if err != nil {
