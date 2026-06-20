@@ -126,18 +126,20 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		}
 	}
 	saveBattle:
-	c.BattleService.SaveBattleResult(userID, defendersID, finalState.Stars, finalState.DestructionPct)
+	if err = c.BattleService.SaveBattleResult(userID, defendersID, finalState.Stars, finalState.DestructionPct); err != nil {
+		return
+	}
 }
 
 func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.Battle, buildings []models.Building) {
 	var troopDrop models.TroopDropBody
 	for msg := range client.Incoming {
 		if err := json.Unmarshal(msg, &troopDrop); err != nil {
-			return
+			continue
 		}
 		t, err := c.BattleService.HydrateTroop(troopDrop, buildings)
 		if err != nil {
-			return
+			continue
 		}
 		b.Mu.Lock()
 		b.Add(t)

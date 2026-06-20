@@ -176,7 +176,10 @@ func (app *application) hydrate(secretKey []byte) {
 		BattleService:  battleService,
 		VillageService: villageService,
 		WSUpgrader:     upgrader,
-		BattleManager:  &models.BattleManager{Mu: new(sync.Mutex)},
+		BattleManager:  &models.BattleManager{
+			Mu: new(sync.Mutex),
+			Battles: make(map[string][]*models.Client),
+	},
 	}
 
 	app.authController = authController
