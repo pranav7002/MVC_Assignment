@@ -65,6 +65,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	totalTroops, err := c.BattleService.GetTotalTroops(userID)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	conn, err := c.WSUpgrader.Upgrade(w, r, nil)
@@ -121,7 +122,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 				close(attacker.Send)
 				goto saveBattle
 			}
-		case <-attacker.Done:
+		case <- attacker.Done:
 			return
 		}
 	}

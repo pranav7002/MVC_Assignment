@@ -28,6 +28,7 @@ export default function MatchmakingPage() {
     const [defenderID, setDefenderID] = useState<string | null>(null)
     const [buildings, setBuildings] = useState<Building[]>([])
     const [loading, setLoading] = useState(false)
+    const [troopCount, setTroopCount] = useState<number | null>(null)
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const grassTileRef = useRef<HTMLImageElement | null>(null)
@@ -46,6 +47,18 @@ export default function MatchmakingPage() {
         setLoading(false)
     }
 
+    async function checkTroops() {
+        try {
+            const res = await protectedFetch('/api/troops', 'GET')
+            const data = await res.json()
+            const troops = data.data || []
+            const total = troops.reduce((sum: number, t: any) => sum + t.quantity, 0)
+            setTroopCount(total)
+        } catch {
+            setTroopCount(0)
+        }
+    }
+
     useEffect(() => {
         const img = new Image()
         img.src = '/sprites/grass.png'
@@ -58,6 +71,7 @@ export default function MatchmakingPage() {
     useEffect(() => {
         if (token) {
             findMatch()
+            checkTroops()
         }
     }, [token])
 
@@ -141,17 +155,17 @@ export default function MatchmakingPage() {
 
                 <button
                     onClick={() => {
-                        if (defenderID) {
+                        if (defenderID && troopCount && troopCount > 0) {
                             useBattleStore.getState().setBattle(defenderID, buildings)
                             router.push(`/battle/${defenderID}`)
                         }
                     }}
-                    disabled={!defenderID}
+                    disabled={!defenderID || !troopCount || troopCount <= 0}
                     style={{
-                        cursor: defenderID ? 'pointer' : 'not-allowed',
+                        cursor: defenderID && troopCount && troopCount > 0 ? 'pointer' : 'not-allowed',
                     }}
                 >
-                    Attack
+                    {troopCount === 0 ? 'No Troops!' : 'Attack'}
                 </button>
             </div>
 

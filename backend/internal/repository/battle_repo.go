@@ -76,6 +76,16 @@ func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars
 		return err
 	}
 
+	query = `
+	DELETE FROM 
+		troops_trained 
+	WHERE 
+		user_id = $1;
+	`
+	if _, err := tx.Exec(ctx, query, userID); err != nil {
+		return err
+	}
+
 	if err := tx.Commit(ctx); err != nil {
 		return err
 	}
