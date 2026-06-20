@@ -21,8 +21,8 @@ CREATE TABLE village (
     id BIGSERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     town_hall_level INT NOT NULL DEFAULT 1,
-    gold INT NOT NULL DEFAULT 0,
-    elixir INT NOT NULL DEFAULT 0,
+    gold INT NOT NULL DEFAULT 0 CHECK (gold >= 0),
+    elixir INT NOT NULL DEFAULT 0 CHECK (elixir >= 0),
     gold_last_collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     elixir_last_collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

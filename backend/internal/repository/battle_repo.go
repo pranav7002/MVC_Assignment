@@ -81,3 +81,23 @@ func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars
 	}
 	return nil
 }
+
+func (r *BattleRepository) GetArmyCount(userID string) (int, error) {
+	ctx := context.Background()
+
+	var count int
+	query := `
+		SELECT 
+			COALESCE(SUM(quantity), 0)
+		FROM 
+			troops_trained
+		WHERE 
+			user_id = $1;
+	`
+	err := r.DB.QueryRow(ctx, query, userID).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
+}

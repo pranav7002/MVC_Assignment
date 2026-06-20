@@ -5,10 +5,13 @@ import (
 	"sync"
 )
 
+const LAST_TICK int = 1200
+
 type Battle struct {
 	BattleGrid        *BattleGrid
 	Buildings         []*BuildingEntity
-	Troops            []*TroopEntity
+	Troops     		  []*TroopEntity
+	TotalTroops		  int
 	TownHallDestroyed bool
 	TotalBuildingHP   int
 	Tick              int
@@ -16,12 +19,7 @@ type Battle struct {
 	Mu *sync.Mutex
 }
 
-type Result struct {
-	DestructionPct int
-	Stars          int
-}
-
-func NewBattle(buildingInputs []BuildingInput) *Battle {
+func NewBattle(buildingInputs []BuildingInput, totalTroops int) *Battle {
 	var buildings []*BuildingEntity
 	var totalBuildingHP int
 
@@ -40,7 +38,7 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 			MaxRange:    b.MaxRange,
 			MinRange:    b.MinRange,
 			AOERange:    b.AOERange,
-			TargetTroop: -1,
+			TargetTroop: 0,
 			Cooldown:    0,
 		})
 
@@ -52,6 +50,7 @@ func NewBattle(buildingInputs []BuildingInput) *Battle {
 	return &Battle{
 		BattleGrid:      g,
 		Buildings:       buildings,
+		TotalTroops: 	 totalTroops,
 		Tick:            0,
 		TotalBuildingHP: totalBuildingHP,
 		Mu:              new(sync.Mutex),
@@ -67,9 +66,10 @@ func (b *Battle) Add(t TroopDrop) {
 		DPS:      t.DPS,
 		Range:    t.Range,
 		Dead:     false,
-		TargetID: -1,
+		TargetID: 0,
 		Path:     nil,
 	})
+	b.TotalTroops--
 }
 
 func (b *Battle) Step() {
@@ -85,10 +85,11 @@ func (b *Battle) Step() {
 	b.Tick++
 }
 
+
+
 func (b *Battle) GetState() (BattleState, bool) {
-	finalHP := 0
-	stars := 0
 	destructionPct := 0
+	stars := 0
 
 	troops := make([]TroopState, 0, len(b.Troops))
 	allTroopsDead := true
@@ -97,55 +98,50 @@ func (b *Battle) GetState() (BattleState, bool) {
 			ID:   t.ID,
 			Name: t.Name,
 			Pos:  t.Pos,
-			HP:   t.HP,
+			HP:   max(0, t.HP),
 			Dead: t.Dead,
 		})
 		if !t.Dead {
 			allTroopsDead = false
 		}
 	}
-	if len(b.Troops) == 0 {
-		allTroopsDead = false
-	}
-
 	buildings := make([]BuildingState, 0, len(b.Buildings))
 	allBuildingsDestroyed := true
+	buildingHpRemaining := 0
 	for _, bg := range b.Buildings {
 		buildings = append(buildings, BuildingState{
 			ID:    bg.ID,
 			Name:  bg.Name,
-			HP:    bg.HP,
+			HP:    max(0, bg.HP),
 			MaxHP: bg.MaxHP,
 			Dead:  bg.Destroyed,
 		})
+		buildingHpRemaining += max(0, bg.HP)
 		if !bg.Destroyed {
 			allBuildingsDestroyed = false
 		}
 	}
 
-	for _, building := range b.Buildings {
-		finalHP += building.HP
+	destructionPct = ((b.TotalBuildingHP - buildingHpRemaining) * 100) / b.TotalBuildingHP
+	if b.TownHallDestroyed {
+		stars++
 	}
-	if b.TotalBuildingHP > 0 {
-		destructionPct = ((b.TotalBuildingHP - finalHP) * 100) / b.TotalBuildingHP
+	if destructionPct >= 50 {
+		stars++
+	}
+	if allBuildingsDestroyed {
+		stars++ 
 	}
 
-	if allBuildingsDestroyed || allTroopsDead || b.Tick >= 1800 {
-		if destructionPct >= 50 {
-			stars++
-		}
-		if b.TownHallDestroyed {
-			stars++
-		}
-		if allBuildingsDestroyed {
-			stars++
-		}
+	done := (b.TotalTroops == 0 && allTroopsDead) || allBuildingsDestroyed || b.Tick == LAST_TICK
+
+	if done {
 		return BattleState{
-			DestructionPct: destructionPct,
-			Stars:          stars,
-			Troops:         troops,
-			Buildings:      buildings,
-		}, true
+		DestructionPct: destructionPct,
+		Stars:          stars,
+		Troops:         troops,
+		Buildings:      buildings,
+	}, done
 	}
 
 	return BattleState{

@@ -85,5 +85,5 @@ func (c *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	WriteJSON(w, http.StatusOK, tokenString)
+	WriteJSON(w, http.StatusCreated, tokenString)
 }

@@ -24,6 +24,7 @@ type BattleServiceInterface interface {
 	HydrateBuildings(b []models.Building) ([]simulation.BuildingInput, error)
 	SaveBattleResult(userID, defendersID string, stars, destructionPct int) error
 	FindMatch(userID string) (models.MatchmakingResBody, error)
+	GetTotalTroops(userID string) (int, error)
 }
 
 func (c *BattleController) MatchmakingHandler(w http.ResponseWriter, r *http.Request) {
@@ -61,6 +62,11 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	totalTroops, err := c.BattleService.GetTotalTroops(userID)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, err.Error())
+	}
+
 	conn, err := c.WSUpgrader.Upgrade(w, r, nil)
 	if err != nil {
 		return
@@ -83,7 +89,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 	go attacker.Read()
 	go attacker.Write()
 
-	battle := simulation.NewBattle(buildingInput)
+	battle := simulation.NewBattle(buildingInput, totalTroops)
 	go c.HandleTroopDrop(attacker, battle, buildings)
 
 	ticker := time.NewTicker(100 * time.Millisecond)

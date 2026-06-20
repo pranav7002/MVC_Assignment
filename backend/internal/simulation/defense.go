@@ -41,7 +41,10 @@ func (b *BuildingEntity) Update(tick int, troops []*TroopEntity, g *BattleGrid) 
 	case "Mortar":
 		targets := findTargetsInAOERange(troops, t.Pos, b.AOERange)
 		for _, target := range targets {
-			target.HP = target.HP - b.DPS
+			if !target.Dead {
+				target.HP = target.HP - b.DPS
+			}
+
 			if target.HP <= 0 {
 				target.Dead = true
 			}

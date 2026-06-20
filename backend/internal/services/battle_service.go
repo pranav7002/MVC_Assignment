@@ -17,6 +17,7 @@ type BattleService struct {
 
 type BattleRepositoyInterface interface {
 	StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted int) error
+	GetArmyCount(userID string) (int, error)
 }
 
 func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.Building) (simulation.TroopDrop, error) {
@@ -159,4 +160,14 @@ func (s *BattleService) FindMatch(userID string) (models.MatchmakingResBody, err
 		DefendersID: defenderVillage.UserID,
 		Buildings:   buildings,
 	}, nil
+}
+
+func (s *BattleService) GetTotalTroops(userID string) (int, error) {
+	totalTroops, err := s.BattleRepo.GetArmyCount(userID) 
+	if err != nil {
+		log.Println("error:", err)
+		return 0, ErrServer
+	}
+
+	return totalTroops, nil
 }
