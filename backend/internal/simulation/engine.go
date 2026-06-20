@@ -59,15 +59,17 @@ func NewBattle(buildingInputs []BuildingInput, totalTroops int) *Battle {
 
 func (b *Battle) Add(t TroopDrop) {
 	b.Troops = append(b.Troops, &TroopEntity{
-		ID:       rand.Intn(1e9),
-		Name:     t.Name,
-		Pos:      t.Pos,
-		HP:       t.HP,
-		DPS:      t.DPS,
-		Range:    t.Range,
-		Dead:     false,
-		TargetID: 0,
-		Path:     nil,
+		ID:              rand.Intn(1e9),
+		Name:            t.Name,
+		Pos:             t.Pos,
+		HP:              t.HP,
+		DPS:             t.DPS,
+		Range:           t.Range,
+		Dead:            false,
+		TargetID:        0,
+		Path:            nil,
+		Speed:           t.Speed,
+		Steps: 0,
 	})
 	b.TotalTroops--
 }

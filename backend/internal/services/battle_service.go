@@ -43,6 +43,7 @@ func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.
 		HP:    cfg.Health,
 		DPS:   cfg.DPS,
 		Range: cfg.Range,
+		Speed: cfg.Speed,
 	}, nil
 }
 

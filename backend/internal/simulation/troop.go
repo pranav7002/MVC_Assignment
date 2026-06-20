@@ -1,15 +1,17 @@
 package simulation
 
 type TroopEntity struct {
-	ID       int
-	Name     string
-	Pos      Position
-	HP       int
-	DPS      int
-	Range    int
-	Dead     bool
-	TargetID int // ID of the building troop is targeting
-	Path     []Position
+	ID              int
+	Name            string
+	Pos             Position
+	HP              int
+	DPS             int
+	Range           int
+	Dead            bool
+	TargetID        int // ID of the building troop is targeting
+	Path            []Position
+	Speed           float64
+	Steps 			float64
 }
 
 const buffer float64 = 0.5
@@ -43,8 +45,12 @@ func (t *TroopEntity) Update(buildings []*BuildingEntity, g *BattleGrid) {
 
 	// 3. Troop has target, not in range
 	if len(t.Path) > 1 {
-		t.Pos = t.Path[1]
-		t.Path = t.Path[1:]
+		t.Steps += t.Speed
+		if t.Steps >= 1.0 && len(t.Path) > 1 {
+			t.Pos = t.Path[1]
+			t.Path = t.Path[1:]
+			t.Steps -= 1.0
+		}
 	}
 }
 

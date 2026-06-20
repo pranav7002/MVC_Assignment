@@ -23,12 +23,12 @@ func Seed(pool *pgxpool.Pool) {
 		log.Println("Seeding Database with Game Configuration...")
 
 		troopQuery := `
-			INSERT INTO troop_config (name, dps, health, range, housing_space, training_cost) VALUES 
-			('Barbarian', 9, 45, 1, 1, 25),
-			('Archer', 8, 22, 4, 1, 50),
-			('Goblin', 11, 25, 1, 1, 25),
-			('Giant', 12, 400, 1, 4, 150),
-			('Wizard', 13, 30, 3, 4, 200);
+			INSERT INTO troop_config (name, dps, health, range, housing_space, training_cost, speed) VALUES 
+			('Barbarian', 9, 45, 1, 1, 25, 0.5),
+			('Archer', 8, 22, 4, 1, 50, 0.8),
+			('Goblin', 11, 25, 1, 1, 25, 1.2),
+			('Giant', 12, 400, 1, 4, 150, 0.3),
+			('Wizard', 13, 30, 3, 4, 200, 0.5);
 		`
 		if _, err = pool.Exec(ctx, troopQuery); err != nil {
 			log.Println("Failed to seed troops: ", err)

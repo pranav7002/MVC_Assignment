@@ -70,10 +70,11 @@ type TrainingGroundsConfig struct {
 }
 
 type TroopConfig struct {
-	Name         string `json:"name" db:"name"`
-	DPS          int    `json:"dps" db:"dps"`
-	Health       int    `json:"health" db:"health"`
-	Range        int    `json:"range" db:"range"`
-	HousingSpace int    `json:"housing_space" db:"housing_space"`
-	TrainingCost int    `json:"training_cost" db:"training_cost"`
+	Name         string  `json:"name" db:"name"`
+	DPS          int     `json:"dps" db:"dps"`
+	Health       int     `json:"health" db:"health"`
+	Range        int     `json:"range" db:"range"`
+	HousingSpace int     `json:"housing_space" db:"housing_space"`
+	TrainingCost int     `json:"training_cost" db:"training_cost"`
+	Speed        float64 `json:"speed" db:"speed"`
 }

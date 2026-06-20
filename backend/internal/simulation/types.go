@@ -26,6 +26,7 @@ type TroopDrop struct {
 	HP    int      `json:"hp"`
 	DPS   int      `json:"dps"`
 	Range int      `json:"range"`
+	Speed float64  `json:"speed"`
 }
 
 type BattleGrid struct {
