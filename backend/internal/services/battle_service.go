@@ -101,8 +101,8 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 		return ErrServer
 	}
 
-	goldLooted := defendersVillage.Gold * destructionPct / 2
-	elixirLooted := defendersVillage.Elixir * destructionPct / 2
+	goldLooted := (defendersVillage.Gold * destructionPct) / 200
+	elixirLooted := (defendersVillage.Elixir * destructionPct) / 200
 
 	var result string
 	switch stars {
