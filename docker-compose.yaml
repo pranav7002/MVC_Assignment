@@ -1,0 +1,58 @@
+services: 
+  postgres:
+    image: postgres:17-alpine
+
+    environment:                  
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vanguard
+
+    ports:
+      - "5434:5432"  
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+
+    container_name: vanguard-backend
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_HOST: postgres                 
+      DB_PORT: 5432             
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: vanguard
+      PORT: 8080
+      JWT_SECRET: you-decide-yours
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+
+    ports: 
+      - "3000:3000"
+
+    depends_on:
+      - backend
+
+volumes:
+  pgdata: 
