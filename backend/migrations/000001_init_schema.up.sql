@@ -10,8 +10,6 @@ CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    xp INT NOT NULL DEFAULT 0,
-    level INT NOT NULL DEFAULT 1,
     trophies INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -23,6 +21,8 @@ CREATE TABLE village (
     town_hall_level INT NOT NULL DEFAULT 1,
     gold INT NOT NULL DEFAULT 0 CHECK (gold >= 0),
     elixir INT NOT NULL DEFAULT 0 CHECK (elixir >= 0),
+    max_gold INT NOT NULL DEFAULT 1500,
+    max_elixir INT NOT NULL DEFAULT 1500,
     gold_last_collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     elixir_last_collected_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -91,7 +91,7 @@ CREATE TABLE resource_config (
     level INT NOT NULL,
     resource_type resource_type NOT NULL,
     max_capacity INT NOT NULL,
-    resource_per_sec INT NOT NULL,
+    resource_per_sec REAL NOT NULL,
     upgrade_cost INT NOT NULL,
     upgrade_cost_type resource_type NOT NULL,
     upgrade_duration_sec INT NOT NULL,

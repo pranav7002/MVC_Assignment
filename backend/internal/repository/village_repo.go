@@ -135,9 +135,9 @@ func (r *VillageRepository) AddResourceFromColletor(userID string, resourceType 
 
 	query := fmt.Sprintf(`
 		UPDATE village 
-		SET %s = %s + $1 
+		SET %s = LEAST(%s + $1, max_%s)
 		WHERE user_id = $2
-	`, resourceType, resourceType)
+	`, resourceType, resourceType, resourceType)
 
 	_, err = tx.Exec(ctx, query, amount, userID)
 	if err != nil {
@@ -313,4 +313,28 @@ func (r *VillageRepository) GetRandomVillage(attackerID string, attackerTHLevel 
 		return models.Village{}, err
 	}
 	return village, nil
+}
+
+func (r *VillageRepository) RecalculateStorage(userID string) error {
+	ctx := context.Background()
+
+	query := `
+	UPDATE village SET
+		max_gold = COALESCE((
+			SELECT SUM(sc.max_capacity)
+			FROM building_instance bi
+			JOIN storage_config sc ON bi.building_name = sc.name AND bi.level = sc.level
+			WHERE bi.user_id = $1 AND bi.building_type = 'storage' AND sc.resource_type = 'gold'
+		), 0),
+		max_elixir = COALESCE((
+			SELECT SUM(sc.max_capacity)
+			FROM building_instance bi
+			JOIN storage_config sc ON bi.building_name = sc.name AND bi.level = sc.level
+			WHERE bi.user_id = $1 AND bi.building_type = 'storage' AND sc.resource_type = 'elixir'
+		), 0)
+	WHERE user_id = $1
+	`
+
+	_, err := r.DB.Exec(ctx, query, userID)
+	return err
 }

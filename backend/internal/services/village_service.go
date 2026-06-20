@@ -20,6 +20,7 @@ type VillageRepositoryInterface interface {
 	RemoveResource(userID string, resourceType string, amount int) error
 	AddResourceFromColletor(userID string, resourceType string, amount int, collectionTime time.Time) error
 	UpgradeTownHall(userID string, upgradeCost int, upgradeCostType string, maxHP int) error
+	RecalculateStorage(userID string) error
 }
 
 type ConfigRepositoryInterface interface {
@@ -183,6 +184,10 @@ func (s *VillageService) CreateBuilding(userID string, buildingReqBody models.Bu
 		return ErrServer
 	}
 
+	if buildingReqBody.BuildingType == "storage" {
+		s.VillageRepo.RecalculateStorage(userID)
+	}
+
 	return nil
 }
 
@@ -308,6 +313,9 @@ func (s *VillageService) UpgradeBuilding(userID string, buildingID int64) error 
 		log.Println("error:", err)
 		return ErrServer
 	}
+	if building.BuildingType == "storage" {
+		s.VillageRepo.RecalculateStorage(userID)
+	}
 
 	return nil
 }
@@ -346,6 +354,8 @@ func (s *VillageService) GetUserVillage(userID string) (models.VillageResBody, e
 		TownHallLevel: village.TownHallLevel,
 		Gold:          village.Gold,
 		Elixir:        village.Elixir,
+		GoldMax:       village.MaxGold,
+		ElixirMax:     village.MaxElixir,
 	}
 
 	return res, nil

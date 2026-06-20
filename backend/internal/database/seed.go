@@ -66,13 +66,13 @@ func Seed(pool *pgxpool.Pool) {
 
 		resQuery := `
 			INSERT INTO resource_config (name, level, resource_type, max_capacity, resource_per_sec, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, max_hp) VALUES 
-			('Gold Mine', 1, 'gold', 500, 3, 150, 'elixir', 10, 400),
-			('Gold Mine', 2, 'gold', 1000, 6, 300, 'elixir', 60, 450),
-			('Gold Mine', 3, 'gold', 1500, 10, 700, 'elixir', 900, 500),
+			('Gold Mine', 1, 'gold', 500, 0.05, 150, 'elixir', 10, 400),
+			('Gold Mine', 2, 'gold', 1200, 0.1, 300, 'elixir', 60, 450),
+			('Gold Mine', 3, 'gold', 2000, 0.18, 700, 'elixir', 900, 500),
 			
-			('Elixir Collector', 1, 'elixir', 500, 3, 150, 'gold', 10, 400),
-			('Elixir Collector', 2, 'elixir', 1000, 6, 300, 'gold', 60, 450),
-			('Elixir Collector', 3, 'elixir', 1500, 10, 700, 'gold', 900, 500);
+			('Elixir Collector', 1, 'elixir', 500, 0.05, 150, 'gold', 10, 400),
+			('Elixir Collector', 2, 'elixir', 1200, 0.1, 300, 'gold', 60, 450),
+			('Elixir Collector', 3, 'elixir', 2000, 0.18, 700, 'gold', 900, 500);
 		`
 		if _, err = pool.Exec(ctx, resQuery); err != nil {
 			log.Println("Failed to seed resources: ", err)

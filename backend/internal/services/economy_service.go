@@ -28,7 +28,7 @@ func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
 		return ErrServer
 	}
 
-	goldPerSecPerLevel := make(map[int]int)
+	goldPerSecPerLevel := make(map[int]float64)
 	for _, cfg := range resourceConfig {
 		if cfg.Name == "Elixir Collector" {
 			continue
@@ -36,14 +36,14 @@ func (s *EconomyService) CollectGold(userID string, reqTime time.Time) error {
 		goldPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
 	}
 
-	var goldPerSec int
+	var goldPerSec float64
 	for _, goldMine := range goldMines {
 		goldPerSec = goldPerSec + goldPerSecPerLevel[goldMine.Level]
 	}
 
 	timeElapsed := reqTime.Sub(village.GoldLastCollectedAt)
 	secondsElapsed := timeElapsed.Seconds()
-	goldCollected := int(secondsElapsed) * goldPerSec
+	goldCollected := int(secondsElapsed * goldPerSec)
 
 	if err := s.VillageRepo.AddResourceFromColletor(userID, "gold", goldCollected, reqTime); err != nil {
 		return err
@@ -69,7 +69,7 @@ func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
 		return ErrServer
 	}
 
-	elixirPerSecPerLevel := make(map[int]int)
+	elixirPerSecPerLevel := make(map[int]float64)
 	for _, cfg := range resourceConfig {
 		if cfg.Name == "Gold Mine" {
 			continue
@@ -77,14 +77,14 @@ func (s *EconomyService) CollectElixir(userID string, reqTime time.Time) error {
 		elixirPerSecPerLevel[cfg.Level] = cfg.ResourcePerSec
 	}
 
-	var elixirPerSec int
+	var elixirPerSec float64
 	for _, elixirCollector := range elixirCollectors {
 		elixirPerSec = elixirPerSec + elixirPerSecPerLevel[elixirCollector.Level]
 	}
 
 	timeElapsed := reqTime.Sub(village.ElixirLastCollectedAt)
 	secondsElapsed := timeElapsed.Seconds()
-	elixirCollected := int(secondsElapsed) * elixirPerSec
+	elixirCollected := int(secondsElapsed * elixirPerSec)
 
 	if err := s.VillageRepo.AddResourceFromColletor(userID, "elixir", elixirCollected, reqTime); err != nil {
 		return err

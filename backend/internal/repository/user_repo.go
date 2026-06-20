@@ -30,17 +30,21 @@ func (r *UserRepository) InsertUser(username, hash string) error {
 	}
 
 	query = `
-	INSERT INTO village (user_id, town_hall_level, gold, elixir)
-	VALUES ($1, $2, $3, $4)
+	INSERT INTO village (user_id, town_hall_level, gold, elixir, max_gold, max_elixir)
+	VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	_, err = tx.Exec(ctx, query, userID, 1, 100000, 100000)
+	_, err = tx.Exec(ctx, query, userID, 1, 250, 250, 1500, 1500)
 	if err != nil {
 		return err
 	}
 
 	query = `
 		INSERT INTO building_instance (user_id, building_type, building_name, level, pos_x, pos_y, size, is_upgrading, hp)
-		VALUES ($1, 'town_hall', 'Town Hall', 1, 8, 8, 4, false, 1500)
+		VALUES 
+		($1, 'town_hall', 'Town Hall', 1, 8, 8, 3, false, 1500),
+		($1, 'training_grounds', 'Training Grounds', 1, 5, 12, 2, false, 400),
+		($1, 'storage', 'Gold Storage', 1, 6, 6, 2, false, 400),
+		($1, 'storage', 'Elixir Storage', 1, 11, 11, 2, false, 400)
 	`
 	_, err = tx.Exec(ctx, query, userID)
 	if err != nil {

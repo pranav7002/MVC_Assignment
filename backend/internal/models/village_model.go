@@ -21,6 +21,8 @@ type Village struct {
 	TownHallLevel         int       `json:"town_hall_level" db:"town_hall_level"`
 	Gold                  int       `json:"gold" db:"gold"`
 	Elixir                int       `json:"elixir" db:"elixir"`
+	MaxGold               int       `json:"max_gold" db:"max_gold"`
+	MaxElixir             int       `json:"max_elixir" db:"max_elixir"`
 	GoldLastCollectedAt   time.Time `json:"gold_last_collected_at" db:"gold_last_collected_at"`
 	ElixirLastCollectedAt time.Time `json:"elixir_last_collected_at" db:"elixir_last_collected_at"`
 }
@@ -41,6 +43,8 @@ type VillageResBody struct {
 	TownHallLevel int `json:"town_hall_level" db:"town_hall_level"`
 	Gold          int `json:"gold" db:"gold"`
 	Elixir        int `json:"elixir" db:"elixir"`
+	GoldMax       int `json:"gold_max"`
+	ElixirMax     int `json:"elixir_max"`
 }
 
 type UpgradeInfoResBody struct {

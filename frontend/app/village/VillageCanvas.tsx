@@ -69,6 +69,8 @@ export default function VillageCanvas() {
     const [village, setVillage] = useState({
         gold: 0,
         elixir: 0,
+        gold_max: 0,
+        elixir_max: 0,
     })
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -387,8 +389,8 @@ export default function VillageCanvas() {
                     <button className="btn" onClick={async () => handleCollect('elixir')}>Collect Elixir</button>
                     <button className="btn btn-blue" onClick={() => router.push('/troops')}>Troops</button>
                     <button className="btn btn-danger" onClick={() => router.push('/matchmaking')}>⚔ Attack</button>
-                    <span className="resource-pill gold">💰 {village?.gold ?? 0}</span>
-                    <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}</span>
+                    <span className="resource-pill gold">💰 {village?.gold ?? 0}/{village?.gold_max ?? 0}</span>
+                    <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}/{village?.elixir_max ?? 0}</span>
                 </div>
             </div>
 

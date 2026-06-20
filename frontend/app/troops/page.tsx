@@ -25,7 +25,7 @@ export default function TroopsPage() {
 
     const [troopConfigs, setTroopConfigs] = useState<TroopConfig[]>([])
     const [trainedTroops, setTrainedTroops] = useState<TrainedTroop[]>([])
-    const [village, setVillage] = useState({ gold: 0, elixir: 0 })
+    const [village, setVillage] = useState({ gold: 0, elixir: 0, gold_max: 0, elixir_max: 0 })
 
     async function loadTroopConfigs() {
         try {
@@ -111,7 +111,7 @@ export default function TroopsPage() {
                 </div>
                 <div className="topbar-nav">
                     <span className="resource-pill gold">⛏ {village.gold}</span>
-                    <span className="resource-pill elixir">🧪 {village.elixir}</span>
+                    <span className="resource-pill elixir">🧪 {village.elixir}/{village.elixir_max}</span>
                 </div>
             </div>
 

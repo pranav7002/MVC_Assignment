@@ -31,7 +31,9 @@ func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars
 	}
 	query = `
 	UPDATE village 
-	SET gold = gold + $1, elixir = elixir + $2 
+	SET 
+		gold = LEAST(gold + $1, max_gold), 
+		elixir = LEAST(elixir + $2, max_elixir) 
 	WHERE user_id = $3
 	`
 	if _, err := tx.Exec(ctx, query, goldLooted, elixirLooted, userID); err != nil {
