@@ -32,6 +32,8 @@ const CELL_SIZE = 45
 
 export default function VillageCanvas() {
     const token = useAuthStore((state) => state.token)
+    const username = useAuthStore((state) => state.username)
+    const logout = useAuthStore((state) => state.logout)
     const router = useRouter()
 
     const [buildings, setBuildings] = useState<Building[]>([])
@@ -80,7 +82,7 @@ export default function VillageCanvas() {
         try {
             const res = await protectedFetch('/api/buildings', 'GET')
             const data = await res.json()
-            setBuildings(data.data)
+            setBuildings(data.data || [])
         } catch (err) {
             console.error(err)
         }
@@ -90,7 +92,7 @@ export default function VillageCanvas() {
         try {
             const res = await protectedFetch('/api/shop/buildings', 'GET')
             const data = await res.json()
-            setShopBuildings(data.data)
+            setShopBuildings(data.data || [])
         } catch (err) {
             console.error(err)
         }
@@ -182,7 +184,7 @@ export default function VillageCanvas() {
             }
         }
 
-        [...buildings]
+        ;[...buildings]
             .sort((a, b) => (a.pos_y + a.size) - (b.pos_y + b.size))
             .forEach((b) => {
             if (movingBuildingId === b.id) return
@@ -391,6 +393,7 @@ export default function VillageCanvas() {
                     <button className="btn btn-danger" onClick={() => router.push('/matchmaking')}>⚔ Attack</button>
                     <span className="resource-pill gold">💰 {village?.gold ?? 0}/{village?.gold_max ?? 0}</span>
                     <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}/{village?.elixir_max ?? 0}</span>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { logout(); router.push('/login') }}>{username} · Logout</button>
                 </div>
             </div>
 

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { useBattleStore } from '../stores/battleStore'
 import { protectedFetch } from '../utils/api'
+import { useRequireAuth } from '../utils/authGuard'
 import sprites from '../village/spriteLoader'
 
 interface Building {
@@ -22,6 +23,7 @@ const GRID_SIZE = 20
 const CELL_SIZE = 45
 
 export default function MatchmakingPage() {
+    useRequireAuth()
     const token = useAuthStore((state) => state.token)
     const router = useRouter()
 
@@ -147,6 +149,7 @@ export default function MatchmakingPage() {
                     >
                         {troopCount === 0 ? 'No Troops!' : '⚔ Attack'}
                     </button>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
             </div>
 

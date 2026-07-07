@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { protectedFetch } from '../utils/api'
+import { useRedirectIfAuth } from '../utils/authGuard'
 
 export default function RegisterPage() {
+    useRedirectIfAuth()
     const router = useRouter()
 
     const [username, setUsername] = useState('')

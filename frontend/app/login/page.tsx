@@ -4,9 +4,11 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
+import { useRedirectIfAuth } from '../utils/authGuard'
 
 export default function LoginPage() {
-    const setToken = useAuthStore((state) => state.setToken)
+    useRedirectIfAuth()
+    const setAuth = useAuthStore((state) => state.setAuth)
 
     const router = useRouter()
 
@@ -35,7 +37,7 @@ export default function LoginPage() {
                                 return
                             }
                             const data = await res.json()
-                            setToken(data.data)
+                            setAuth(data.data, username)
                             router.push('/village')
                         } catch (err) {
                             setError('Unable to connect to server')

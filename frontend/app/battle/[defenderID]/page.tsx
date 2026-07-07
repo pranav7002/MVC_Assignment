@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import { useAuthStore } from '../../stores/authStore'
 import { useBattleStore } from '../../stores/battleStore'
 import { protectedFetch } from '../../utils/api'
+import { useRequireAuth } from '../../utils/authGuard'
 import sprites from '../../village/spriteLoader'
 
 interface Building {
@@ -58,6 +59,7 @@ function getUserIDFromToken(token: string): string | null {
 }
 
 export default function BattlePage() {
+    useRequireAuth()
     const token = useAuthStore((state) => state.token)
     const router = useRouter()
     const params = useParams()

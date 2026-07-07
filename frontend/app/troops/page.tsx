@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
+import { useRequireAuth } from '../utils/authGuard'
 
 interface TroopConfig {
     name: string
@@ -20,6 +21,7 @@ interface TrainedTroop {
 }
 
 export default function TroopsPage() {
+    useRequireAuth()
     const token = useAuthStore((state) => state.token)
     const router = useRouter()
 
@@ -112,6 +114,7 @@ export default function TroopsPage() {
                 <div className="topbar-nav">
                     <span className="resource-pill gold">⛏ {village.gold}</span>
                     <span className="resource-pill elixir">🧪 {village.elixir}/{village.elixir_max}</span>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
             </div>
 

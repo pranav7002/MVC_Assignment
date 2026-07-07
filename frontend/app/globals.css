@@ -163,8 +163,17 @@ html, body {
     transition: all 0.15s ease;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     box-shadow: var(--shadow-sm);
+}
+
+.btn-compact {
+    padding: 4px 10px;
+    font-size: clamp(9px, 0.9vw, 11px);
+    border: 1.5px solid var(--border-dark);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    box-shadow: 0 1px 0 var(--border-dark);
 }
 
 .btn:hover:not(:disabled) {
