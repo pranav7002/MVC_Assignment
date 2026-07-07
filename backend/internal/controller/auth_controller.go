@@ -40,10 +40,14 @@ func (c *AuthController) RegisterHandler(w http.ResponseWriter, r *http.Request)
 		WriteError(w, http.StatusBadRequest, "Username can't be empty!")
 		return
 	}
-
 	if len(userReqBody.Username) > 50 {
 		WriteError(w, http.StatusBadRequest, "Username longer than 50 characters!")
 		return
+	}
+
+	if userReqBody.Password == "" {
+		WriteError(w, http.StatusBadRequest, "Password can't be empty!")
+		return	
 	}
 
 	err = c.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)

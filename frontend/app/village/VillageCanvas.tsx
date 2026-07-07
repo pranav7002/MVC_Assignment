@@ -74,6 +74,7 @@ export default function VillageCanvas() {
         elixir: 0,
         gold_max: 0,
         elixir_max: 0,
+        trophies: 0,
     })
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -397,6 +398,7 @@ export default function VillageCanvas() {
                     <button className="btn btn-danger" onClick={() => router.push('/matchmaking')}>⚔ Attack</button>
                     <span className="resource-pill gold">💰 {village?.gold ?? 0}/{village?.gold_max ?? 0}</span>
                     <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}/{village?.elixir_max ?? 0}</span>
+                    <span className="resource-pill" style={{ backgroundColor: '#FCEEA7', border: '2px solid var(--border-dark)', color: '#8B6914' }}>🏆 {village?.trophies ?? 0}</span>
                 </div>
             </div>
 
