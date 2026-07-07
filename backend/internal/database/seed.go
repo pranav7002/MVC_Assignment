@@ -27,7 +27,7 @@ func Seed(pool *pgxpool.Pool) {
 			('Barbarian', 8, 300, 1, 1, 25, 0.5),
 			('Archer', 6, 150, 4, 1, 50, 0.8),
 			('Goblin', 10, 200, 1, 1, 25, 1.2),
-			('Giant', 4, 2500, 1, 4, 150, 0.3),
+			('Giant', 4, 800, 1, 4, 150, 0.3),
 			('Wizard', 10, 250, 3, 4, 200, 0.5);
 		`
 		if _, err = pool.Exec(ctx, troopQuery); err != nil {
@@ -47,18 +47,18 @@ func Seed(pool *pgxpool.Pool) {
 
 		defQuery := `
 			INSERT INTO defense_config (name, level, upgrade_cost, upgrade_cost_type, upgrade_duration_sec, dps, max_hp, max_range, min_range, aoe_range) VALUES 
-			('Cannon', 1, 250, 'gold', 10, 6, 420, 9, 0, 0),
-			('Cannon', 2, 1000, 'gold', 900, 8, 470, 9, 0, 0),
-			('Cannon', 3, 4000, 'gold', 3600, 11, 540, 9, 0, 0),
-			('Cannon', 4, 16000, 'gold', 14400, 14, 620, 9, 0, 0),
+			('Cannon', 1, 250, 'gold', 10, 60, 500, 9, 0, 0),
+			('Cannon', 2, 1000, 'gold', 900, 80, 600, 9, 0, 0),
+			('Cannon', 3, 4000, 'gold', 3600, 110, 650, 9, 0, 0),
+			('Cannon', 4, 16000, 'gold', 14400, 140, 750, 9, 0, 0),
 			
-			('Archer Tower', 1, 1000, 'gold', 900, 7, 400, 10, 0, 0),
-			('Archer Tower', 2, 2000, 'gold', 1800, 10, 460, 10, 0, 0),
-			('Archer Tower', 3, 5000, 'gold', 3600, 14, 520, 10, 0, 0),
-			('Archer Tower', 4, 20000, 'gold', 14400, 18, 590, 10, 0, 0),
+			('Archer Tower', 1, 1000, 'gold', 900, 70, 500, 10, 0, 0),
+			('Archer Tower', 2, 2000, 'gold', 1800, 100, 550, 10, 0, 0),
+			('Archer Tower', 3, 5000, 'gold', 3600, 140, 650, 10, 0, 0),
+			('Archer Tower', 4, 20000, 'gold', 14400, 180, 700, 10, 0, 0),
 			
-			('Mortar', 1, 8000, 'gold', 7200, 3, 400, 11, 4, 3),
-			('Mortar', 2, 32000, 'gold', 43200, 4, 450, 11, 4, 3);
+			('Mortar', 1, 8000, 'gold', 7200, 30, 500, 11, 4, 3),
+			('Mortar', 2, 32000, 'gold', 43200, 40, 550, 11, 4, 3);
 		`
 		if _, err = pool.Exec(ctx, defQuery); err != nil {
 			log.Println("Failed to seed defenses: ", err)

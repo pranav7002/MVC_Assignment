@@ -51,8 +51,9 @@ type TroopState struct {
 	ID   int      `json:"id"`
 	Name string   `json:"name"`
 	Pos  Position `json:"pos"`
-	HP   int      `json:"hp"`
-	Dead bool     `json:"dead"`
+	HP    int      `json:"hp"`
+	MaxHP int      `json:"max_hp"`
+	Dead  bool     `json:"dead"`
 }
 
 type BuildingState struct {

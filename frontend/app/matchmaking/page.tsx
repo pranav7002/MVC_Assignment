@@ -135,9 +135,7 @@ export default function MatchmakingPage() {
                     <span className="topbar-title">Matchmaking</span>
                 </div>
                 <div className="topbar-nav">
-                    <button className="btn" onClick={findMatch} disabled={loading}>
-                        {loading ? '...' : '↻ Skip'}
-                    </button>
+
                     <button
                         className="btn btn-green"
                         onClick={() => {

@@ -5,6 +5,7 @@ type TroopEntity struct {
 	Name            string
 	Pos             Position
 	HP              int
+	MaxHP           int
 	DPS             int
 	Range           int
 	Dead            bool

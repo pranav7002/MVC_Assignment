@@ -24,6 +24,7 @@ interface TroopState {
     name: string
     pos: { x: number; y: number }
     hp: number
+    max_hp: number
     dead: boolean
 }
 
@@ -260,6 +261,28 @@ export default function BattlePage() {
             } else {
                 ctx.fillStyle = 'blue'
                 ctx.fillRect(tx + 8, ty + 8, CELL_SIZE - 16, CELL_SIZE - 16)
+            }
+
+            // troop HP bar
+            if (t.max_hp && t.max_hp > 0) {
+                const barY = ty - 4
+                const barW = CELL_SIZE
+                const barH = 3
+                const hpRatio = Math.max(0, t.hp) / t.max_hp
+
+                // background
+                ctx.fillStyle = '#333'
+                ctx.fillRect(tx, barY, barW, barH)
+
+                // fill
+                if (hpRatio > 0.6) {
+                    ctx.fillStyle = '#4caf50'
+                } else if (hpRatio > 0.3) {
+                    ctx.fillStyle = '#ffeb3b'
+                } else {
+                    ctx.fillStyle = '#f44336'
+                }
+                ctx.fillRect(tx, barY, barW * hpRatio, barH)
             }
         }
     }, [buildings, buildingHPs, troops])

@@ -63,6 +63,7 @@ func (b *Battle) Add(t TroopDrop) {
 		Name:            t.Name,
 		Pos:             t.Pos,
 		HP:              t.HP,
+		MaxHP:           t.HP,
 		DPS:             t.DPS,
 		Range:           t.Range,
 		Dead:            false,
@@ -100,8 +101,9 @@ func (b *Battle) GetState() (BattleState, bool) {
 			ID:   t.ID,
 			Name: t.Name,
 			Pos:  t.Pos,
-			HP:   max(0, t.HP),
-			Dead: t.Dead,
+			HP:    max(0, t.HP),
+			MaxHP: t.MaxHP,
+			Dead:  t.Dead,
 		})
 		if !t.Dead {
 			allTroopsDead = false
