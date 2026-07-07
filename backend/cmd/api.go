@@ -73,10 +73,11 @@ func (app *application) mount() http.Handler {
 
 			// BATTLE
 			r.Get("/battle/match", app.battleController.MatchmakingHandler)
+			r.Get("/battle/ws-ticket", app.authController.GenerateWSTicketHandler)
 		})
 	})
 
-	// WS route outside auth middleware (browser WS can't send headers)
+	// WS route outside auth middleware (still secure due to a ws ticket system now)
 	r.Get("/api/battle/ws/{defendersID}", app.battleController.HandleWebSocket)
 
 	return r

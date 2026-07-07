@@ -3,9 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"github.com/pranav7002/MVC_Assignment/internal/middleware"
@@ -44,11 +46,43 @@ func (c *BattleController) MatchmakingHandler(w http.ResponseWriter, r *http.Req
 }
 
 func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
-		WriteError(w, http.StatusUnauthorized, "user_id query param required")
+	WSTicketString := r.URL.Query().Get("ws_ticket")
+	if WSTicketString == "" {
+		WriteError(w, http.StatusUnauthorized, "ws ticket query param required")
 		return
 	}
+
+	token, err := jwt.Parse(WSTicketString, func(t *jwt.Token) (any, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, http.ErrAbortHandler
+		}
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil || !token.Valid {
+		WriteError(w, http.StatusUnauthorized, "Invalid JWT Ticket")
+		return
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "Invalid token claims")
+		return
+	}
+	tokenType, ok := claims["type"].(string)
+	if !ok {	
+		WriteError(w, http.StatusUnauthorized, "Invalid type claim")
+		return
+	}
+	if tokenType != "ws_ticket" {
+		WriteError(w, http.StatusUnauthorized, "Invalid type claim")
+		return
+	}
+	userID, ok := claims["user_id"].(string)
+	if !ok {	
+		WriteError(w, http.StatusUnauthorized, "Invalid user_id claim")
+		return
+	}
+
 	defendersID := chi.URLParam(r, "defendersID")
 
 	buildings, err := c.VillageService.GetBuildings(defendersID)

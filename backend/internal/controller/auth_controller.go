@@ -6,12 +6,14 @@ import (
 	"strings"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/pranav7002/MVC_Assignment/internal/middleware"
 )
 
 type AuthServiceInterface interface {
 	RegisterUser(username, password string) error
 	LoginUser(username, password string) (bool, error)
 	CreateToken(userID string) (string, error)
+	CreateWSTicket(userID string) (string, error)
 }
 
 type AuthController struct {
@@ -86,4 +88,20 @@ func (c *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, http.StatusCreated, tokenString)
+}
+
+func (c *AuthController) GenerateWSTicketHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(middleware.ContextKey("user_id")).(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "User ID not found in context")
+		return
+	}
+
+	WSTicketString, err := c.AuthService.CreateWSTicket(userID)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
+		return
+	}
+
+	WriteJSON(w, http.StatusCreated, WSTicketString)
 }
