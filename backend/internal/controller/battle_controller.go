@@ -73,7 +73,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		WriteError(w, http.StatusUnauthorized, "Invalid type claim")
 		return
 	}
-	if tokenType != "ws_ticket" {
+	if tokenType != "ws-ticket" {
 		WriteError(w, http.StatusUnauthorized, "Invalid type claim")
 		return
 	}

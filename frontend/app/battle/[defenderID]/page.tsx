@@ -49,15 +49,7 @@ interface TrainedTroop {
 const GRID_SIZE = 20
 const CELL_SIZE = 45
 
-function getUserIDFromToken(token: string): string | null {
-    try {
-        const payload = token.split('.')[1]
-        const decoded = JSON.parse(atob(payload))
-        return decoded.user_id || null
-    } catch {
-        return null
-    }
-}
+
 
 export default function BattlePage() {
     useRequireAuth()
@@ -108,55 +100,73 @@ export default function BattlePage() {
 
         loadTrainedTroops()
 
-        const userID = getUserIDFromToken(token)
-        if (!userID) return
-
         let wasOpen = false
+        let activeWs: WebSocket | null = null
 
-        const ws = new WebSocket(
-            `ws://localhost:8080/api/battle/ws/${defenderID}?user_id=${userID}`,
-        )
-        wsRef.current = ws
-
-        ws.onopen = () => {
-            wasOpen = true
-        }
-
-        ws.onmessage = (event) => {
-            if (!event.data || event.data === '') return
-            let state: BattleState
+        const connectWS = async () => {
             try {
-                state = JSON.parse(event.data)
-            } catch {
-                return
-            }
-            console.log('ws tick', { troops: state.troops.length, buildings: state.buildings.length, destruction: state.destruction_pct })
+                const res = await protectedFetch('/api/battle/ws-ticket', 'GET')
+                if (!res.ok) {
+                    console.error('Failed to fetch ticket')
+                    return
+                }
+                
+                const data = await res.json()
+                const ticket = data.data
 
-            setTroops(state.troops)
-            setDestructionPct(state.destruction_pct)
-            setStarCount(state.stars)
+                const ws = new WebSocket(
+                    `ws://localhost:8080/api/battle/ws/${defenderID}?ws_ticket=${ticket}`,
+                )
+                wsRef.current = ws
+                activeWs = ws
 
-            const hpMap = new Map<number, BuildingHP>()
-            for (const b of state.buildings) {
-                hpMap.set(b.id, {
-                    hp: b.hp,
-                    max_hp: b.max_hp,
-                    dead: b.dead,
-                })
+                ws.onopen = () => {
+                    wasOpen = true
+                }
+
+                ws.onmessage = (event) => {
+                    if (!event.data || event.data === '') return
+                    let state: BattleState
+                    try {
+                        state = JSON.parse(event.data)
+                    } catch {
+                        return
+                    }
+                    console.log('ws tick', { troops: state.troops.length, buildings: state.buildings.length, destruction: state.destruction_pct })
+
+                    setTroops(state.troops)
+                    setDestructionPct(state.destruction_pct)
+                    setStarCount(state.stars)
+
+                    const hpMap = new Map<number, BuildingHP>()
+                    for (const b of state.buildings) {
+                        hpMap.set(b.id, {
+                            hp: b.hp,
+                            max_hp: b.max_hp,
+                            dead: b.dead,
+                        })
+                    }
+                    setBuildingHPs(hpMap)
+                }
+
+                ws.onclose = () => {
+                    if (wasOpen) {
+                        setBattleOver(true)
+                    }
+                }
+            } catch (err) {
+                console.error('WS Error:', err)
             }
-            setBuildingHPs(hpMap)
         }
-
-        ws.onclose = () => {
-            if (wasOpen) {
-                setBattleOver(true)
-            }
-        }
+        
+        connectWS()
 
         return () => {
-            ws.close()
+            if (activeWs) {
+                activeWs.close()
+            }
         }
-    }, [token])
+    }, [token, defenderID])
 
     // canvas draw
     useEffect(() => {
