@@ -16,7 +16,7 @@ type BattleService struct {
 }
 
 type BattleRepositoyInterface interface {
-	StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted int) error
+	StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted, attackerTrophyChange, defenderTrophyChange int) error
 	GetArmyCount(userID string) (int, error)
 }
 
@@ -104,7 +104,7 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 	goldLooted := (defendersVillage.Gold * destructionPct) / 200
 	elixirLooted := (defendersVillage.Elixir * destructionPct) / 200
 
-	var result string
+	var result = "DRAW"
 	switch stars {
 	case 0:
 		result = "LOSS"
@@ -116,6 +116,16 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 		result = "THREE_STARS"
 	}
 
+	attackerTrophyChange := stars * 10
+	if stars == 0 {
+		attackerTrophyChange = -10
+	}
+
+	defenderTrophyChange := -attackerTrophyChange
+	if defenderTrophyChange > 0 {
+		defenderTrophyChange = 0
+	}
+
 	if err := s.BattleRepo.StoreBattle(
 		userID,
 		defendersID,
@@ -124,6 +134,8 @@ func (s *BattleService) SaveBattleResult(userID, defendersID string, stars, dest
 		destructionPct,
 		goldLooted,
 		elixirLooted,
+		attackerTrophyChange,
+		defenderTrophyChange,
 	); err != nil {
 		log.Println("error:", err)
 		return ErrServer

@@ -10,7 +10,7 @@ type BattleRepository struct {
 	DB *pgxpool.Pool
 }
 
-func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted int) error {
+func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars, destructionPct, goldLooted, elixirLooted, attackerTrophyChange, defenderTrophyChange int) error {
 	ctx := context.Background()
 
 	tx, err := r.DB.Begin(ctx)
@@ -50,23 +50,13 @@ func (r *BattleRepository) StoreBattle(userID, defendersID, result string, stars
 		return err
 	}
 
-	trophyChange := stars * 10
-	if stars == 0 {
-		trophyChange = -10
-	}
-
 	query = `
 	UPDATE users 
 	SET trophies = GREATEST(0, trophies + $1)
 	WHERE id = $2
 	`
-	if _, err := tx.Exec(ctx, query, trophyChange, userID); err != nil {
+	if _, err := tx.Exec(ctx, query, attackerTrophyChange, userID); err != nil {
 		return err
-	}
-
-	defenderTrophyChange := -trophyChange
-	if defenderTrophyChange > 0 {
-		defenderTrophyChange = 0
 	}
 
 	query = `
