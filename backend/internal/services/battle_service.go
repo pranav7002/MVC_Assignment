@@ -34,7 +34,7 @@ func (s *BattleService) HydrateTroop(t models.TroopDropBody, buildings []models.
 		}
 	}
 	outOfBounds := t.X >= gridSize || t.Y >= gridSize || t.X < 0 || t.Y < 0
-	if outOfBounds || villageBitmap[t.X][t.Y]  {
+	if outOfBounds || villageBitmap[t.X][t.Y] {
 		return simulation.TroopDrop{}, errors.New("Invalid drop location")
 	}
 	return simulation.TroopDrop{
@@ -176,7 +176,7 @@ func (s *BattleService) FindMatch(userID string) (models.MatchmakingResBody, err
 }
 
 func (s *BattleService) GetTotalTroops(userID string) (int, error) {
-	totalTroops, err := s.BattleRepo.GetArmyCount(userID) 
+	totalTroops, err := s.BattleRepo.GetArmyCount(userID)
 	if err != nil {
 		log.Println("error:", err)
 		return 0, ErrServer

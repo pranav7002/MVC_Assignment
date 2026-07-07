@@ -1,18 +1,18 @@
 package simulation
 
 type TroopEntity struct {
-	ID              int
-	Name            string
-	Pos             Position
-	HP              int
-	MaxHP           int
-	DPS             int
-	Range           int
-	Dead            bool
-	TargetID        int // ID of the building troop is targeting
-	Path            []Position
-	Speed           float64
-	Steps 			float64
+	ID       int
+	Name     string
+	Pos      Position
+	HP       int
+	MaxHP    int
+	DPS      int
+	Range    int
+	Dead     bool
+	TargetID int // ID of the building troop is targeting
+	Path     []Position
+	Speed    float64
+	Steps    float64
 }
 
 const buffer float64 = 0.5

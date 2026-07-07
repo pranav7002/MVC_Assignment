@@ -69,7 +69,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	tokenType, ok := claims["type"].(string)
-	if !ok {	
+	if !ok {
 		WriteError(w, http.StatusUnauthorized, "Invalid type claim")
 		return
 	}
@@ -78,7 +78,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	userID, ok := claims["user_id"].(string)
-	if !ok {	
+	if !ok {
 		WriteError(w, http.StatusUnauthorized, "Invalid user_id claim")
 		return
 	}
@@ -156,11 +156,11 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 				close(attacker.Send)
 				goto saveBattle
 			}
-		case <- attacker.Done:
+		case <-attacker.Done:
 			return
 		}
 	}
-	saveBattle:
+saveBattle:
 	if err = c.BattleService.SaveBattleResult(userID, defendersID, finalState.Stars, finalState.DestructionPct); err != nil {
 		return
 	}
@@ -181,4 +181,3 @@ func (c *BattleController) HandleTroopDrop(client *models.Client, b *simulation.
 		b.Mu.Unlock()
 	}
 }
-

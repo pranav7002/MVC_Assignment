@@ -34,17 +34,17 @@ func (c *AuthController) RegisterHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-    userReqBody.Username = strings.TrimSpace(userReqBody.Username)
+	userReqBody.Username = strings.TrimSpace(userReqBody.Username)
 
-    if userReqBody.Username == "" {
-        WriteError(w, http.StatusBadRequest, "Username can't be empty!")
+	if userReqBody.Username == "" {
+		WriteError(w, http.StatusBadRequest, "Username can't be empty!")
 		return
-    } 
+	}
 
-    if len(userReqBody.Username) > 50 {
-        WriteError(w, http.StatusBadRequest, "Username longer than 50 characters!")
+	if len(userReqBody.Username) > 50 {
+		WriteError(w, http.StatusBadRequest, "Username longer than 50 characters!")
 		return
-    }
+	}
 
 	err = c.AuthService.RegisterUser(userReqBody.Username, userReqBody.Password)
 
@@ -65,7 +65,7 @@ func (c *AuthController) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    userReqBody.Username = strings.TrimSpace(userReqBody.Username)
+	userReqBody.Username = strings.TrimSpace(userReqBody.Username)
 
 	isAuthenticated, err := c.AuthService.LoginUser(userReqBody.Username, userReqBody.Password)
 	if err == pgx.ErrNoRows {

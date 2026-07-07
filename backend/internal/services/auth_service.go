@@ -77,7 +77,7 @@ func (s *AuthService) CreateWSTicket(userID string) (string, error) {
 		jwt.MapClaims{
 			"user_id": userID,
 			"exp":     time.Now().Add(time.Second * 30).Unix(),
-			"type": "ws-ticket",
+			"type":    "ws-ticket",
 		})
 
 	tokenString, err := token.SignedString(s.SecretKey)

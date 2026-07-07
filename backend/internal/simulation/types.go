@@ -48,9 +48,9 @@ func Dist(n, m Position) float64 {
 // BATTLE EVENTS
 
 type TroopState struct {
-	ID   int      `json:"id"`
-	Name string   `json:"name"`
-	Pos  Position `json:"pos"`
+	ID    int      `json:"id"`
+	Name  string   `json:"name"`
+	Pos   Position `json:"pos"`
 	HP    int      `json:"hp"`
 	MaxHP int      `json:"max_hp"`
 	Dead  bool     `json:"dead"`

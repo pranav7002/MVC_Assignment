@@ -10,8 +10,8 @@ const LAST_TICK int = 1200
 type Battle struct {
 	BattleGrid        *BattleGrid
 	Buildings         []*BuildingEntity
-	Troops     		  []*TroopEntity
-	TotalTroops		  int
+	Troops            []*TroopEntity
+	TotalTroops       int
 	TownHallDestroyed bool
 	TotalBuildingHP   int
 	Tick              int
@@ -50,7 +50,7 @@ func NewBattle(buildingInputs []BuildingInput, totalTroops int) *Battle {
 	return &Battle{
 		BattleGrid:      g,
 		Buildings:       buildings,
-		TotalTroops: 	 totalTroops,
+		TotalTroops:     totalTroops,
 		Tick:            0,
 		TotalBuildingHP: totalBuildingHP,
 		Mu:              new(sync.Mutex),
@@ -59,18 +59,18 @@ func NewBattle(buildingInputs []BuildingInput, totalTroops int) *Battle {
 
 func (b *Battle) Add(t TroopDrop) {
 	b.Troops = append(b.Troops, &TroopEntity{
-		ID:              rand.Intn(1e9),
-		Name:            t.Name,
-		Pos:             t.Pos,
-		HP:              t.HP,
-		MaxHP:           t.HP,
-		DPS:             t.DPS,
-		Range:           t.Range,
-		Dead:            false,
-		TargetID:        0,
-		Path:            nil,
-		Speed:           t.Speed,
-		Steps: 0,
+		ID:       rand.Intn(1e9),
+		Name:     t.Name,
+		Pos:      t.Pos,
+		HP:       t.HP,
+		MaxHP:    t.HP,
+		DPS:      t.DPS,
+		Range:    t.Range,
+		Dead:     false,
+		TargetID: 0,
+		Path:     nil,
+		Speed:    t.Speed,
+		Steps:    0,
 	})
 	b.TotalTroops--
 }
@@ -88,8 +88,6 @@ func (b *Battle) Step() {
 	b.Tick++
 }
 
-
-
 func (b *Battle) GetState() (BattleState, bool) {
 	destructionPct := 0
 	stars := 0
@@ -98,9 +96,9 @@ func (b *Battle) GetState() (BattleState, bool) {
 	allTroopsDead := true
 	for _, t := range b.Troops {
 		troops = append(troops, TroopState{
-			ID:   t.ID,
-			Name: t.Name,
-			Pos:  t.Pos,
+			ID:    t.ID,
+			Name:  t.Name,
+			Pos:   t.Pos,
 			HP:    max(0, t.HP),
 			MaxHP: t.MaxHP,
 			Dead:  t.Dead,
@@ -134,18 +132,18 @@ func (b *Battle) GetState() (BattleState, bool) {
 		stars++
 	}
 	if allBuildingsDestroyed {
-		stars++ 
+		stars++
 	}
 
 	done := (b.TotalTroops == 0 && allTroopsDead) || allBuildingsDestroyed || b.Tick == LAST_TICK
 
 	if done {
 		return BattleState{
-		DestructionPct: destructionPct,
-		Stars:          stars,
-		Troops:         troops,
-		Buildings:      buildings,
-	}, done
+			DestructionPct: destructionPct,
+			Stars:          stars,
+			Troops:         troops,
+			Buildings:      buildings,
+		}, done
 	}
 
 	return BattleState{

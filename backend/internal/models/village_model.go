@@ -45,6 +45,7 @@ type VillageResBody struct {
 	Elixir        int `json:"elixir" db:"elixir"`
 	GoldMax       int `json:"gold_max"`
 	ElixirMax     int `json:"elixir_max"`
+	Trophies      int `json:"trophies"`
 }
 
 type UpgradeInfoResBody struct {
@@ -54,4 +55,3 @@ type UpgradeInfoResBody struct {
 	NextMaxHP       int    `json:"next_max_hp"`
 	UpgradeDuration int    `json:"upgrade_duration_sec"`
 }
-

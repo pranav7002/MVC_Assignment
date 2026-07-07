@@ -40,6 +40,7 @@ type ConfigRepositoryInterface interface {
 type VillageService struct {
 	VillageRepo VillageRepositoryInterface
 	ConfigRepo  ConfigRepositoryInterface
+	UserRepo    UserRepositoryInterface
 }
 
 const gridSize int = 20
@@ -350,12 +351,18 @@ func (s *VillageService) GetUserVillage(userID string) (models.VillageResBody, e
 		return models.VillageResBody{}, ErrServer
 	}
 
+	trophies, err := s.UserRepo.GetTrophies(userID)
+	if err != nil {
+		return models.VillageResBody{}, ErrServer
+	}
+
 	res := models.VillageResBody{
 		TownHallLevel: village.TownHallLevel,
 		Gold:          village.Gold,
 		Elixir:        village.Elixir,
 		GoldMax:       village.MaxGold,
 		ElixirMax:     village.MaxElixir,
+		Trophies:      trophies,
 	}
 
 	return res, nil
@@ -446,4 +453,3 @@ func (s *VillageService) GetBuildingUpgradeInfo(userID string, buildingID int64)
 
 	return res, nil
 }
-

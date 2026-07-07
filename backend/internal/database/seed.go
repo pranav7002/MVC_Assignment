@@ -142,7 +142,7 @@ func Seed(pool *pgxpool.Pool) {
 			(4, 'storage', 'Gold Storage', 3, 2),
 			(4, 'storage', 'Elixir Storage', 3, 2),
 			(4, 'training_grounds', 'Training Grounds', 2, 2);
-		`		
+		`
 		if _, err = pool.Exec(ctx, progQuery); err != nil {
 			log.Println("Failed to seed progression rules: ", err)
 		}

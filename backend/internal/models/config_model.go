@@ -22,16 +22,16 @@ type StorageConfig struct {
 }
 
 type ResourceConfig struct {
-	Name               string `json:"name" db:"name"`
-	Level              int    `json:"level" db:"level"`
-	ResourceType       string `json:"resource_type" db:"resource_type"`
-	MaxCapacity        int    `json:"max_capacity" db:"max_capacity"`
+	Name               string  `json:"name" db:"name"`
+	Level              int     `json:"level" db:"level"`
+	ResourceType       string  `json:"resource_type" db:"resource_type"`
+	MaxCapacity        int     `json:"max_capacity" db:"max_capacity"`
 	ResourcePerSec     float64 `json:"resource_per_sec" db:"resource_per_sec"`
-	UpgradeCost        int    `json:"upgrade_cost" db:"upgrade_cost"`
-	UpgradeCostType    string `json:"upgrade_cost_type" db:"upgrade_cost_type"`
-	UpgradeDurationSec int    `json:"upgrade_duration_sec" db:"upgrade_duration_sec"`
-	MaxHP              int    `json:"max_hp" db:"max_hp"`
-	Size               int    `json:"size" db:"size"`
+	UpgradeCost        int     `json:"upgrade_cost" db:"upgrade_cost"`
+	UpgradeCostType    string  `json:"upgrade_cost_type" db:"upgrade_cost_type"`
+	UpgradeDurationSec int     `json:"upgrade_duration_sec" db:"upgrade_duration_sec"`
+	MaxHP              int     `json:"max_hp" db:"max_hp"`
+	Size               int     `json:"size" db:"size"`
 }
 
 type TownHallConfig struct {
