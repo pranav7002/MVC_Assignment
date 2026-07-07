@@ -13,8 +13,6 @@
     --text-muted: #9C9089;
 
     --border-dark: #2C2623;
-    --border-light: #2C2623;
-    --border-mid: #2C2623;
 
     --accent-mint: #8FBFA5;
     --accent-mint-hover: #7DAF93;
@@ -29,23 +27,12 @@
     --elixir-bg: rgba(224, 182, 199, 0.2);
 
     --danger: #D14A56;
-    --danger-hover: #BE3E4A;
 
     --shadow-sm: 0 2px 0 #2C2623;
     --shadow-md: 0 3px 0 #2C2623;
     --shadow-hover: 0 4px 0 #2C2623;
 
     --font-pixel: 'Pixelify Sans', sans-serif;
-
-    --background: #E4D8C9;
-    --foreground: #2C2623;
-}
-
-@theme inline {
-    --color-background: #E4D8C9;
-    --color-foreground: #2C2623;
-    --font-sans: var(--font-geist-sans);
-    --font-mono: var(--font-geist-mono);
 }
 
 * {
@@ -333,7 +320,7 @@ html, body {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: var(--bg-page);
+    background: url('/bg.png') center/cover no-repeat, var(--bg-page);
 }
 
 .auth-card {

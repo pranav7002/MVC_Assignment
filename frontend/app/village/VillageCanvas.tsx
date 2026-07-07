@@ -386,7 +386,10 @@ export default function VillageCanvas() {
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             {/* ── Top Bar ── */}
             <div className="topbar">
-                <span className="topbar-title">Vanguard</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span className="topbar-title">Vanguard</span>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { logout(); router.push('/login') }}>{username} · Logout</button>
+                </div>
                 <div className="topbar-nav">
                     <button className="btn" onClick={async () => handleCollect('gold')}>Collect Gold</button>
                     <button className="btn" onClick={async () => handleCollect('elixir')}>Collect Elixir</button>
@@ -394,7 +397,6 @@ export default function VillageCanvas() {
                     <button className="btn btn-danger" onClick={() => router.push('/matchmaking')}>⚔ Attack</button>
                     <span className="resource-pill gold">💰 {village?.gold ?? 0}/{village?.gold_max ?? 0}</span>
                     <span className="resource-pill elixir">🔮 {village?.elixir ?? 0}/{village?.elixir_max ?? 0}</span>
-                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { logout(); router.push('/login') }}>{username} · Logout</button>
                 </div>
             </div>
 

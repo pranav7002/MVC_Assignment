@@ -133,9 +133,9 @@ export default function MatchmakingPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button className="btn" onClick={() => router.push('/village')}>← Village</button>
                     <span className="topbar-title">Matchmaking</span>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
                 <div className="topbar-nav">
-
                     <button
                         className="btn btn-green"
                         onClick={() => {
@@ -148,7 +148,6 @@ export default function MatchmakingPage() {
                     >
                         {troopCount === 0 ? 'No Troops!' : '⚔ Attack'}
                     </button>
-                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
             </div>
 

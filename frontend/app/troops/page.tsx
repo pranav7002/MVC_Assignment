@@ -111,11 +111,11 @@ export default function TroopsPage() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <button className="btn" onClick={() => router.push('/village')}>← Village</button>
                     <span className="topbar-title">Troops</span>
+                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
                 <div className="topbar-nav">
                     <span className="resource-pill gold">⛏ {village.gold}</span>
                     <span className="resource-pill elixir">🧪 {village.elixir}/{village.elixir_max}</span>
-                    <button className="btn btn-compact" suppressHydrationWarning onClick={() => { useAuthStore.getState().logout(); router.push('/login') }}>{useAuthStore.getState().username} · Logout</button>
                 </div>
             </div>
 
