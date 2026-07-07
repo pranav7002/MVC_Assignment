@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
 import sprites from './spriteLoader'
+import { toast } from 'react-toastify'
 
 interface Building {
     id: number
@@ -297,7 +298,7 @@ export default function VillageCanvas() {
                 await loadShopBuildings()
                 deselectEverything()
             } catch (error: any) {
-                alert(error.message || 'Action failed')
+                toast.error(error.message || 'Action failed')
             }
             return
         }
@@ -357,7 +358,7 @@ export default function VillageCanvas() {
                 setActiveBuilding(null)
             }
         } catch (error: any) {
-            alert(error.message || 'Upgrade failed')
+            toast.error(error.message || 'Upgrade failed')
         }
     }
 
@@ -377,7 +378,7 @@ export default function VillageCanvas() {
             if (!res.ok) throw new Error((await res.json()).error)
             await loadVillage()
         } catch (error: any) {
-            alert(error.message || 'Collection failed')
+            toast.error(error.message || 'Collection failed')
         }
     }
 

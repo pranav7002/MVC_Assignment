@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { useBattleStore } from '../stores/battleStore'
+import { toast } from 'react-toastify'
 import { protectedFetch } from '../utils/api'
 import { useRequireAuth } from '../utils/authGuard'
 import sprites from '../village/spriteLoader'
@@ -44,7 +45,7 @@ export default function MatchmakingPage() {
             setDefenderID(data.data.defenders_id)
             setBuildings(data.data.buildings)
         } catch (error: any) {
-            alert(error.message || 'No opponents found')
+            toast.error(error.message || 'No opponents found')
         }
         setLoading(false)
     }

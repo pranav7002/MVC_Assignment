@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
 import { useRedirectIfAuth } from '../utils/authGuard'
+import { toast } from 'react-toastify'
 
 export default function LoginPage() {
     useRedirectIfAuth()
@@ -14,7 +15,6 @@ export default function LoginPage() {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
     return (
@@ -33,14 +33,14 @@ export default function LoginPage() {
                             })
                             if (!res.ok) {
                                 const err = await res.json()
-                                setError(err.error)
+                                toast.error(err.error)
                                 return
                             }
                             const data = await res.json()
                             setAuth(data.data, username)
                             router.push('/village')
                         } catch (err) {
-                            setError('Unable to connect to server')
+                            toast.error('Unable to connect to server')
                             setUsername('')
                             setPassword('')
                             console.error(err)
@@ -67,7 +67,6 @@ export default function LoginPage() {
                         {loading ? 'Signing in...' : 'Login'}
                     </button>
                 </form>
-                {error && <p style={{ color: 'var(--danger)', fontSize: 'clamp(11px, 1vw, 13px)', marginTop: '12px', textAlign: 'center' }}>{error}</p>}
                 <p style={{ fontSize: 'clamp(11px, 1vw, 13px)', color: 'var(--text-muted)', marginTop: '16px', textAlign: 'center' }}>
                     No account?{' '}
                     <span onClick={() => router.push('/register')} style={{ color: 'var(--accent-blue)', cursor: 'pointer' }}>Register</span>

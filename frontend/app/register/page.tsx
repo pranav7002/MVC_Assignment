@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { protectedFetch } from '../utils/api'
 import { useRedirectIfAuth } from '../utils/authGuard'
+import { toast } from 'react-toastify'
 
 export default function RegisterPage() {
     useRedirectIfAuth()
@@ -11,7 +12,6 @@ export default function RegisterPage() {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
 
     return (
@@ -30,12 +30,12 @@ export default function RegisterPage() {
                             })
                             if (!res.ok) {
                                 const err = await res.json()
-                                setError(err.error)
+                                toast.error(err.error)
                                 return
                             }
                             router.push('/login')
                         } catch (err) {
-                            console.error(err)
+                            toast.error('Unable to connect to server')
                         } finally {
                             setLoading(false)
                         }
@@ -59,7 +59,6 @@ export default function RegisterPage() {
                         {loading ? 'Creating...' : 'Register'}
                     </button>
                 </form>
-                {error && <p style={{ color: 'var(--danger)', fontSize: 'clamp(11px, 1vw, 13px)', marginTop: '12px', textAlign: 'center' }}>{error}</p>}
                 <p style={{ fontSize: 'clamp(11px, 1vw, 13px)', color: 'var(--text-muted)', marginTop: '16px', textAlign: 'center' }}>
                     Already have an account?{' '}
                     <span onClick={() => router.push('/login')} style={{ color: 'var(--accent-blue)', cursor: 'pointer' }}>Login</span>

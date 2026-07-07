@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     description: 'Village combat game',
 }
 
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 export default function RootLayout({
     children,
 }: Readonly<{
@@ -24,7 +27,22 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en" className="h-full antialiased">
-            <body className="min-h-full flex flex-col">{children}</body>
+            <body className="min-h-full flex flex-col">
+                {children}
+                <ToastContainer 
+                    position="bottom-right" 
+                    autoClose={3000} 
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="dark"
+                    toastStyle={{ fontFamily: 'var(--font-pixel)', fontSize: '14px', background: 'var(--bg-card)', color: 'var(--text-primary)', border: '2px solid var(--border-dark)', borderRadius: '12px' }}
+                />
+            </body>
         </html>
     )
 }

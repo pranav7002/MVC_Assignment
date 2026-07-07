@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../stores/authStore'
 import { protectedFetch } from '../utils/api'
 import { useRequireAuth } from '../utils/authGuard'
+import { toast } from 'react-toastify'
 
 interface TroopConfig {
     name: string
@@ -80,7 +81,7 @@ export default function TroopsPage() {
             await loadTrainedTroops()
             await loadVillage()
         } catch (error: any) {
-            alert(error.message || 'Training failed')
+            toast.error(error.message || 'Training failed')
         }
     }
 
@@ -94,7 +95,7 @@ export default function TroopsPage() {
             await loadTrainedTroops()
             await loadVillage()
         } catch (error: any) {
-            alert(error.message || 'Delete failed')
+            toast.error(error.message || 'Delete failed')
         }
     }
 
