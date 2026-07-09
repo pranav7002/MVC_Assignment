@@ -17,8 +17,9 @@ type MatchmakingResBody struct {
 	Buildings   []Building `json:"buildings"`
 }
 type BattleManager struct {
-	Mu      *sync.Mutex
-	Battles map[string][]*Client
+	Mu          *sync.Mutex
+	Battles     map[string][]*Client
+	UsedTickets map[string]bool
 }
 type Client struct {
 	ID       string

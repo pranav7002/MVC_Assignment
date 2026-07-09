@@ -95,6 +95,15 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	c.BattleManager.Mu.Lock()
+	if c.BattleManager.UsedTickets[WSTicketString] {
+		c.BattleManager.Mu.Unlock()
+		WriteError(w, http.StatusUnauthorized, "WS ticket already used")
+		return
+	}
+	c.BattleManager.UsedTickets[WSTicketString] = true
+	c.BattleManager.Mu.Unlock()
+
 	buildings, err := c.VillageService.GetBuildings(defendersID)
 	if err != nil {
 		WriteError(w, http.StatusNotFound, err.Error())
@@ -144,6 +153,7 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
 		c.BattleManager.Mu.Lock()
 		delete(c.BattleManager.Battles, battleID)
+		delete(c.BattleManager.UsedTickets, WSTicketString)
 		c.BattleManager.Mu.Unlock()
 
 		ticker.Stop()

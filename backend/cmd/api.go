@@ -179,8 +179,9 @@ func (app *application) hydrate(secretKey []byte) {
 		VillageService: villageService,
 		WSUpgrader:     upgrader,
 		BattleManager: &models.BattleManager{
-			Mu:      new(sync.Mutex),
-			Battles: make(map[string][]*models.Client),
+			Mu:          new(sync.Mutex),
+			Battles:     make(map[string][]*models.Client),
+			UsedTickets: make(map[string]bool),
 		},
 	}
 
