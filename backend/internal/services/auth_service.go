@@ -72,12 +72,13 @@ func (s *AuthService) CreateToken(username string) (string, error) {
 	return tokenString, nil
 }
 
-func (s *AuthService) CreateWSTicket(userID string) (string, error) {
+func (s *AuthService) CreateWSTicket(userID, defenderID string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"user_id": userID,
-			"exp":     time.Now().Add(time.Second * 30).Unix(),
-			"type":    "ws-ticket",
+			"user_id":     userID,
+			"defender_id": defenderID,
+			"exp":         time.Now().Add(time.Second * 30).Unix(),
+			"type":        "ws-ticket",
 		})
 
 	tokenString, err := token.SignedString(s.SecretKey)

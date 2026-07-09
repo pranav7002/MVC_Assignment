@@ -13,7 +13,7 @@ type AuthServiceInterface interface {
 	RegisterUser(username, password string) error
 	LoginUser(username, password string) (bool, error)
 	CreateToken(userID string) (string, error)
-	CreateWSTicket(userID string) (string, error)
+	CreateWSTicket(userID, defenderID string) (string, error)
 }
 
 type AuthController struct {
@@ -101,7 +101,13 @@ func (c *AuthController) GenerateWSTicketHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	WSTicketString, err := c.AuthService.CreateWSTicket(userID)
+	defenderID := r.URL.Query().Get("defender_id")
+	if defenderID == "" {
+		WriteError(w, http.StatusBadRequest, "defender_id query param required")
+		return
+	}
+
+	WSTicketString, err := c.AuthService.CreateWSTicket(userID, defenderID)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError, "Something bad happened on the server :/")
 		return

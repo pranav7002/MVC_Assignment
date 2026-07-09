@@ -105,7 +105,7 @@ export default function BattlePage() {
 
         const connectWS = async () => {
             try {
-                const res = await protectedFetch('/api/battle/ws-ticket', 'GET')
+                const res = await protectedFetch(`/api/battle/ws-ticket?defender_id=${defenderID}`, 'GET')
                 if (!res.ok) {
                     console.error('Failed to fetch ticket')
                     return

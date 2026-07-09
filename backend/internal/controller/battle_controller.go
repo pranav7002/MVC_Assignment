@@ -85,6 +85,16 @@ func (c *BattleController) HandleWebSocket(w http.ResponseWriter, r *http.Reques
 
 	defendersID := chi.URLParam(r, "defendersID")
 
+	claimDefenderID, ok := claims["defender_id"].(string)
+	if !ok {
+		WriteError(w, http.StatusUnauthorized, "Invalid defender_id claim")
+		return
+	}
+	if claimDefenderID != defendersID {
+		WriteError(w, http.StatusUnauthorized, "Ticket defender_id mismatch")
+		return
+	}
+
 	buildings, err := c.VillageService.GetBuildings(defendersID)
 	if err != nil {
 		WriteError(w, http.StatusNotFound, err.Error())
